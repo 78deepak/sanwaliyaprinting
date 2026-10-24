@@ -1,0 +1,287 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #fff8f5;
+    --foreground: #201b18;
+    
+    --card: #ffffff;
+    --card-foreground: #201b18;
+    
+    --popover: #ffffff;
+    --popover-foreground: #201b18;
+    
+    --primary: #5b0617;
+    --primary-container: #7a1f2b;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #7d5700;
+    --secondary-container: #fcc665;
+    --secondary-foreground: #755100;
+    
+    --tertiary: #128c7e;
+    --tertiary-hover: #0e7064;
+    --tertiary-foreground: #ffffff;
+    
+    --surface: #fff8f5;
+    --surface-lowest: #ffffff;
+    --surface-low: #fdf1ec;
+    --surface-container: #f7ece6;
+    --surface-high: #f1e6e1;
+    --surface-highest: #ebe0db;
+    
+    --muted: #f7ece6;
+    --muted-foreground: #564242;
+    
+    --accent: #fcc665;
+    --accent-foreground: #755100;
+    
+    --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
+    
+    --border: #dcc0c0;
+    --border-subtle: #ebe0db;
+    --gold-border: #b8892e;
+    --ring: #7a1f2b;
+    
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #14110f;
+    --foreground: #f5efeb;
+    
+    --card: #1d1916;
+    --card-foreground: #f5efeb;
+    
+    --popover: #1d1916;
+    --popover-foreground: #f5efeb;
+    
+    --primary: #d4707f;
+    --primary-container: #7a1f2b;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #e2bc62;
+    --secondary-container: #332d28;
+    --secondary-foreground: #e2bc62;
+    
+    --tertiary: #25d366;
+    --tertiary-hover: #1ebb5a;
+    --tertiary-foreground: #14110f;
+    
+    --surface: #1d1916;
+    --surface-lowest: #1d1916;
+    --surface-low: #221d1a;
+    --surface-container: #28231f;
+    --surface-high: #332d28;
+    --surface-highest: #3d3732;
+    
+    --muted: #28231f;
+    --muted-foreground: #c9beb7;
+    
+    --accent: #332d28;
+    --accent-foreground: #e2bc62;
+    
+    --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
+    
+    --border: #4a413d;
+    --border-subtle: #332d28;
+    --gold-border: #e2bc62;
+    --ring: #d4707f;
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-hover: var(--tertiary-hover);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-surface: var(--surface);
+  --color-surface-lowest: var(--surface-lowest);
+  --color-surface-low: var(--surface-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-gold-border: var(--gold-border);
+  --color-ring: var(--ring);
+
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+  --font-devanagari: var(--font-devanagari), system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 24px;
+  overscroll-behavior-y: none;
+}
+
+/* ============================================================
+   Stitch Typography Exact Scale & Weights
+   ============================================================ */
+.font-display-lg {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 56px;
+  line-height: 64px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .font-display-lg {
+    font-size: 38px;
+    line-height: 44px;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+}
+
+.font-display-md {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 44px;
+  line-height: 52px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .font-display-md {
+    font-size: 32px;
+    line-height: 38px;
+    letter-spacing: 0em;
+    font-weight: 600;
+  }
+}
+
+.font-headline-lg {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: 0em;
+  font-weight: 500;
+}
+
+.font-headline-md {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+}
+
+.font-headline-sm {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}
+
+.font-body-lg {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: 0em;
+  font-weight: 400;
+}
+
+.font-body-md {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 24px;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+}
+
+.font-body-sm {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+.font-label-lg {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.font-label-md {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.font-label-sm {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* Gold Pulse Keyframe for Live Consultation Triggers */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(184, 137, 46, 0.45);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 14px rgba(184, 137, 46, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(184, 137, 46, 0);
+  }
+}
+
+.gold-pulse {
+  animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Debossed well effect for inputs */
+.deboss-well {
+  box-shadow: inset 0 1px 3px rgba(32, 27, 24, 0.08);
+}
+
+/* Micro paper contact shadow */
+.paper-elevation {
+  box-shadow: 0 2px 8px -2px rgba(32, 27, 24, 0.04);
+}
+
+.paper-elevation-hover {
+  transition: all 0.3s ease;
+}
+.paper-elevation-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -8px rgba(91, 6, 23, 0.08), 0 4px 12px -2px rgba(32, 27, 24, 0.04);
+}
