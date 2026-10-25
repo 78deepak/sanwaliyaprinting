@@ -35,6 +35,8 @@ async function seed() {
         tagline: "Fine Print Studio & Bespoke Wedding Stationery",
         taglineHi: "शाही विवाह पत्रिका, विजिटिंग कार्ड्स एवं कमर्शियल प्रिंटिंग",
         establishedYear: 1994,
+        ownerName: "Ramesh Patidar (Owner)",
+        ownerEmail: "ramesh@sanwaliyapress.in",
         socialLinks: {
           instagram: "https://instagram.com/sanwaliyapress",
           facebook: "https://facebook.com/sanwaliyapress",

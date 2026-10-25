@@ -20,9 +20,10 @@ import { MobileDrawer } from "./MobileDrawer";
 
 interface AdminShellProps {
   children: React.ReactNode;
+  ownerName?: string;
 }
 
-export function AdminShell({ children }: AdminShellProps) {
+export function AdminShell({ children, ownerName }: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
@@ -30,12 +31,13 @@ export function AdminShell({ children }: AdminShellProps) {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Desktop Left Sidebar */}
-      <Sidebar />
+      <Sidebar ownerName={ownerName} />
 
       {/* Mobile Slide-in Drawer */}
       <MobileDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        ownerName={ownerName}
       />
 
       {/* Right Content Area with Desktop Left Margin */}

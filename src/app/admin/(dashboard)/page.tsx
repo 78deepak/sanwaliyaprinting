@@ -75,7 +75,7 @@ export default async function AdminDashboardPage() {
             </div>
 
             <h1 className="font-headline-lg text-2xl md:text-3xl text-primary font-bold tracking-tight">
-              Namaste Ramesh ji{" "}
+              Namaste {settings.ownerName ? settings.ownerName.replace(/\s*\(Owner\)/i, "").trim() : "Ramesh ji"}{" "}
               <span className="font-headline-md text-xl md:text-2xl font-normal text-muted-foreground ml-1">
                 (दुकानदार डैशबोर्ड)
               </span>

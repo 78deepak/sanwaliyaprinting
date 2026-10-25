@@ -148,6 +148,19 @@ describe("2. Zod Validation Schemas", () => {
 
     const result = siteSettingsSchema.safeParse(validSettings);
     assert.equal(result.success, true, "Valid settings must pass schema validation");
+    if (result.success) {
+      assert.equal(result.data.ownerName, "Ramesh Patidar (Owner)", "Defaults ownerName when omitted");
+    }
+
+    // Custom owner name test
+    const customOwnerResult = siteSettingsSchema.safeParse({
+      ...validSettings,
+      ownerName: "Deepak Patidar (Director)",
+    });
+    assert.equal(customOwnerResult.success, true, "Custom ownerName must pass schema validation");
+    if (customOwnerResult.success) {
+      assert.equal(customOwnerResult.data.ownerName, "Deepak Patidar (Director)");
+    }
 
     const invalidSettings = {
       ...validSettings,
@@ -155,6 +168,12 @@ describe("2. Zod Validation Schemas", () => {
     };
     const invalidResult = siteSettingsSchema.safeParse(invalidSettings);
     assert.equal(invalidResult.success, false, "Too short WhatsApp number must fail validation");
+
+    const invalidOwnerResult = siteSettingsSchema.safeParse({
+      ...validSettings,
+      ownerName: "X", // too short (must be at least 2 chars)
+    });
+    assert.equal(invalidOwnerResult.success, false, "Too short owner name must fail validation");
   });
 });
 

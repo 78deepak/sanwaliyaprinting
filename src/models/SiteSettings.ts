@@ -18,6 +18,8 @@ export interface ISiteSettings extends Document {
   tagline: string;
   taglineHi: string;
   establishedYear: number;
+  ownerName?: string;
+  ownerEmail?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -94,6 +96,16 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
     establishedYear: {
       type: Number,
       default: 1994,
+    },
+    ownerName: {
+      type: String,
+      default: "Ramesh Patidar (Owner)",
+      trim: true,
+    },
+    ownerEmail: {
+      type: String,
+      default: "ramesh@sanwaliyapress.in",
+      trim: true,
     },
   },
   {

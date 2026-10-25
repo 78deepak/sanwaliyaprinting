@@ -23,9 +23,14 @@ import { logoutAction } from "@/app/admin/auth-actions";
 interface SidebarProps {
   className?: string;
   totalProductsCount?: number;
+  ownerName?: string;
 }
 
-export function Sidebar({ className = "", totalProductsCount = 48 }: SidebarProps) {
+export function Sidebar({
+  className = "",
+  totalProductsCount = 48,
+  ownerName = "Ramesh Patidar (Owner)",
+}: SidebarProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
@@ -99,10 +104,10 @@ export function Sidebar({ className = "", totalProductsCount = 48 }: SidebarProp
         {/* Verified Owner Badge */}
         <div className="px-4 py-3 border-b border-border/40">
           <div className="p-2.5 rounded-lg bg-surface-container flex items-center justify-between border border-border/40">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-secondary" />
-              <span className="text-label-sm text-foreground font-semibold">
-                Ramesh Patidar (Owner)
+            <div className="flex items-center gap-2 min-w-0 pr-1">
+              <CheckCircle2 className="w-4 h-4 text-secondary shrink-0" />
+              <span className="text-label-sm text-foreground font-semibold truncate" title={ownerName}>
+                {ownerName}
               </span>
             </div>
             <span className="w-2 h-2 rounded-full bg-secondary" />

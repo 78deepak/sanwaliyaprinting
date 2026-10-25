@@ -25,12 +25,14 @@ interface MobileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   totalProductsCount?: number;
+  ownerName?: string;
 }
 
 export function MobileDrawer({
   isOpen,
   onClose,
   totalProductsCount = 48,
+  ownerName = "Ramesh Patidar (Owner)",
 }: MobileDrawerProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
@@ -139,10 +141,10 @@ export function MobileDrawer({
           {/* Owner info */}
           <div className="p-4 border-b border-border/40">
             <div className="p-2 rounded-lg bg-surface-container flex items-center justify-between border border-border/30">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-secondary" />
-                <span className="text-label-sm font-semibold text-foreground">
-                  Ramesh Patidar (Owner)
+              <div className="flex items-center gap-2 min-w-0 pr-1">
+                <CheckCircle2 className="w-4 h-4 text-secondary shrink-0" />
+                <span className="text-label-sm font-semibold text-foreground truncate" title={ownerName}>
+                  {ownerName}
                 </span>
               </div>
               <span className="w-2 h-2 rounded-full bg-secondary" />

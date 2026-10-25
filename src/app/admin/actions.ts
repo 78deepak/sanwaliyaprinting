@@ -320,6 +320,8 @@ export async function saveSiteSettingsAction(input: unknown): Promise<ActionResu
 
   revalidatePath("/");
   revalidatePath("/admin/settings");
+  revalidatePath("/admin", "layout");
+  revalidatePath("/admin");
 
   return {
     ok: true,
@@ -351,6 +353,8 @@ export async function getSiteSettingsAction(): Promise<SiteSettingsValues & { up
         tagline: doc.tagline,
         taglineHi: doc.taglineHi,
         establishedYear: doc.establishedYear || 1994,
+        ownerName: doc.ownerName || "Ramesh Patidar (Owner)",
+        ownerEmail: doc.ownerEmail || "ramesh@sanwaliyapress.in",
         socialLinks: {
           instagram: doc.socialLinks?.instagram || "",
           facebook: doc.socialLinks?.facebook || "",
@@ -377,6 +381,8 @@ export async function getSiteSettingsAction(): Promise<SiteSettingsValues & { up
     tagline: "Fine Print Studio & Bespoke Wedding Stationery",
     taglineHi: "शाही विवाह पत्रिका, विजिटिंग कार्ड्स एवं कमर्शियल प्रिंटिंग",
     establishedYear: 1994,
+    ownerName: "Ramesh Patidar (Owner)",
+    ownerEmail: "ramesh@sanwaliyapress.in",
     socialLinks: {
       instagram: "https://instagram.com/sanwaliyapress",
       facebook: "https://facebook.com/sanwaliyapress",
