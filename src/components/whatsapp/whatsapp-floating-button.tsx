@@ -10,7 +10,7 @@ export function WhatsAppFloatingButton() {
   const directUrl = buildGeneralEnquiryUrl();
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5">
+    <div className="hidden lg:flex fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5">
       {/* Tooltip Card / Quick Popup */}
       {isOpen && (
         <div className="bg-surface-lowest p-4 rounded-2xl shadow-2xl border border-border w-72 mb-2 animate-in slide-in-from-bottom-3 duration-200">
@@ -32,7 +32,7 @@ export function WhatsAppFloatingButton() {
           <p className="text-xs text-muted-foreground leading-relaxed">
             Namaste! Have questions about wedding cards, visiting card papers, or need an urgent quote? Chat with our master pressman directly.
           </p>
-          <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
+          <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
             <span>⏱️ Replies in ~15 mins</span>
             <a
               href={directUrl}

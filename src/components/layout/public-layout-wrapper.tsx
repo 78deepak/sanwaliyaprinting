@@ -21,7 +21,7 @@ export function PublicLayoutWrapper({
   return (
     <>
       <Header />
-      <main className="flex-1 w-full">{children}</main>
+      <main className="flex-1 w-full pb-16 lg:pb-0">{children}</main>
       <Footer />
       <WhatsAppFloatingButton />
       <SelectionDrawer />

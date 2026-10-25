@@ -13,6 +13,7 @@ import {
 import { siteConfig } from "@/lib/site-config";
 import { categories } from "@/data/categories";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Footer() {
   return (
@@ -109,7 +110,7 @@ export function Footer() {
                     className="text-muted-foreground hover:text-primary transition-colors flex items-center justify-between"
                   >
                     <span>{c.name}</span>
-                    <span className="text-[11px] text-secondary font-devanagari">
+                    <span className="text-xs text-secondary font-devanagari">
                       {c.nameHi}
                     </span>
                   </Link>
@@ -190,7 +191,7 @@ export function Footer() {
           <div>
             © 1994 – {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span>सांवलिया प्रिंटिंग प्रेस • सुवासरा (मंदसौर)</span>
             <span className="text-border">|</span>
             <Link href="/custom-enquiry" className="hover:text-primary underline">
@@ -204,6 +205,11 @@ export function Footer() {
             >
               Admin Desk
             </Link>
+            <span className="text-border">|</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground font-medium">Theme:</span>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>
