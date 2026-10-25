@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     "Handcrafted bespoke wedding invitations, luxury gold foil visiting cards, hardbound bill books, and event banners. Browse our curated catalogue and consult directly with our master press artisans on WhatsApp.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.sanwaliyaprinting.in",
-  phone: process.env.NEXT_PUBLIC_PHONE_NUMBER || "+91 98765 43210",
+  phone: process.env.NEXT_PUBLIC_PHONE_NUMBER || "+91 62643 50165",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "916264350165", // International format without plus or symbols
   address: "Ramsnehi Patidar Complex, Sadar Bazar, Suwasra (Dist. Mandsaur, M.P.)",
   addressShort: "Sadar Bazar, Suwasra (M.P.)",
