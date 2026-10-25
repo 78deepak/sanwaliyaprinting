@@ -2,6 +2,7 @@ export interface ProductImage {
   url: string;
   alt: string;
   isPrimary?: boolean;
+  publicId?: string;
   caption?: string;
   width?: number;
   height?: number;

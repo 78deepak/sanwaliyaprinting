@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,7 +14,9 @@ import {
   Store,
   ShieldCheck,
   Loader2,
+  ShieldAlert,
 } from "lucide-react";
+import { loginAction, checkLockoutStatusAction } from "@/app/admin/auth-actions";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -22,30 +24,52 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [retryMinutes, setRetryMinutes] = useState<number | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    checkLockoutStatusAction().then((status) => {
+      if (mounted && status.isLocked) {
+        setIsLocked(true);
+        setRetryMinutes(status.retryAfterMinutes || 15);
+        setError(
+          `Control desk is temporarily locked due to excessive failed attempts. Please retry in ${
+            status.retryAfterMinutes || 15
+          } minutes.`
+        );
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLocked) return;
+
     setIsLoading(true);
     setError(null);
 
-    // // TODO(backend): Authenticate master credentials with POST /api/admin/auth/login and set HTTP-only JWT cookie
-    await new Promise((r) => setTimeout(r, 600));
+    try {
+      const result = await loginAction(password);
 
-    // Simple client-side mock check (accepts any non-empty password or RoyalPress@1994)
-    if (!password || password.trim().length === 0) {
-      setError("Please enter the master desk password.");
+      if (result.success) {
+        router.push("/admin");
+        router.refresh();
+      } else {
+        setError(result.error || "Authentication failed: Incorrect password.");
+        if (result.locked) {
+          setIsLocked(true);
+          setRetryMinutes(result.retryAfterMinutes || 15);
+        }
+        setIsLoading(false);
+      }
+    } catch {
+      setError("An unexpected authentication error occurred. Please try again.");
       setIsLoading(false);
-      return;
     }
-
-    if (password === "wrong") {
-      setError("Authentication failed: Incorrect password. 2 attempts remaining.");
-      setIsLoading(false);
-      return;
-    }
-
-    // Success redirect
-    router.push("/admin");
   };
 
   return (
@@ -94,8 +118,18 @@ export default function AdminLoginPage() {
 
           {/* Error Banner */}
           {error && (
-            <div className="w-full mt-5 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive flex items-center gap-2.5 text-left text-body-sm animate-in fade-in">
-              <AlertCircle className="w-5 h-5 shrink-0" />
+            <div
+              className={`w-full mt-5 p-3.5 rounded-lg border flex items-center gap-2.5 text-left text-body-sm animate-in fade-in ${
+                isLocked
+                  ? "bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300"
+                  : "bg-destructive/10 border-destructive/30 text-destructive"
+              }`}
+            >
+              {isLocked ? (
+                <ShieldAlert className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" />
+              ) : (
+                <AlertCircle className="w-5 h-5 shrink-0" />
+              )}
               <span>{error}</span>
             </div>
           )}
@@ -121,14 +155,20 @@ export default function AdminLoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter shop master password"
-                  className="w-full px-4 pr-11 py-3 rounded-lg bg-surface-container border border-border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all shadow-inner"
-                  autoFocus
+                  disabled={isLoading || isLocked}
+                  placeholder={
+                    isLocked
+                      ? `Locked for ${retryMinutes || 15} minutes`
+                      : "Enter shop master password"
+                  }
+                  className="w-full px-4 pr-11 py-3 rounded-lg bg-surface-container border border-border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all shadow-inner disabled:opacity-50"
+                  autoFocus={!isLocked}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                  disabled={isLocked}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors disabled:opacity-40"
                   title={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -151,13 +191,18 @@ export default function AdminLoginPage() {
             {/* Sign in button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isLocked}
               className="w-full py-3.5 px-6 rounded-lg bg-primary hover:bg-primary-container text-white text-label-lg font-bold shadow-md transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2 group"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Verifying Credentials...</span>
+                </>
+              ) : isLocked ? (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span>Desk Temporarily Locked</span>
                 </>
               ) : (
                 <>

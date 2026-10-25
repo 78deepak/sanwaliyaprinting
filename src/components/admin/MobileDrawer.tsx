@@ -19,6 +19,7 @@ import {
   Laptop,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { logoutAction } from "@/app/admin/auth-actions";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -236,13 +237,18 @@ export function MobileDrawer({
             </div>
           </div>
 
-          <Link
-            href="/admin/login"
-            className="min-h-[40px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive text-label-md font-semibold transition-colors"
+          {/* Logout Action */}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              logoutAction();
+            }}
+            className="w-full min-h-[40px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive text-label-md font-semibold transition-colors text-left"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
-          </Link>
+          </button>
         </div>
       </div>
     </div>

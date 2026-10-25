@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   PlusCircle,
@@ -12,13 +12,14 @@ import {
 import {
   AdminProduct,
   ProductStatus,
-  getMockAdminProducts,
-  deleteMockAdminProduct,
-  bulkDeleteMockAdminProducts,
-  bulkUpdateMockProductStatus,
-  toggleMockProductFeatured,
 } from "@/data/admin-mock";
 import { categories } from "@/data/categories";
+import {
+  getAdminProductsListAction,
+  toggleFeaturedAction,
+  deleteProductAction,
+  bulkProductsAction,
+} from "@/app/admin/actions";
 import { ProductTable } from "@/components/admin/ProductTable";
 import { ProductCardList } from "@/components/admin/ProductCardList";
 import { EmptyState } from "@/components/admin/EmptyState";
@@ -26,6 +27,8 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
   // Filters & Search
@@ -45,47 +48,42 @@ export default function AdminProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   useEffect(() => {
-    let isMounted = true;
-    const fetchFiltered = async () => {
+    let ignore = false;
+
+    async function loadProducts() {
       try {
-        const list = await getMockAdminProducts({
-          query: searchQuery,
+        const res = await getAdminProductsListAction({
+          search: searchQuery,
           category: selectedCategory,
-          status: selectedStatus,
-          sortBy: selectedSort,
+          status: selectedStatus as "all" | "published" | "draft",
+          featured: featuredOnly ? true : undefined,
+          sort: selectedSort,
+          page: currentPage,
+          limit: pageSize,
         });
-        if (isMounted) {
-          setProducts(list);
+        if (!ignore) {
+          setProducts(res.items);
+          setTotalItems(res.total);
+          setTotalPages(res.totalPages);
           setIsLoading(false);
         }
       } catch (err) {
-        console.error(err);
-        if (isMounted) setIsLoading(false);
+        if (!ignore) {
+          console.error("Failed to load admin products:", err);
+          setIsLoading(false);
+        }
       }
-    };
-
-    fetchFiltered();
-    return () => {
-      isMounted = false;
-    };
-  }, [searchQuery, selectedCategory, selectedStatus, selectedSort]);
-
-  // Client-filtered list for featured toggle
-  const filteredProducts = useMemo(() => {
-    if (featuredOnly) {
-      return products.filter((p) => p.featured);
     }
-    return products;
-  }, [products, featuredOnly]);
 
-  // Paginated slice
-  const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredProducts.slice(start, start + pageSize);
-  }, [filteredProducts, currentPage, pageSize]);
+    loadProducts();
 
-  const totalPages = Math.ceil(filteredProducts.length / pageSize) || 1;
+    return () => {
+      ignore = true;
+    };
+  }, [searchQuery, selectedCategory, selectedStatus, selectedSort, featuredOnly, currentPage, pageSize, refreshKey]);
 
   // Selection handlers
   const handleToggleSelect = (id: string) => {
@@ -96,82 +94,101 @@ export default function AdminProductsPage() {
 
   const handleSelectAll = (selectAll: boolean) => {
     if (selectAll) {
-      const currentIds = paginatedProducts.map((p) => p.id);
+      const currentIds = products.map((p) => p.id);
       setSelectedIds((prev) => Array.from(new Set([...prev, ...currentIds])));
     } else {
-      const currentIds = paginatedProducts.map((p) => p.id);
+      const currentIds = products.map((p) => p.id);
       setSelectedIds((prev) => prev.filter((id) => !currentIds.includes(id)));
-    }
-  };
-
-  const refreshProducts = async () => {
-    try {
-      const list = await getMockAdminProducts({
-        query: searchQuery,
-        category: selectedCategory,
-        status: selectedStatus,
-        sortBy: selectedSort,
-      });
-      setProducts(list);
-    } catch (err) {
-      console.error(err);
     }
   };
 
   // Toggle Featured
   const handleToggleFeatured = async (id: string) => {
-    // // TODO(backend): PATCH /api/admin/products/:id/featured
-    await toggleMockProductFeatured(id);
+    const current = products.find((p) => p.id === id);
+    if (!current) return;
+    const newFeatured = !current.featured;
+
     setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, featured: !p.featured } : p))
+      prev.map((p) => (p.id === id ? { ...p, featured: newFeatured } : p))
     );
+
+    const res = await toggleFeaturedAction(id, newFeatured);
+    if (!res.ok) {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, featured: !newFeatured } : p))
+      );
+    }
   };
 
   // Single delete
   const handleDeleteConfirm = async () => {
     if (!productToDelete) return;
-    // // TODO(backend): DELETE /api/admin/products/:id
-    await deleteMockAdminProduct(productToDelete.id);
-    setSelectedIds((prev) => prev.filter((id) => id !== productToDelete.id));
-    setProductToDelete(null);
-    refreshProducts();
+    const res = await deleteProductAction(productToDelete.id);
+    if (res.ok) {
+      setSelectedIds((prev) => prev.filter((id) => id !== productToDelete.id));
+      setProductToDelete(null);
+      setRefreshKey((k) => k + 1);
+    }
   };
 
   // Bulk status update
   const handleBulkStatusChange = async (status: ProductStatus) => {
-    // // TODO(backend): PATCH /api/admin/products/bulk-status
-    await bulkUpdateMockProductStatus(selectedIds, status);
-    refreshProducts();
+    if (selectedIds.length === 0) return;
+    const action = status === "published" ? "publish" : "draft";
+    const res = await bulkProductsAction(action, selectedIds);
+    if (res.ok) {
+      setSelectedIds([]);
+      setRefreshKey((k) => k + 1);
+    }
   };
 
   // Bulk delete confirm
   const handleBulkDeleteConfirm = async () => {
-    // // TODO(backend): POST /api/admin/products/bulk-delete
+    if (selectedIds.length === 0) return;
     setIsBulkDeleting(true);
-    await bulkDeleteMockAdminProducts(selectedIds);
-    setSelectedIds([]);
-    setBulkDeleteDialogOpen(false);
-    setIsBulkDeleting(false);
-    refreshProducts();
+    try {
+      const res = await bulkProductsAction("delete", selectedIds);
+      if (res.ok) {
+        setSelectedIds([]);
+        setBulkDeleteDialogOpen(false);
+        setRefreshKey((k) => k + 1);
+      }
+    } finally {
+      setIsBulkDeleting(false);
+    }
   };
 
-  // Export CSV mock handler
-  const handleExportCSV = () => {
-    // // TODO(backend): Trigger GET /api/admin/products/export.csv
-    const headers = "ID,Code,Name,Category,Status,StartingPrice,Inquiries\n";
-    const rows = products
-      .map(
-        (p) =>
-          `"${p.id}","${p.productCode}","${p.name}","${p.category}","${p.status}","${p.price.startingFrom || 0}","${p.inquiriesCount}"`
-      )
-      .join("\n");
-    const blob = new Blob([headers + rows], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `sanwaliya-products-${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  // Export CSV handler with real catalogue data
+  const handleExportCSV = async () => {
+    try {
+      const res = await getAdminProductsListAction({
+        search: searchQuery,
+        category: selectedCategory,
+        status: selectedStatus as "all" | "published" | "draft",
+        featured: featuredOnly ? true : undefined,
+        sort: selectedSort,
+        page: 1,
+        limit: 1000,
+      });
+
+      const headers = "ID,Code,Name,Category,Status,StartingPrice,Unit\n";
+      const rows = res.items
+        .map(
+          (p) =>
+            `"${p.id}","${p.productCode}","${p.name.replace(/"/g, '""')}","${p.category}","${p.status}","${p.price.startingFrom || 0}","${p.price.unit || "piece"}"`
+        )
+        .join("\n");
+
+      const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sanwaliya-products-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Export CSV error:", e);
+    }
   };
 
   return (
@@ -181,7 +198,7 @@ export default function AdminProductsPage() {
         isOpen={Boolean(productToDelete)}
         title={`Delete "${productToDelete?.name}"?`}
         subtitle={`Product Code: ${productToDelete?.productCode}`}
-        message="This will permanently delete this product from the master index and client catalog. Orders referencing this SKU will keep vector records."
+        message="This will permanently delete this product from the master index and client catalog. This action cannot be undone."
         confirmLabel="Delete Product"
         cancelLabel="Cancel"
         onConfirm={handleDeleteConfirm}
@@ -231,10 +248,10 @@ export default function AdminProductsPage() {
             </div>
             <div className="flex flex-col">
               <span className="text-[11px] font-label-sm uppercase tracking-wider text-muted-foreground">
-                Total Active
+                Total Found
               </span>
               <span className="text-label-md text-foreground font-bold leading-tight">
-                {products.length} <span className="text-secondary font-medium">SKUs</span>
+                {totalItems} <span className="text-secondary font-medium">Items</span>
               </span>
             </div>
           </div>
@@ -259,14 +276,20 @@ export default function AdminProductsPage() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Search by title, code (RM-W-101), or keyword (शादी कार्ड)..."
               className="w-full min-h-[44px] pl-10 pr-12 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-body-md placeholder:text-muted-foreground focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 transition-all shadow-inner"
             />
             {searchQuery ? (
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
+                onClick={() => {
+                  setSearchQuery("");
+                  setCurrentPage(1);
+                }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-label-sm font-semibold"
               >
                 Clear
@@ -282,7 +305,10 @@ export default function AdminProductsPage() {
           <div className="lg:col-span-4 relative">
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full min-h-[44px] px-3.5 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md font-medium focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
             >
               <option value="all">All Categories ({categories.length} Sections)</option>
@@ -298,13 +324,16 @@ export default function AdminProductsPage() {
           <div className="lg:col-span-3 relative">
             <select
               value={selectedSort}
-              onChange={(e) => setSelectedSort(e.target.value)}
+              onChange={(e) => {
+                setSelectedSort(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full min-h-[44px] px-3.5 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md font-medium focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
             >
               <option value="newest">Sort: Newest First</option>
               <option value="code_asc">Sort: Product Code (A-Z)</option>
               <option value="name_asc">Sort: Title (A-Z)</option>
-              <option value="inquiries">Sort: Most Inquired (WhatsApp)</option>
+              <option value="oldest">Sort: Oldest First</option>
             </select>
           </div>
         </div>
@@ -315,7 +344,10 @@ export default function AdminProductsPage() {
           <div className="flex items-center p-1 rounded-lg bg-surface-container border border-border/50">
             <button
               type="button"
-              onClick={() => setSelectedStatus("all")}
+              onClick={() => {
+                setSelectedStatus("all");
+                setCurrentPage(1);
+              }}
               className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
                 selectedStatus === "all"
                   ? "bg-surface-lowest text-primary font-bold shadow-xs"
@@ -327,7 +359,10 @@ export default function AdminProductsPage() {
 
             <button
               type="button"
-              onClick={() => setSelectedStatus("published")}
+              onClick={() => {
+                setSelectedStatus("published");
+                setCurrentPage(1);
+              }}
               className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
                 selectedStatus === "published"
                   ? "bg-surface-lowest text-primary font-bold shadow-xs"
@@ -339,7 +374,10 @@ export default function AdminProductsPage() {
 
             <button
               type="button"
-              onClick={() => setSelectedStatus("draft")}
+              onClick={() => {
+                setSelectedStatus("draft");
+                setCurrentPage(1);
+              }}
               className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
                 selectedStatus === "draft"
                   ? "bg-surface-lowest text-primary font-bold shadow-xs"
@@ -354,7 +392,10 @@ export default function AdminProductsPage() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setFeaturedOnly(!featuredOnly)}
+              onClick={() => {
+                setFeaturedOnly(!featuredOnly);
+                setCurrentPage(1);
+              }}
               className={`min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-label-sm font-semibold transition-colors ${
                 featuredOnly
                   ? "bg-secondary/15 text-secondary border-secondary/40 font-bold"
@@ -379,7 +420,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Main View: Responsive Desktop Table / Mobile Cards */}
-      {filteredProducts.length === 0 && !isLoading ? (
+      {products.length === 0 && !isLoading ? (
         <EmptyState
           title="No Matching Designs Found"
           description="No print designs match your active search keyword, category, or status filter. Try clearing filters or create a new product."
@@ -389,13 +430,14 @@ export default function AdminProductsPage() {
             setSelectedCategory("all");
             setSelectedStatus("all");
             setFeaturedOnly(false);
+            setCurrentPage(1);
           }}
         />
       ) : (
         <>
           {/* Mobile Card List (Screens < 768px) */}
           <ProductCardList
-            products={paginatedProducts}
+            products={products}
             selectedIds={selectedIds}
             onToggleSelect={handleToggleSelect}
             onToggleFeatured={handleToggleFeatured}
@@ -405,7 +447,7 @@ export default function AdminProductsPage() {
           {/* Desktop Data Table (Screens >= 768px) */}
           <div className="hidden md:block">
             <ProductTable
-              products={paginatedProducts}
+              products={products}
               selectedIds={selectedIds}
               isLoading={isLoading}
               onToggleSelect={handleToggleSelect}
@@ -416,7 +458,7 @@ export default function AdminProductsPage() {
               onBulkDelete={() => setBulkDeleteDialogOpen(true)}
               currentPage={currentPage}
               totalPages={totalPages}
-              totalItems={filteredProducts.length}
+              totalItems={totalItems}
               pageSize={pageSize}
               onPageChange={setCurrentPage}
               onPageSizeChange={(newSize) => {

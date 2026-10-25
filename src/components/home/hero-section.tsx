@@ -15,11 +15,15 @@ import {
 } from "lucide-react";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
 import { useSelection } from "@/context/selection-context";
-import { products } from "@/data/products";
+import { Product } from "@/types/product";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  featuredProduct?: Product | null;
+}
+
+export function HeroSection({ featuredProduct }: HeroSectionProps) {
   const { toggleItem, hasItem } = useSelection();
-  const rajwadaProduct = products[0]; // RM-W-101
+  const rajwadaProduct = featuredProduct || null;
   const isSelected = rajwadaProduct ? hasItem(rajwadaProduct.id) : false;
 
   return (

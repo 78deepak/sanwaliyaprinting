@@ -3,7 +3,11 @@ import Link from "next/link";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { categories } from "@/data/categories";
 
-export function CategoriesGrid() {
+interface CategoriesGridProps {
+  categoryCounts?: Record<string, number>;
+}
+
+export function CategoriesGrid({ categoryCounts }: CategoriesGridProps) {
   return (
     <section className="w-full bg-surface-low py-16 px-4 sm:px-8 lg:px-12 border-y border-border/60">
       <div className="mx-auto max-w-7xl">
@@ -61,7 +65,11 @@ export function CategoriesGrid() {
 
               {/* Footer link & count */}
               <div className="mt-auto flex items-center justify-between pt-3 border-t border-border/50 text-primary font-label-sm">
-                <span>Browse {cat.itemCount}</span>
+                <span>
+                  {categoryCounts && typeof categoryCounts[cat.slug] === "number"
+                    ? `${categoryCounts[cat.slug]} Design${categoryCounts[cat.slug] === 1 ? "" : "s"}`
+                    : `Browse ${cat.itemCount}`}
+                </span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>

@@ -1,18 +1,25 @@
 import React from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight, Info } from "lucide-react";
-import { products } from "@/data/products";
 import { ProductCard } from "@/components/products/product-card";
+import { Product } from "@/types/product";
 
-export function FeaturedSection() {
+interface FeaturedSectionProps {
+  products?: Product[];
+}
+
+export function FeaturedSection({ products = [] }: FeaturedSectionProps) {
   const featuredWeddingCards = products
     .filter((p) => p.category === "wedding-cards")
     .slice(0, 4);
 
+  // If wedding cards category not in slice, use top featured products
+  const displayProducts = featuredWeddingCards.length > 0 ? featuredWeddingCards : products.slice(0, 4);
+
   return (
     <section className="w-full bg-background py-16 px-4 sm:px-8 lg:px-12" id="wedding-catalog">
       <div className="mx-auto max-w-7xl">
-        {/* Section Header & Notice Banner matching Stitch Screen 1 Section 3 */}
+        {/* Section Header & Notice Banner */}
         <div className="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 font-label-sm uppercase tracking-widest text-secondary font-bold mb-2">
@@ -38,7 +45,7 @@ export function FeaturedSection() {
 
         {/* 4-Item Responsive Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredWeddingCards.map((product) => (
+          {displayProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -49,7 +56,7 @@ export function FeaturedSection() {
             href="/wedding-cards"
             className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-container transition-colors group"
           >
-            <span>Browse All 140+ Wedding Designs</span>
+            <span>Browse All Wedding Designs</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

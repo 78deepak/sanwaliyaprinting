@@ -45,6 +45,59 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: siteConfig.name }],
   metadataBase: new URL(siteConfig.url),
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} | Fine Print Studio & Wedding Stationery • ${siteConfig.nameHindi}`,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} • Fine Print Studio`,
+    description: siteConfig.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "PrintShop",
+  name: siteConfig.name,
+  alternateName: siteConfig.nameHindi,
+  description: siteConfig.description,
+  url: siteConfig.url,
+  telephone: siteConfig.phone,
+  priceRange: "₹₹",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Ramsnehi Patidar Complex, Sadar Bazar",
+    addressLocality: "Suwasra",
+    addressRegion: "Madhya Pradesh",
+    postalCode: "458888",
+    addressCountry: "IN",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: "24.0886",
+    longitude: "75.6327",
+  },
+  openingHours: "Mo-Sa 10:00-20:30",
+  sameAs: [siteConfig.googleMapsUrl],
 };
 
 export default function RootLayout({
@@ -58,6 +111,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${playfair.variable} ${plusJakarta.variable} ${notoDevanagari.variable} scroll-smooth`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground antialiased selection:bg-secondary-container selection:text-secondary-foreground">
         <ThemeProvider
           attribute="class"

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Fuse from "fuse.js";
 import { Search, X, ArrowRight, Sparkles } from "lucide-react";
-import { products } from "@/data/products";
+import { products as sampleProducts } from "@/data/products";
 import { categories } from "@/data/categories";
 
 interface SearchDialogProps {
@@ -12,13 +12,43 @@ interface SearchDialogProps {
   onClose: () => void;
 }
 
+interface SearchItem {
+  id: string;
+  name: string;
+  nameHi?: string;
+  slug: string;
+  productCode: string;
+  category: string;
+  shortDescription?: string;
+  image?: string;
+  tags?: string[];
+  searchAliases?: string[];
+}
+
 export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   const [query, setQuery] = useState("");
+  const [catalogProducts, setCatalogProducts] = useState<SearchItem[]>([]);
+  const [hasFetched, setHasFetched] = useState(false);
 
-  // Fuse instance over products and categories
+  useEffect(() => {
+    if (isOpen && !hasFetched) {
+      fetch("/api/search-index")
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data.products) && data.products.length > 0) {
+            setCatalogProducts(data.products);
+            setHasFetched(true);
+          }
+        })
+        .catch((err) => console.warn("Search index fetch failed, using fallback:", err));
+    }
+  }, [isOpen, hasFetched]);
+
+  // Fuse instance over real products and categories
   const fuse = useMemo(() => {
+    const itemsToSearch = catalogProducts.length > 0 ? catalogProducts : sampleProducts;
     const searchableItems = [
-      ...products.map((p) => ({
+      ...itemsToSearch.map((p) => ({
         type: "product" as const,
         id: p.id,
         title: p.name,
@@ -26,10 +56,14 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
         code: p.productCode,
         category: p.category,
         url: `/${p.category}/${p.slug}`,
-        description: p.shortDescription,
-        tags: p.tags.join(" "),
-        aliases: p.searchAliases.join(" "),
-        image: p.images[0]?.url,
+        description: p.shortDescription || "",
+        tags: Array.isArray(p.tags) ? p.tags.join(" ") : "",
+        image:
+          "image" in p && typeof p.image === "string"
+            ? p.image
+            : "images" in p && Array.isArray(p.images)
+            ? p.images[0]?.url || ""
+            : "",
       })),
       ...categories.map((c) => ({
         type: "category" as const,
@@ -57,7 +91,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
       ],
       threshold: 0.35,
     });
-  }, []);
+  }, [catalogProducts]);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];

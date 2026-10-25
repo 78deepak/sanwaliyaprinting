@@ -309,7 +309,7 @@ export function Header() {
                 className="flex items-center justify-center gap-2 bg-tertiary text-white py-3 rounded-lg font-semibold text-sm"
               >
                 <MessageCircle className="w-4 h-4" />
-                Chat on WhatsApp (+91 98765 43210)
+                Chat on WhatsApp ({siteConfig.phone})
               </a>
             </div>
           </div>

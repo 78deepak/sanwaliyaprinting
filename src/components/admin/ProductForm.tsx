@@ -18,7 +18,13 @@ import {
   Trash2,
   Sparkles,
 } from "lucide-react";
-import { AdminProduct, ProductStatus, saveMockAdminProduct, deleteMockAdminProduct } from "@/data/admin-mock";
+import { AdminProduct, ProductStatus } from "@/data/admin-mock";
+import {
+  createProductAction,
+  updateProductAction,
+  deleteProductAction,
+  checkSlugUniquenessAction,
+} from "@/app/admin/actions";
 import { categories } from "@/data/categories";
 import { FormSection } from "./FormSection";
 import { ImageUploader, UploadedImage } from "./ImageUploader";
@@ -85,6 +91,12 @@ export function ProductForm({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [slugStatus, setSlugStatus] = useState<{
+    checking: boolean;
+    available?: boolean;
+    suggestedSlug?: string;
+  }>({ checking: false });
 
   // Additional state not handled by basic inputs
   const [images, setImages] = useState<UploadedImage[]>(
@@ -183,57 +195,83 @@ export function ProductForm({
     }
   };
 
-  // Submit Handler: Saves product into mock data
+  // Live Slug Uniqueness Checker
+  const handleCheckSlug = async (slugVal: string) => {
+    if (!slugVal || slugVal.trim().length < 2) return;
+    setSlugStatus({ checking: true });
+    try {
+      const res = await checkSlugUniquenessAction(slugVal, initialProduct?.id);
+      setSlugStatus({
+        checking: false,
+        available: res.available,
+        suggestedSlug: res.suggestedSlug,
+      });
+    } catch {
+      setSlugStatus({ checking: false });
+    }
+  };
+
+  // Submit Handler: Saves product into database via Server Action
   const onSubmit = async (data: ProductFormValues, submitStatus?: ProductStatus) => {
     setIsSubmitting(true);
-    // // TODO(backend): Submit validated product to POST /api/admin/products or PUT /api/admin/products/:id
+    setServerError(null);
 
     try {
-      const payload: Partial<AdminProduct> = {
-        ...(initialProduct ? { id: initialProduct.id } : {}),
+      const isPublished = (submitStatus || data.status) === "published";
+      const payload = {
         name: data.name,
-        nameHi: data.nameHi,
-        slug: data.slug,
-        productCode: data.productCode,
+        nameHi: data.nameHi || "",
+        slug: data.slug.toLowerCase().trim(),
+        productCode: data.productCode.toUpperCase().trim(),
         category: data.category,
         shortDescription: data.shortDescription,
         description: data.description,
-        minimumQuantity: data.minimumQuantity,
-        featured: data.featured,
-        status: submitStatus || data.status,
-        price: {
-          show: data.showPrice,
-          startingFrom: data.showPrice ? data.startingFrom : undefined,
-          maxPrice: data.showPrice ? data.maxPrice : undefined,
-          unit: "complete suite",
-          note: data.showPrice
-            ? `Estimated ₹${data.startingFrom} - ₹${data.maxPrice || ""} / suite. Exact quote on WhatsApp.`
-            : "Custom quotation on WhatsApp.",
-        },
-        images,
-        tags,
+        images: images.map((img, idx) => ({
+          url: img.url,
+          alt: img.alt || data.name,
+          isPrimary: idx === 0 || Boolean(img.isPrimary),
+          publicId: img.publicId || (img.url.includes("cloudinary") ? img.id : undefined),
+          width: img.width,
+          height: img.height,
+          order: idx,
+        })),
         availableOptions: {
           sizes,
           papers,
           finishes,
           languages: ["Hindi (Devanagari)", "English"],
+          customizations: tags,
         },
+        minimumQuantity: data.minimumQuantity,
+        price: {
+          show: data.showPrice,
+          startingFrom: data.showPrice ? data.startingFrom : undefined,
+          unit: "per piece",
+        },
+        featured: data.featured,
+        published: isPublished,
+        tags,
+        searchAliases: [data.productCode, data.nameHi || "", ...tags].filter(Boolean),
+        seoTitle: `${data.name} | Sanwaliya Printing Press`,
+        seoDescription: data.shortDescription,
       };
 
-      const saved = await saveMockAdminProduct(payload);
+      const result =
+        isEditMode && initialProduct?.id
+          ? await updateProductAction(initialProduct.id, payload)
+          : await createProductAction(payload);
 
-      setToastMessage(
-        isEditMode
-          ? `Product "${saved.name}" updated successfully.`
-          : `New product "${saved.name}" created successfully.`
-      );
-
-      setTimeout(() => {
-        router.push("/admin/products");
-      }, 1000);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save product. Please try again.");
+      if (result.ok) {
+        setToastMessage(result.message || "Product saved successfully!");
+        setTimeout(() => {
+          router.push("/admin/products");
+          router.refresh();
+        }, 800);
+      } else {
+        setServerError(result.message || "Failed to save product.");
+      }
+    } catch {
+      setServerError("An unexpected error occurred while saving the product.");
     } finally {
       setIsSubmitting(false);
     }
@@ -241,15 +279,19 @@ export function ProductForm({
 
   // Delete Handler
   const handleDeleteConfirm = async () => {
-    if (!initialProduct) return;
+    if (!initialProduct?.id) return;
     setIsDeleting(true);
-    // // TODO(backend): Call DELETE /api/admin/products/:id
     try {
-      await deleteMockAdminProduct(initialProduct.id);
-      setDeleteDialogOpen(false);
-      router.push("/admin/products");
-    } catch (err) {
-      console.error(err);
+      const res = await deleteProductAction(initialProduct.id);
+      if (res.ok) {
+        setDeleteDialogOpen(false);
+        router.push("/admin/products");
+        router.refresh();
+      } else {
+        alert(res.message || "Failed to delete product.");
+      }
+    } catch {
+      alert("Failed to delete product.");
     } finally {
       setIsDeleting(false);
     }
@@ -262,6 +304,23 @@ export function ProductForm({
         <div className="fixed top-20 right-6 z-50 bg-primary text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in slide-in-from-top-4">
           <CheckCircle2 className="w-5 h-5 text-secondary" />
           <span className="text-label-md font-bold">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Server Error Banner */}
+      {serverError && (
+        <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive flex items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-5 h-5 shrink-0" />
+            <span className="text-body-md font-semibold">{serverError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setServerError(null)}
+            className="text-destructive/70 hover:text-destructive"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
@@ -387,17 +446,40 @@ export function ProductForm({
                   <input
                     type="text"
                     {...register("slug")}
+                    onBlur={() => handleCheckSlug(watchedSlug)}
                     placeholder="rajwada-velvet-box-suite"
                     className={`w-full px-4 py-2.5 rounded-lg bg-surface-container border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all ${
-                      errors.slug ? "border-destructive ring-1 ring-destructive" : "border-border"
+                      errors.slug || slugStatus.available === false
+                        ? "border-destructive ring-1 ring-destructive"
+                        : "border-border"
                     }`}
                   />
-                  {watchedSlug && !errors.slug && (
+                  {watchedSlug && !errors.slug && slugStatus.available !== false && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-label-sm flex items-center gap-1">
                       <CheckCircle2 className="w-4 h-4" />
                     </span>
                   )}
                 </div>
+
+                {slugStatus.available === false && slugStatus.suggestedSlug && (
+                  <div className="flex items-center gap-2 text-label-sm text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1.5 rounded-md border border-amber-500/30">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                    <span>Slug already taken!</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setValue("slug", slugStatus.suggestedSlug!, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                        setSlugStatus({ checking: false, available: true });
+                      }}
+                      className="font-bold underline hover:text-amber-700 dark:hover:text-amber-300"
+                    >
+                      Use &quot;{slugStatus.suggestedSlug}&quot;
+                    </button>
+                  </div>
+                )}
 
                 {errors.slug ? (
                   <span className="text-destructive text-label-sm flex items-center gap-1">
@@ -508,7 +590,7 @@ export function ProductForm({
           {/* SECTION 2: Product Images & Gallery */}
           <FormSection
             title="Product Images & Gallery"
-            titleHi="तस्वीरें एवं विजुअल प्रमाण (Local object URLs)"
+            titleHi="क्लाउडिनरी अनुकूलित तस्वीरें (Cloudinary CDN f_auto, q_auto)"
             icon={ImageIcon}
             badge={
               <span className="text-label-sm text-muted-foreground">

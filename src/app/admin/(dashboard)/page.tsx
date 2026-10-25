@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -21,33 +19,40 @@ import {
   ArrowRight,
   ShieldCheck,
 } from "lucide-react";
-import {
-  adminMetrics,
-  shopkeeperNotes,
-  getMockAdminProducts,
-  AdminProduct,
-} from "@/data/admin-mock";
+import { requireAdmin } from "@/lib/auth";
+import { getDashboardStats, getAdminProducts } from "@/lib/products";
+import { getSiteSettingsAction } from "@/app/admin/actions";
+import { categories } from "@/data/categories";
+import { shopkeeperNotes, adminMetrics, AdminProduct } from "@/data/admin-mock";
 import { StatCard } from "@/components/admin/StatCard";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 
-export default function AdminDashboardPage() {
-  const [products, setProducts] = useState<AdminProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function AdminDashboardPage() {
+  await requireAdmin();
 
-  useEffect(() => {
-    // // TODO(backend): Fetch dashboard summary and recent products from GET /api/admin/dashboard
-    const fetchDashboard = async () => {
-      try {
-        const list = await getMockAdminProducts({ sortBy: "newest" });
-        setProducts(list.slice(0, 5));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
+  const [stats, recentResult, settings] = await Promise.all([
+    getDashboardStats(),
+    getAdminProducts({ limit: 5, sort: "newest" }),
+    getSiteSettingsAction(),
+  ]);
+
+  const products: AdminProduct[] = recentResult.items.map((p) => {
+    const raw = p as unknown as Record<string, unknown>;
+    return {
+      ...p,
+      featured: Boolean(p.featured),
+      status: p.published ? "published" : "draft",
+      createdAt: p.createdAt || new Date().toISOString(),
+      updatedAt: String(raw.updatedAt || p.createdAt || new Date().toISOString()),
+      inquiriesCount: Number(raw.inquiriesCount) || 0,
     };
-    fetchDashboard();
-  }, []);
+  });
+
+  const total = stats.totalProducts;
+  const published = stats.publishedCount;
+  const drafts = stats.draftCount;
+  const featured = stats.featuredCount;
+  const healthPercent = total > 0 ? Math.round((published / total) * 100) : 100;
 
   return (
     <div className="flex flex-col w-full gap-8">
@@ -77,7 +82,7 @@ export default function AdminDashboardPage() {
             </h1>
 
             <p className="text-body-md text-muted-foreground leading-relaxed">
-              Here is what&apos;s happening in your Suwasra printing catalogue and production desk today. 42 live client-facing suites are synchronized.
+              Here is what&apos;s happening in your Suwasra printing catalogue and production desk today. {published} live client-facing suites are synchronized with MongoDB Atlas.
             </p>
           </div>
 
@@ -91,7 +96,7 @@ export default function AdminDashboardPage() {
                 Sync Status
               </span>
               <span className="text-label-md text-foreground font-bold flex items-center gap-1.5">
-                {adminMetrics.syncStatus}
+                Atlas Connected
                 <span className="w-2 h-2 rounded-full bg-tertiary inline-block animate-pulse" />
               </span>
             </div>
@@ -103,8 +108,8 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         <StatCard
           title="Published Designs"
-          value={adminMetrics.publishedProducts}
-          total={`/ ${adminMetrics.totalProducts} items`}
+          value={String(published).padStart(2, "0")}
+          total={`/ ${total} items`}
           description="Live on public website catalog"
           icon={CheckCircle2}
           accentColor="primary"
@@ -113,7 +118,7 @@ export default function AdminDashboardPage() {
 
         <StatCard
           title="Draft Items"
-          value="06"
+          value={String(drafts).padStart(2, "0")}
           total="in progress"
           description="Needs photos or client pricing"
           icon={Clock}
@@ -123,9 +128,9 @@ export default function AdminDashboardPage() {
 
         <StatCard
           title="Product Categories"
-          value="07"
+          value={String(categories.length).padStart(2, "0")}
           total="sections"
-          description="Managed securely by developer"
+          description="Managed securely in master index"
           icon={Layers}
           accentColor="neutral"
           badge={{ text: "Route Fixed", variant: "neutral" }}
@@ -133,7 +138,7 @@ export default function AdminDashboardPage() {
 
         <StatCard
           title="Featured on Home"
-          value="08"
+          value={String(featured).padStart(2, "0")}
           total="showcased"
           description="Showcased in top homepage banner"
           icon={Star}
@@ -172,7 +177,7 @@ export default function AdminDashboardPage() {
               className="min-h-[46px] px-4 py-2.5 rounded-lg bg-surface-lowest hover:bg-surface-container border border-border text-primary text-label-lg font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]"
             >
               <Package className="w-5 h-5" />
-              <span>Manage Products ({adminMetrics.totalProducts})</span>
+              <span>Manage Products ({total})</span>
             </Link>
 
             {/* View Public Website */}
@@ -188,7 +193,7 @@ export default function AdminDashboardPage() {
 
             {/* WhatsApp Link */}
             <a
-              href="https://wa.me/919876543210"
+              href={`https://wa.me/${settings.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
               className="min-h-[46px] px-4 py-2.5 rounded-lg bg-tertiary hover:bg-tertiary/90 text-white text-label-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98]"
@@ -229,13 +234,9 @@ export default function AdminDashboardPage() {
 
           {/* Product List Stack */}
           <div className="bg-surface-lowest rounded-xl border border-border shadow-xs overflow-hidden flex flex-col divide-y divide-border/60">
-            {isLoading ? (
+            {products.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
-                Loading recently updated items...
-              </div>
-            ) : products.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                No items found.
+                No items found in database catalogue. Add your first design above!
               </div>
             ) : (
               products.map((product) => {
@@ -283,7 +284,7 @@ export default function AdminDashboardPage() {
                               {product.price.maxPrice
                                 ? `– ₹${product.price.maxPrice.toLocaleString("en-IN")}`
                                 : ""}{" "}
-                              / {product.price.unit || "suite"}
+                              / {product.price.unit || "piece"}
                             </span>
                           ) : (
                             <span className="text-label-md text-secondary font-bold">
@@ -293,7 +294,7 @@ export default function AdminDashboardPage() {
                           <span>•</span>
                           <span className="flex items-center gap-1 text-[13px]">
                             <Clock className="w-3.5 h-3.5" />
-                            Updated: {product.updatedAt}
+                            SKU: {product.productCode}
                           </span>
                         </div>
                       </div>
@@ -309,7 +310,7 @@ export default function AdminDashboardPage() {
                       </Link>
 
                       <Link
-                        href={`/category/${product.category}/${product.slug}`}
+                        href={`/${product.category}/${product.slug}`}
                         target="_blank"
                         className="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
                         title="Preview Public Page"
@@ -326,7 +327,7 @@ export default function AdminDashboardPage() {
           {/* Footer action below table */}
           <div className="p-4 rounded-xl bg-surface-lowest border border-border flex items-center justify-between shadow-xs">
             <span className="text-body-sm text-muted-foreground">
-              Showing latest {products.length} of {adminMetrics.totalProducts} printing suites
+              Showing latest {products.length} of {total} printing suites
             </span>
             <Link
               href="/admin/products"
@@ -392,41 +393,47 @@ export default function AdminDashboardPage() {
                 </h2>
               </div>
               <span className="text-label-sm font-bold text-tertiary">
-                {adminMetrics.catalogueHealth}% Ready
+                {healthPercent}% Ready
               </span>
             </div>
 
-            {/* Metric 1: High Res Studio Photos */}
+            {/* Metric 1: Published Suites */}
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center text-label-sm">
                 <span className="text-foreground font-semibold flex items-center gap-1.5">
                   <Camera className="w-3.5 h-3.5 text-secondary" />
-                  High-Res Studio Photos
+                  Published Studio Suites
                 </span>
-                <span className="font-bold text-primary">42 / 48 items</span>
+                <span className="font-bold text-primary">{published} / {total} items</span>
               </div>
               <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                <div className="h-full bg-primary rounded-full" style={{ width: "87.5%" }} />
+                <div
+                  className="h-full bg-primary rounded-full transition-all"
+                  style={{ width: `${total > 0 ? (published / total) * 100 : 0}%` }}
+                />
               </div>
               <span className="text-[11px] text-muted-foreground">
-                6 draft items still need photo shoot
+                {drafts} draft items pending review
               </span>
             </div>
 
-            {/* Metric 2: Hindi Search Tags */}
+            {/* Metric 2: Featured Showcases */}
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center text-label-sm">
                 <span className="text-foreground font-semibold flex items-center gap-1.5">
                   <Languages className="w-3.5 h-3.5 text-secondary" />
-                  Hindi Search Tags (शगुन, शादी, बिल)
+                  Homepage Featured Designs
                 </span>
-                <span className="font-bold text-primary">38 / 48 items</span>
+                <span className="font-bold text-primary">{featured} / {total} items</span>
               </div>
               <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                <div className="h-full bg-secondary rounded-full" style={{ width: "79%" }} />
+                <div
+                  className="h-full bg-secondary rounded-full transition-all"
+                  style={{ width: `${total > 0 ? (featured / total) * 100 : 0}%` }}
+                />
               </div>
               <span className="text-[11px] text-muted-foreground">
-                Helps local Mandsaur/Suwasra buyers search
+                High-visibility hero spotlight suites
               </span>
             </div>
 
@@ -440,10 +447,10 @@ export default function AdminDashboardPage() {
                   Direct WhatsApp Link Active
                 </span>
                 <span className="text-body-sm text-muted-foreground truncate">
-                  Linked to +91 98765 43210
+                  Linked to +{settings.whatsapp}
                 </span>
                 <span className="text-label-sm text-tertiary font-semibold mt-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary" /> All 48 items route correctly
+                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary" /> All catalogue suites route here
                 </span>
               </div>
             </div>

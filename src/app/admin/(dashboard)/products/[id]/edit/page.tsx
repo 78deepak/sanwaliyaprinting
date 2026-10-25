@@ -1,45 +1,19 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import React from "react";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { getMockAdminProductById, AdminProduct } from "@/data/admin-mock";
-import { Loader2 } from "lucide-react";
+import { getProductById } from "@/lib/products";
+import { requireAdmin } from "@/lib/auth";
+import { AdminProduct } from "@/data/admin-mock";
 
-export default function EditProductPage() {
-  const params = useParams();
-  const id = params?.id as string;
+export default async function EditProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  await requireAdmin();
+  const { id } = await params;
 
-  const [product, setProduct] = useState<AdminProduct | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // // TODO(backend): Fetch single product from GET /api/admin/products/:id
-    const fetchProduct = async () => {
-      if (!id) return;
-      try {
-        const found = await getMockAdminProductById(id);
-        setProduct(found);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProduct();
-  }, [id]);
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        <span className="text-muted-foreground text-label-md">
-          Loading print design specifications...
-        </span>
-      </div>
-    );
-  }
+  const product = await getProductById(id);
 
   if (!product) {
     return (
@@ -52,5 +26,15 @@ export default function EditProductPage() {
     );
   }
 
-  return <ProductForm initialProduct={product} isEditMode={true} />;
+  const raw = product as unknown as Record<string, unknown>;
+  const adminProduct: AdminProduct = {
+    ...product,
+    featured: Boolean(product.featured),
+    status: product.published ? "published" : "draft",
+    createdAt: product.createdAt || new Date().toISOString(),
+    updatedAt: String(raw.updatedAt || product.createdAt || new Date().toISOString()),
+    inquiriesCount: Number(raw.inquiriesCount) || 0,
+  };
+
+  return <ProductForm initialProduct={adminProduct} isEditMode={true} />;
 }

@@ -1,6 +1,8 @@
 import React from "react";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { requireAdmin } from "@/lib/auth";
 
-export default function NewProductPage() {
+export default async function NewProductPage() {
+  await requireAdmin();
   return <ProductForm isEditMode={false} />;
 }
