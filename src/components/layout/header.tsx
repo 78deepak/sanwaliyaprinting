@@ -83,9 +83,9 @@ export function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md shadow-xs border-b border-border/40">
-        {/* Top Atelier Bar: location, hours, phone only. Hidden on scroll */}
+        {/* Top Atelier Bar: location, hours, phone only. Hidden on mobile & on scroll */}
         <div
-          className={`bg-surface-high/90 text-muted-foreground text-xs leading-tight transition-all duration-300 ease-in-out border-b ${
+          className={`hidden sm:block bg-surface-high/90 text-muted-foreground text-xs leading-tight transition-all duration-300 ease-in-out border-b ${
             isScrolled
               ? "max-h-0 opacity-0 py-0 border-transparent overflow-hidden pointer-events-none"
               : "max-h-12 opacity-100 py-2 border-border/50 px-3 sm:px-5 lg:px-6 xl:px-8"
@@ -114,8 +114,8 @@ export function Header() {
           </div>
         </div>
 
-        {/* Main Navbar */}
-        <div className="h-20 max-w-[1536px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 flex items-center justify-between gap-2 xl:gap-4">
+        {/* Main Navbar: h-16 on mobile (matching Stitch), h-20 on desktop */}
+        <div className="h-16 sm:h-20 max-w-[1536px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 flex items-center justify-between gap-2 xl:gap-4">
           {/* Logo & Brand Identity */}
           <Link href="/" className="flex items-center gap-2.5 xl:gap-3 shrink-0 group">
             <div className="w-8 h-8 sm:w-9 sm:h-9 xl:w-10 xl:h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm group-hover:scale-105 transition-transform shrink-0">

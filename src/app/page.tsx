@@ -13,7 +13,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="w-full flex flex-col pt-20 sm:pt-28">
+    <div className="w-full flex flex-col pt-16 sm:pt-28">
       <HeroSection featuredProduct={featuredProducts[0] || null} />
       <CategoriesGrid categoryCounts={stats.categoryCounts} />
       <FeaturedSection products={featuredProducts} />

@@ -31,9 +31,9 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
   const isSelected = rajwadaProduct ? hasItem(rajwadaProduct.id) : false;
 
   return (
-    <section className="relative w-full overflow-hidden bg-background pt-4 sm:pt-8 pb-12 lg:py-20">
+    <section className="relative w-full overflow-hidden bg-background pt-0 sm:pt-8 pb-12 lg:py-20">
       {/* Mobile Announcement Top Ticker matching Stitch Screen 1 */}
-      <aside className="sm:hidden -mx-4 -mt-4 mb-4 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between shadow-xs">
+      <aside className="sm:hidden w-full mb-4 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-1.5 min-w-0 pr-2">
           <MapPin className="w-3.5 h-3.5 text-secondary shrink-0" />
           <p className="font-label-sm text-[11px] truncate tracking-wide text-primary-foreground/90">
