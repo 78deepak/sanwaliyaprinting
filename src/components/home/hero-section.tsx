@@ -12,7 +12,11 @@ import {
   Languages,
   CheckCircle2,
   Heart,
+  Phone,
+  MapPin,
+  ChevronRight,
 } from "lucide-react";
+import { siteConfig } from "@/lib/site-config";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
 import { useSelection } from "@/context/selection-context";
 import { Product } from "@/types/product";
@@ -27,24 +31,41 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
   const isSelected = rajwadaProduct ? hasItem(rajwadaProduct.id) : false;
 
   return (
-    <section className="relative w-full overflow-hidden bg-background pt-8 pb-16 lg:py-20">
+    <section className="relative w-full overflow-hidden bg-background pt-4 sm:pt-8 pb-12 lg:py-20">
+      {/* Mobile Announcement Top Ticker matching Stitch Screen 1 */}
+      <aside className="sm:hidden -mx-4 -mt-4 mb-4 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-1.5 min-w-0 pr-2">
+          <MapPin className="w-3.5 h-3.5 text-secondary shrink-0" />
+          <p className="font-label-sm text-[11px] truncate tracking-wide text-primary-foreground/90">
+            Ramsnehi Patidar Complex, Suwasra
+          </p>
+        </div>
+        <a
+          href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
+          className="shrink-0 flex items-center gap-1 bg-primary-container text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs active:scale-95 transition-transform"
+        >
+          <Phone className="w-3 h-3 text-secondary" />
+          <span>CALL NOW</span>
+        </a>
+      </aside>
+
       {/* Ambient gold and burgundy glow orbs */}
       <div className="pointer-events-none absolute -left-28 -top-28 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
       <div className="pointer-events-none absolute right-0 top-1/4 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-14">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
           {/* Left Column: Typographic Majesty (7 cols) */}
           <div className="flex flex-col items-start lg:col-span-7">
             {/* Top Atelier Overline Badge */}
-            <div className="mb-5 flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container px-3.5 py-1 font-label-sm text-primary uppercase tracking-wider shadow-xs border border-border/50">
+            <div className="mb-4 sm:mb-5 flex flex-wrap items-center gap-2 sm:gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container px-3 sm:px-3.5 py-1 font-label-sm text-xs text-primary uppercase tracking-wider shadow-xs border border-border/50">
                 <Sparkles className="w-3.5 h-3.5 text-secondary" />
                 Sanwaliya Printing Press • सुवासरा (मंदसौर)
               </span>
               <a
                 href="#swatch-kit"
-                className="inline-flex items-center gap-1.5 rounded-full bg-secondary-container px-3.5 py-1 font-label-sm font-bold text-secondary-foreground shadow-xs hover:opacity-90 transition-opacity"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-secondary-container px-3.5 py-1 font-label-sm font-bold text-secondary-foreground shadow-xs hover:opacity-90 transition-opacity"
               >
                 <Package className="w-3.5 h-3.5" />
                 Free 12-Paper Swatch Kit
@@ -52,7 +73,7 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
             </div>
 
             {/* Bilingual Main Headline matching Stitch Screen 1 */}
-            <h1 className="font-display-lg text-foreground tracking-tight leading-[1.1] mb-4">
+            <h1 className="font-display-lg text-2xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-[1.15] mb-3 sm:mb-4">
               Beautiful Designs.
               <br />
               Quality Printing.
@@ -63,26 +84,26 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
             </h1>
 
             {/* Hindi Subtitle Ribbon */}
-            <div className="mb-6 flex items-center gap-3 rounded-lg bg-surface-container px-4 py-2.5 shadow-xs border border-border/60">
-              <span className="h-6 w-1 rounded-full bg-secondary shrink-0" />
-              <p className="font-headline-sm text-secondary font-medium tracking-normal font-devanagari">
+            <div className="mb-4 sm:mb-6 flex items-center gap-3 rounded-lg bg-surface-container px-3.5 sm:px-4 py-2 sm:py-2.5 shadow-xs border border-border/60">
+              <span className="h-5 sm:h-6 w-1 rounded-full bg-secondary shrink-0" />
+              <p className="font-headline-sm text-xs sm:text-sm text-secondary font-medium tracking-normal font-devanagari">
                 उत्कृष्ट डिज़ाइन और राजसी मुद्रण — आपकी खास यादों के लिए।
               </p>
             </div>
 
             {/* Editorial Narrative */}
-            <p className="font-body-lg text-muted-foreground max-w-2xl mb-8 leading-relaxed">
+            <p className="font-body-lg text-xs sm:text-base text-muted-foreground max-w-2xl mb-6 sm:mb-8 leading-relaxed">
               Handcrafted bespoke wedding invitations, luxury gold foil visiting cards, hardbound bill books, and event banners. Browse our curated catalogue at Sanwaliya Printing Press, Suwasra, and consult directly with our master press artisans on WhatsApp.
             </p>
 
-            {/* CTAs Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto mb-8">
+            {/* CTAs Bar: 2-column on mobile, flex on sm */}
+            <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-row items-stretch sm:items-center w-full sm:w-auto mb-6 sm:mb-8">
               <Link
                 href="/wedding-cards"
-                className="inline-flex items-center justify-center gap-2.5 rounded-lg bg-primary px-7 py-3.5 font-label-lg text-primary-foreground shadow-md hover:bg-primary-container transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg bg-primary px-4 sm:px-7 py-3 sm:py-3.5 font-label-md sm:font-label-lg text-xs sm:text-sm text-primary-foreground shadow-md hover:bg-primary-container transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Explore Designs</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 shrink-0" />
               </Link>
 
               <div className="flex flex-col gap-1">
@@ -90,20 +111,86 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
                   href={buildGeneralEnquiryUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2.5 rounded-lg bg-[#128C7E] px-6 py-3.5 font-label-lg text-white shadow-md hover:bg-[#0e7064] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg bg-[#128C7E] px-4 sm:px-6 py-3 sm:py-3.5 font-label-md sm:font-label-lg text-xs sm:text-sm text-white shadow-md hover:bg-[#0e7064] transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <MessageCircle className="w-5 h-5" />
-                  <span>Get a Quote on WhatsApp</span>
+                  <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                  <span>WhatsApp Quote</span>
                 </a>
-                <span className="text-center sm:text-left font-label-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-1.5 pt-0.5">
+                <span className="hidden sm:flex text-center sm:text-left font-label-sm text-muted-foreground items-center justify-center sm:justify-start gap-1.5 pt-0.5">
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse" />
                   Typically replies in 15 mins
                 </span>
               </div>
             </div>
 
-            {/* Atelier Quality Tickers */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-2">
+            {/* Mobile Featured Craft Finishes Swipe Strip matching Stitch Screen 1 */}
+            <div className="sm:hidden w-full pb-4 pt-1">
+              <div className="flex items-center justify-between pb-2 text-[11px] font-bold uppercase tracking-wider text-secondary">
+                <span>Featured Craft Finishes</span>
+                <span className="text-muted-foreground font-normal flex items-center gap-0.5">Swipe →</span>
+              </div>
+              <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none scroll-smooth">
+                {/* 1. Rajwada Velvet */}
+                <div className="min-w-[190px] w-[190px] rounded-xl bg-surface-container p-2.5 flex flex-col gap-2 shrink-0 border border-border/50 shadow-xs">
+                  <div className="relative w-full h-24 rounded-lg overflow-hidden bg-surface-container-high">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJkNwF6A5Z5H925ql-_DGwvCXk8pLRQ23pNrKCfOdb0w6Ggor5wadr5Ya3ruBft3DPfvqXkNiYLJdP0BXtInkE5U0djHoAFBQ4pO0Yjh1350Kbu5P89Nu7bIt_ju65Y_wJh6ret9hwqLF1sZug4PlmvIdc3Yd5T6tOLO5RoZoKnV6I9KL-0fGxqOQUIB1sHecx-1RVZt3s6V7xiJx-Q3-RMEKvSkFrf6sjH08iaj3AF9mkDSo_-9qyqA"
+                      alt="Rajwada Velvet Suite"
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-primary/90 text-white font-label-sm text-[9px] font-bold">
+                      Royal Velvet
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="font-headline-sm text-sm text-primary font-bold leading-tight">Rajwada Velvet Suite</h4>
+                    <p className="text-[11px] text-muted-foreground font-devanagari">शाही मखमल बक्सा • 24k Foil</p>
+                  </div>
+                </div>
+
+                {/* 2. Handmade Rag */}
+                <div className="min-w-[190px] w-[190px] rounded-xl bg-surface-container p-2.5 flex flex-col gap-2 shrink-0 border border-border/50 shadow-xs">
+                  <div className="relative w-full h-24 rounded-lg overflow-hidden bg-surface-container-high">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqtL0S-8jNf-x7KUq6mUxbj7uGsQxgIo1UYZFh3vaIfAUpfvkfTjGzehvvSC2y8bbAC9090Kj73FRGdYvypovWTJuxAmEiQ6Co0TibNY_18oh45Z7rSs0m-YaKKR8uWyXSandTcN9Rp3bJHYmVsA3uI9t86ZJJyxAE4mOTph9PaftnNp5Bd4ibWwODphEIKdFFejui7Kg532bhSr6vVFOml9C0QksBa0IJpGB-U5QqRCHNo21T_YEs1w"
+                      alt="Minimal Ivory Letterpress"
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-secondary-container text-secondary-foreground font-label-sm text-[9px] font-bold">
+                      Handmade Rag
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="font-headline-sm text-sm text-primary font-bold leading-tight">Minimal Ivory Press</h4>
+                    <p className="text-[11px] text-muted-foreground font-devanagari">हाथ से बना कागज़ • 600 GSM</p>
+                  </div>
+                </div>
+
+                {/* 3. Luxe Metallic */}
+                <div className="min-w-[190px] w-[190px] rounded-xl bg-surface-container p-2.5 flex flex-col gap-2 shrink-0 border border-border/50 shadow-xs">
+                  <div className="relative w-full h-24 rounded-lg overflow-hidden bg-surface-container-high">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqhIlKVHD9Y26TcVDm7u_7CkODnX1ceQD1EpIT5U806MwhgjttlONbT6_r4_oXIB5EAvaqSWy0tO6DaZLKDu8wcSIld3nAV9YwRp8B_t6n8EOBXxAsoptD5Ox5Q_MziBTRBjvA7RToUA7pKL2mc1YQC85fQRHTNUgxkeCB88RPuPacCL7y9-MYcukE2Af59T7X_sQZT5E6-B4BBN3XjU5paoVpiwP7SXLzIu1HZYuOgE6W-52161E49g"
+                      alt="Luxe Metallic Cards"
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-foreground text-background font-label-sm text-[9px] font-bold">
+                      Gilded Edges
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="font-headline-sm text-sm text-primary font-bold leading-tight">Luxe Metallic Cards</h4>
+                    <p className="text-[11px] text-muted-foreground font-devanagari">बिजनेस कार्ड • Velvet Touch</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Atelier Quality Tickers (Desktop) */}
+            <div className="hidden sm:flex flex-wrap items-center gap-2.5 pt-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1 font-label-sm text-foreground border border-border/50 shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 text-secondary" /> Bespoke Foil Stamping
               </span>

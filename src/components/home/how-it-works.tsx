@@ -62,7 +62,38 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        {/* Mobile View: Vertical Step Stack matching Stitch Screen 1 */}
+        <div className="sm:hidden flex flex-col gap-3">
+          {steps.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.step}
+                className="bg-card rounded-xl p-3.5 flex items-start gap-3.5 shadow-xs border border-border/70"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-label-md flex items-center justify-center shrink-0 font-bold text-xs">
+                  {item.step}
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-headline-sm text-sm text-primary font-semibold">
+                      {item.title}
+                    </h4>
+                    <span className="font-label-sm text-xs text-secondary font-devanagari font-medium">
+                      {item.titleHi}
+                    </span>
+                  </div>
+                  <p className="font-body-sm text-xs text-muted-foreground mt-1 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop View: 5-Column Grid */}
+        <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-6">
           {steps.map((item) => {
             const Icon = item.icon;
             return (

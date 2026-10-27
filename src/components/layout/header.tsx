@@ -15,6 +15,8 @@ import {
   X,
   Sparkles,
   ChevronRight,
+  Home,
+  Briefcase,
 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { useSelection } from "@/context/selection-context";
@@ -377,278 +379,343 @@ export function Header() {
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Slide-in Drawer (below lg) */}
-        {isMobileDrawerOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 flex justify-end">
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-              onClick={() => setIsMobileDrawerOpen(false)}
-            />
+      {/* Mobile Slide-in Drawer (outside <header> to prevent backdrop-filter stacking trap) */}
+      {isMobileDrawerOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex justify-end">
+          {/* Full Screen Dimmed Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setIsMobileDrawerOpen(false)}
+          />
 
-            {/* Drawer Panel */}
-            <div className="relative w-4/5 max-w-sm bg-surface-lowest h-full shadow-2xl flex flex-col justify-between z-10 animate-in slide-in-from-right duration-300 border-l border-border overflow-y-auto">
-              <div className="flex flex-col">
-                {/* Drawer Header */}
-                <div className="p-4 flex items-center justify-between border-b border-border/40">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-                      <Sparkles className="w-4 h-4 text-secondary" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-serif text-lg font-bold text-primary leading-tight">
-                        {siteConfig.name}
-                      </span>
-                      <span className="text-xs uppercase tracking-widest text-secondary font-semibold font-devanagari">
-                        {siteConfig.nameHindi}
-                      </span>
-                    </div>
+          {/* Full Height Drawer Panel */}
+          <div className="relative w-[85%] max-w-sm bg-surface-lowest h-[100dvh] shadow-2xl flex flex-col justify-between z-10 animate-in slide-in-from-right duration-300 border-l border-border overflow-y-auto overscroll-contain">
+            <div className="flex flex-col">
+              {/* Drawer Header */}
+              <div className="p-4 flex items-center justify-between border-b border-border/40">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
+                    <Sparkles className="w-4 h-4 text-secondary" />
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsMobileDrawerOpen(false)}
-                    className="p-2 text-muted-foreground hover:text-foreground rounded-lg"
-                    aria-label="Close menu"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <div className="flex flex-col">
+                    <span className="font-serif text-lg font-bold text-primary leading-tight">
+                      {siteConfig.name}
+                    </span>
+                    <span className="text-xs uppercase tracking-widest text-secondary font-semibold font-devanagari">
+                      {siteConfig.nameHindi}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Drawer Accordion Navigation */}
-                <nav className="p-3 flex flex-col gap-1.5 text-sm">
-                  {/* Accordion 1: Wedding Cards */}
-                  <div className="rounded-xl border border-border/50 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => toggleAccordion("wedding")}
-                      className="w-full flex items-center justify-between px-3.5 py-3 font-semibold text-foreground bg-surface-container/40 hover:bg-surface-container transition-colors"
-                    >
-                      <span>{lang === "hi" ? "शाही विवाह निमंत्रण" : "Wedding Cards"}</span>
-                      <ChevronDown
-                        className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
-                          openAccordions.wedding ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                    {openAccordions.wedding && (
-                      <div className="p-2 flex flex-col gap-1 bg-surface-lowest text-xs">
-                        <Link
-                          href="/wedding-cards"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
-                        >
-                          Royal Farman & Scrolls (शाही फरमान)
-                        </Link>
-                        <Link
-                          href="/wedding-cards"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
-                        >
-                          Laser-Cut & Velvet Hardbound (वेलवेट व लेजर कट)
-                        </Link>
-                        <Link
-                          href="/wedding-cards"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
-                        >
-                          Minimalist Cotton Rag (हैंडमेड पेपर)
-                        </Link>
-                        <Link
-                          href="/wedding-cards"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-primary font-bold hover:bg-surface-low border-t border-border/40 mt-1"
-                        >
-                          View All 140+ Suites (सभी देखें) →
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Accordion 2: Business Printing */}
-                  <div className="rounded-xl border border-border/50 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => toggleAccordion("business")}
-                      className="w-full flex items-center justify-between px-3.5 py-3 font-semibold text-foreground bg-surface-container/40 hover:bg-surface-container transition-colors"
-                    >
-                      <span>{lang === "hi" ? "व्यापारिक मुद्रण" : "Business Printing"}</span>
-                      <ChevronDown
-                        className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
-                          openAccordions.business ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                    {openAccordions.business && (
-                      <div className="p-2 flex flex-col gap-1 bg-surface-lowest text-xs">
-                        <Link
-                          href="/visiting-cards"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
-                        >
-                          Luxury Visiting Cards (विजिटिंग कार्ड्स)
-                        </Link>
-                        <Link
-                          href="/bill-books"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
-                        >
-                          Custom Bill Books & Ledgers (बिल बुक व रसीदें)
-                        </Link>
-                        <Link
-                          href="/custom-enquiry?service=letterheads"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
-                        >
-                          Letterheads & Pads (लेटरहेड)
-                        </Link>
-                        <Link
-                          href="/pamphlets-brochures"
-                          onClick={() => setIsMobileDrawerOpen(false)}
-                          className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
-                        >
-                          Pamphlets & Brochures (पर्चे व ब्रोशर)
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 3. Banners & Flex */}
-                  <Link
-                    href="/flex-banners"
-                    onClick={() => setIsMobileDrawerOpen(false)}
-                    className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-border/40 font-semibold text-foreground hover:bg-surface-low"
-                  >
-                    <span>{lang === "hi" ? "फ्लेक्स व होर्डिंग्स" : "Banners & Flex"}</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-
-                  {/* 4. Envelopes & Stationery */}
-                  <Link
-                    href="/envelopes-stationery"
-                    onClick={() => setIsMobileDrawerOpen(false)}
-                    className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-border/40 font-semibold text-foreground hover:bg-surface-low"
-                  >
-                    <span>{lang === "hi" ? "शगुन लिफाफे" : "Envelopes & Stationery"}</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </Link>
-
-                  {/* 5. Custom Order */}
-                  <Link
-                    href="/custom-enquiry"
-                    onClick={() => setIsMobileDrawerOpen(false)}
-                    className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-secondary/30 bg-secondary/5 font-bold text-secondary hover:bg-secondary/10"
-                  >
-                    <span>{lang === "hi" ? "कस्टम प्रिंटिंग ऑर्डर" : "Custom Printing Order"}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-
-                  {/* My Selection in Drawer */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMobileDrawerOpen(false);
-                      openDrawer();
-                    }}
-                    className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-primary/30 bg-primary/5 font-semibold text-primary hover:bg-primary/10 mt-1"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-primary" />
-                      <span>{lang === "hi" ? "मेरी पसंद" : "My Selection"}</span>
-                    </div>
-                    {count > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                </nav>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  className="p-2 text-muted-foreground hover:text-foreground hover:bg-surface-low rounded-xl transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              {/* Drawer Footer: Preferences & Contact Info */}
-              <div className="p-4 border-t border-border/50 bg-surface-container/20 flex flex-col gap-4">
-                {/* Language & Theme Controls */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground font-medium">Language:</span>
-                    <div className="flex items-center bg-surface-low p-0.5 rounded-lg border border-border/60">
-                      <button
-                        type="button"
-                        onClick={() => setLang("en")}
-                        className={`px-2 py-1 rounded text-xs font-bold transition-all ${
-                          lang === "en"
-                            ? "bg-surface-lowest text-primary shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
+              {/* Drawer Accordion Navigation */}
+              <nav className="p-3 flex flex-col gap-1.5 text-sm">
+                {/* Accordion 1: Wedding Cards */}
+                <div className="rounded-xl border border-border/50 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleAccordion("wedding")}
+                    className="w-full flex items-center justify-between px-3.5 py-3 font-semibold text-foreground bg-surface-container/40 hover:bg-surface-container transition-colors"
+                  >
+                    <span>{lang === "hi" ? "शाही विवाह निमंत्रण" : "Wedding Cards"}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                        openAccordions.wedding ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openAccordions.wedding && (
+                    <div className="p-2 flex flex-col gap-1 bg-surface-lowest text-xs">
+                      <Link
+                        href="/wedding-cards"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
                       >
-                        EN
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setLang("hi")}
-                        className={`px-2 py-1 rounded text-xs font-bold transition-all ${
-                          lang === "hi"
-                            ? "bg-surface-lowest text-primary shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
+                        Royal Farman & Scrolls (शाही फरमान)
+                      </Link>
+                      <Link
+                        href="/wedding-cards"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
                       >
-                        हिं
-                      </button>
+                        Laser-Cut & Velvet Hardbound (वेलवेट व लेजर कट)
+                      </Link>
+                      <Link
+                        href="/wedding-cards"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
+                      >
+                        Minimalist Cotton Rag (हैंडमेड पेपर)
+                      </Link>
+                      <Link
+                        href="/wedding-cards"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-primary font-bold hover:bg-surface-low border-t border-border/40 mt-1"
+                      >
+                        View All 140+ Suites (सभी देखें) →
+                      </Link>
                     </div>
-                  </div>
+                  )}
+                </div>
 
+                {/* Accordion 2: Business Printing */}
+                <div className="rounded-xl border border-border/50 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleAccordion("business")}
+                    className="w-full flex items-center justify-between px-3.5 py-3 font-semibold text-foreground bg-surface-container/40 hover:bg-surface-container transition-colors"
+                  >
+                    <span>{lang === "hi" ? "व्यापारिक मुद्रण" : "Business Printing"}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                        openAccordions.business ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openAccordions.business && (
+                    <div className="p-2 flex flex-col gap-1 bg-surface-lowest text-xs">
+                      <Link
+                        href="/visiting-cards"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
+                      >
+                        Luxury Visiting Cards (विजिटिंग कार्ड्स)
+                      </Link>
+                      <Link
+                        href="/bill-books"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
+                      >
+                        Custom Bill Books & Ledgers (बिल बुक व रसीदें)
+                      </Link>
+                      <Link
+                        href="/custom-enquiry?service=letterheads"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
+                      >
+                        Letterheads & Pads (लेटरहेड)
+                      </Link>
+                      <Link
+                        href="/pamphlets-brochures"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="px-3 py-2 rounded-lg text-foreground hover:bg-surface-low font-medium"
+                      >
+                        Pamphlets & Brochures (पर्चे व ब्रोशर)
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Banners & Flex */}
+                <Link
+                  href="/flex-banners"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-border/40 font-semibold text-foreground hover:bg-surface-low"
+                >
+                  <span>{lang === "hi" ? "फ्लेक्स व होर्डिंग्स" : "Banners & Flex"}</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </Link>
+
+                {/* 4. Envelopes & Stationery */}
+                <Link
+                  href="/envelopes-stationery"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-border/40 font-semibold text-foreground hover:bg-surface-low"
+                >
+                  <span>{lang === "hi" ? "शगुन लिफाफे" : "Envelopes & Stationery"}</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </Link>
+
+                {/* 5. Custom Order */}
+                <Link
+                  href="/custom-enquiry"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-secondary/30 bg-secondary/5 font-bold text-secondary hover:bg-secondary/10"
+                >
+                  <span>{lang === "hi" ? "कस्टम प्रिंटिंग ऑर्डर" : "Custom Printing Order"}</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+
+                {/* My Selection in Drawer */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileDrawerOpen(false);
+                    openDrawer();
+                  }}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-primary/30 bg-primary/5 font-semibold text-primary hover:bg-primary/10 mt-1"
+                >
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground font-medium">Theme:</span>
-                    <ThemeToggle />
+                    <Heart className="w-4 h-4 text-primary" />
+                    <span>{lang === "hi" ? "मेरी पसंद" : "My Selection"}</span>
+                  </div>
+                  {count > 0 && (
+                    <span className="px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                      {count}
+                    </span>
+                  )}
+                </button>
+              </nav>
+            </div>
+
+            {/* Drawer Footer: Preferences & Contact Info */}
+            <div className="p-4 border-t border-border/50 bg-surface-container/20 flex flex-col gap-4 pb-8">
+              {/* Language & Theme Controls */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Language:</span>
+                  <div className="flex items-center bg-surface-low p-0.5 rounded-lg border border-border/60">
+                    <button
+                      type="button"
+                      onClick={() => setLang("en")}
+                      className={`px-2 py-1 rounded text-xs font-bold transition-all ${
+                        lang === "en"
+                          ? "bg-surface-lowest text-primary shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      EN
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLang("hi")}
+                      className={`px-2 py-1 rounded text-xs font-bold transition-all ${
+                        lang === "hi"
+                          ? "bg-surface-lowest text-primary shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      हिं
+                    </button>
                   </div>
                 </div>
 
-                {/* Atelier Contact Details */}
-                <div className="text-xs text-muted-foreground space-y-2 pt-2 border-t border-border/40">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-secondary shrink-0 mt-0.5" />
-                    <span>{siteConfig.address}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-secondary shrink-0" />
-                    <span>{siteConfig.hours}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
-                    <a
-                      href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
-                      className="font-semibold text-foreground hover:text-primary"
-                    >
-                      {siteConfig.phone}
-                    </a>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Theme:</span>
+                  <ThemeToggle />
+                </div>
+              </div>
+
+              {/* Atelier Contact Details */}
+              <div className="text-xs text-muted-foreground space-y-2 pt-2 border-t border-border/40">
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-secondary shrink-0 mt-0.5" />
+                  <span>{siteConfig.address}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-3.5 h-3.5 text-secondary shrink-0" />
+                  <span>{siteConfig.hours}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
+                  <a
+                    href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
+                    className="font-semibold text-foreground hover:text-primary"
+                  >
+                    {siteConfig.phone}
+                  </a>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </header>
+        </div>
+      )}
 
-      {/* Sticky Bottom Bar below lg: WhatsApp and Call */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-lowest/95 backdrop-blur-md border-t border-border px-3 py-2 flex items-center justify-between gap-3 shadow-lg">
-        <a
-          href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
-          className="flex-1 flex items-center justify-center gap-2 bg-surface-container hover:bg-surface-container-high text-foreground border border-border py-2.5 px-3 rounded-xl text-xs font-bold transition-colors"
-        >
-          <Phone className="w-4 h-4 text-secondary shrink-0" />
-          <span>{lang === "hi" ? "कॉल करें" : "Call Studio"}</span>
-        </a>
-        <a
-          href={buildGeneralEnquiryUrl()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 flex items-center justify-center gap-2 bg-[#128C7E] hover:bg-[#0e7064] text-white py-2.5 px-3 rounded-xl text-xs font-bold transition-colors shadow-xs"
-        >
-          <MessageCircle className="w-4 h-4 shrink-0" />
-          <span>{lang === "hi" ? "व्हाट्सएप" : "WhatsApp"}</span>
-        </a>
-      </div>
+      {/* Floating WhatsApp pill on Mobile (positioned above bottom tab bar, exactly per Stitch design) */}
+      <a
+        href={buildGeneralEnquiryUrl()}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Direct WhatsApp Enquiry"
+        className="lg:hidden fixed bottom-20 right-4 z-40 h-11 px-3.5 rounded-full bg-[#128C7E] hover:bg-[#0e7064] text-white flex items-center gap-2 shadow-[0_6px_20px_rgba(18,140,126,0.35)] active:scale-95 transition-all text-xs font-bold"
+      >
+        <MessageCircle className="w-4 h-4 text-white" />
+        <span>{lang === "hi" ? "व्हाट्सएप" : "WhatsApp"}</span>
+      </a>
+
+      {/* Stitch 4-Tab Mobile App Navigation Bar (below lg) */}
+      <nav
+        aria-label="Mobile Application Navigation"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 pb-safe bg-surface/95 backdrop-blur-xl border-t border-border/80 shadow-[0_-2px_12px_rgba(0,0,0,0.05)]"
+      >
+        <div className="flex justify-around items-center h-16 px-1">
+          {/* 1. Home */}
+          <Link
+            href="/"
+            className={`flex-1 flex flex-col items-center justify-center h-12 transition-colors ${
+              pathname === "/"
+                ? "text-primary font-bold"
+                : "text-muted-foreground hover:text-primary"
+            }`}
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-[10px] sm:text-[11px] mt-0.5 font-medium">
+              {lang === "hi" ? "होम" : "Home"}
+            </span>
+          </Link>
+
+          {/* 2. Wedding Cards */}
+          <Link
+            href="/wedding-cards"
+            className={`flex-1 flex flex-col items-center justify-center h-12 transition-colors ${
+              isWeddingActive
+                ? "text-primary font-bold"
+                : "text-muted-foreground hover:text-primary"
+            }`}
+          >
+            <Sparkles className="w-5 h-5 text-secondary" />
+            <span className="text-[10px] sm:text-[11px] mt-0.5 font-medium">
+              {lang === "hi" ? "शादी कार्ड" : "Weddings"}
+            </span>
+          </Link>
+
+          {/* 3. Business Printing */}
+          <Link
+            href="/visiting-cards"
+            className={`flex-1 flex flex-col items-center justify-center h-12 transition-colors ${
+              isBusinessActive
+                ? "text-primary font-bold"
+                : "text-muted-foreground hover:text-primary"
+            }`}
+          >
+            <Briefcase className="w-5 h-5" />
+            <span className="text-[10px] sm:text-[11px] mt-0.5 font-medium">
+              {lang === "hi" ? "व्यापार" : "Business"}
+            </span>
+          </Link>
+
+          {/* 4. My Selection */}
+          <button
+            type="button"
+            onClick={openDrawer}
+            className="flex-1 flex flex-col items-center justify-center h-12 text-muted-foreground hover:text-primary transition-colors relative"
+            aria-label="Open My Selection"
+          >
+            <div className="relative">
+              <Heart className="w-5 h-5 text-primary" />
+              {count > 0 && (
+                <span className="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-0.5 bg-primary text-primary-foreground text-[9px] rounded-full flex items-center justify-center font-bold">
+                  {count}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] sm:text-[11px] mt-0.5 font-medium">
+              {lang === "hi" ? "मेरी पसंद" : "Selection"}
+            </span>
+          </button>
+        </div>
+      </nav>
 
       {/* Search Modal */}
       <SearchDialog

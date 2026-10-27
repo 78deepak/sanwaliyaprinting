@@ -255,15 +255,18 @@ export function SelectionDrawer() {
               </pre>
             </div>
 
-            {/* Direct WhatsApp Send Action */}
+            {/* Direct WhatsApp Send Action matching Stitch Screen 4 */}
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-3.5 px-4 rounded-xl bg-tertiary hover:bg-tertiary-hover text-white font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full h-12 rounded-xl bg-[#128C7E] hover:bg-[#0d6e63] text-white flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all px-3"
             >
-              <Send className="w-4 h-4" />
-              <span>Send Shortlist on WhatsApp ({count} Items)</span>
+              <MessageCircle className="w-5 h-5 shrink-0" />
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-label-md text-xs font-bold">Send to WhatsApp ({count} Items)</span>
+                <span className="text-[10px] text-white/90 font-devanagari">व्हाट्सएप पर तुरंत कोटेशन पाएं</span>
+              </div>
             </a>
 
             <div className="text-center text-[11px] text-muted-foreground">

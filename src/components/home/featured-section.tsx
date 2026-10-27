@@ -43,8 +43,8 @@ export function FeaturedSection({ products = [] }: FeaturedSectionProps) {
           </div>
         </div>
 
-        {/* 4-Item Responsive Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 4-Item Responsive Product Grid: 2 columns on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {displayProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

@@ -16,7 +16,14 @@ import {
   Sparkles,
   Languages,
   Package,
+  Phone,
+  ChevronDown,
+  Layers,
+  Clock,
+  ShieldCheck,
+  FileCheck,
 } from "lucide-react";
+import { siteConfig } from "@/lib/site-config";
 import { Product } from "@/types/product";
 import { ProductGallery } from "./product-gallery";
 import { ProductCard } from "./product-card";
@@ -51,12 +58,21 @@ export function ProductDetailView({
   const [quantity, setQuantity] = useState(product.minimumQuantity || 100);
   const [customNotes, setCustomNotes] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
+  const [openSpec, setOpenSpec] = useState<string | null>("spec1");
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
+      if (navigator.share) {
+        navigator.share({
+          title: `${product.name} - Sanwaliya Printing Press`,
+          text: product.shortDescription,
+          url: window.location.href,
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      }
     }
   };
 
@@ -82,8 +98,43 @@ export function ProductDetailView({
     currentUrl: typeof window !== "undefined" ? window.location.href : undefined,
   });
 
+  const telHref = `tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`;
+
   return (
-    <div className="w-full flex flex-col pt-24 sm:pt-28">
+    <div className="w-full flex flex-col pt-16 sm:pt-28 pb-24 lg:pb-0">
+      {/* Mobile Top Utility Bar matching Stitch Screen 3 */}
+      <section className="px-4 py-2 bg-surface-low border-b border-border/50 lg:hidden">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-secondary-foreground text-[10px] font-bold">
+              <Check className="w-3 h-3" /> VERIFIED ATELIER
+            </span>
+            <span className="text-muted-foreground text-[11px] uppercase tracking-wider font-mono">
+              Code: {product.productCode}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleShare}
+              className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-foreground active:scale-95 transition-transform"
+              aria-label="Share Design"
+            >
+              {copiedLink ? <Check className="w-3.5 h-3.5 text-tertiary" /> : <Share2 className="w-3.5 h-3.5" />}
+            </button>
+            <button
+              type="button"
+              onClick={handleAddToShortlist}
+              className={`w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-transform ${
+                isShortlisted ? "bg-primary text-white" : "bg-surface-container text-foreground"
+              }`}
+              aria-label="Shortlist Suite"
+            >
+              <Heart className={`w-3.5 h-3.5 ${isShortlisted ? "fill-current" : ""}`} />
+            </button>
+          </div>
+        </div>
+      </section>
       {/* Top Breadcrumb & Archival Reference Strip */}
       <section className="max-w-7xl mx-auto w-full px-4 sm:px-8 lg:px-12 pt-4 pb-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -412,30 +463,152 @@ export function ProductDetailView({
                   </span>
                 </button>
               </div>
+              {/* Collapsible Atelier Specifications Accordions matching Stitch Screen 3 */}
+              <div className="mt-4 flex flex-col gap-2.5">
+                <h3 className="font-label-lg text-xs text-foreground font-bold uppercase tracking-wider">
+                  Atelier Specifications • तकनीकी विवरण
+                </h3>
+
+                {/* Specs Accordion Item 1 */}
+                <div className="bg-surface-low rounded-xl overflow-hidden border border-border/60">
+                  <button
+                    type="button"
+                    className="w-full px-4 py-3 flex items-center justify-between text-left transition-colors"
+                    onClick={() => setOpenSpec(openSpec === "spec1" ? null : "spec1")}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Layers className="w-4 h-4 text-primary" />
+                      <span className="font-label-md text-xs sm:text-sm font-semibold text-foreground">
+                        Materials &amp; Board Foundation
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 text-muted-foreground transition-transform ${
+                        openSpec === "spec1" ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openSpec === "spec1" && (
+                    <div className="px-4 pb-3 pt-1 flex flex-col gap-2 text-xs text-muted-foreground border-t border-border/40">
+                      <div className="flex justify-between py-1 bg-surface-container px-2 rounded">
+                        <span className="font-medium text-foreground">Box Core:</span>
+                        <span>900 GSM Heavy Kappa Rigid Board</span>
+                      </div>
+                      <div className="flex justify-between py-1 bg-surface-container px-2 rounded">
+                        <span className="font-medium text-foreground">Inserts Paper:</span>
+                        <span>320 GSM Textured Cotton Linen (Acid-free)</span>
+                      </div>
+                      <div className="flex justify-between py-1 bg-surface-container px-2 rounded">
+                        <span className="font-medium text-foreground">Lining:</span>
+                        <span>Satin-finished raw silk matching velvet tone</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Specs Accordion Item 2 */}
+                <div className="bg-surface-low rounded-xl overflow-hidden border border-border/60">
+                  <button
+                    type="button"
+                    className="w-full px-4 py-3 flex items-center justify-between text-left transition-colors"
+                    onClick={() => setOpenSpec(openSpec === "spec2" ? null : "spec2")}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Clock className="w-4 h-4 text-primary" />
+                      <span className="font-label-md text-xs sm:text-sm font-semibold text-foreground">
+                        Production &amp; Dispatch Timeline
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 text-muted-foreground transition-transform ${
+                        openSpec === "spec2" ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openSpec === "spec2" && (
+                    <div className="px-4 pb-3 pt-1 flex flex-col gap-2 text-xs text-muted-foreground border-t border-border/40">
+                      <div className="flex justify-between py-1 bg-surface-container px-2 rounded">
+                        <span className="font-medium text-foreground">Digital Proof:</span>
+                        <span>Delivered within 24 hours on WhatsApp</span>
+                      </div>
+                      <div className="flex justify-between py-1 bg-surface-container px-2 rounded">
+                        <span className="font-medium text-foreground">Production Crafting:</span>
+                        <span>7 to 10 Business Days post approval</span>
+                      </div>
+                      <div className="flex justify-between py-1 bg-surface-container px-2 rounded">
+                        <span className="font-medium text-foreground">Transit Dispatch:</span>
+                        <span>Direct Suwasra pickup / Pan-India courier</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Specs Accordion Item 3 */}
+                <div className="bg-surface-low rounded-xl overflow-hidden border border-border/60">
+                  <button
+                    type="button"
+                    className="w-full px-4 py-3 flex items-center justify-between text-left transition-colors"
+                    onClick={() => setOpenSpec(openSpec === "spec3" ? null : "spec3")}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <FileCheck className="w-4 h-4 text-primary" />
+                      <span className="font-label-md text-xs sm:text-sm font-semibold text-foreground">
+                        Included in Complete Suite
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 text-muted-foreground transition-transform ${
+                        openSpec === "spec3" ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openSpec === "spec3" && (
+                    <div className="px-4 pb-3 pt-1 flex flex-col gap-2 text-xs text-muted-foreground border-t border-border/40">
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Hand-bound Velvet Outer Box with Metal Monogram Plate</li>
+                        <li>3 Event Inserts (Main Wedding, Sangeet, Reception)</li>
+                        <li>Custom foiled inner envelope with wax seal impression</li>
+                        <li>Complimentary digital WhatsApp video invite design</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Trust / Atelier Reassurance Banner */}
+              <div className="mt-3 p-3.5 rounded-xl bg-surface-container flex items-center gap-3 border border-border/50">
+                <div className="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center text-secondary-foreground shrink-0">
+                  <Sparkles className="w-4 h-4 text-secondary" />
+                </div>
+                <div className="flex flex-col text-xs">
+                  <span className="font-bold text-foreground">Personalized Proofing by Sanwaliya Press</span>
+                  <span className="text-muted-foreground">We customize family names, shlokas &amp; colors before taking any printing deposit.</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Similar Designs Strip */}
         {relatedProducts.length > 0 && (
-          <div className="mt-20 pt-10 border-t border-border/60 space-y-6">
+          <div className="mt-14 sm:mt-20 pt-8 sm:pt-10 border-t border-border/60 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="font-label-sm uppercase tracking-wider text-secondary font-bold">
+                <span className="font-label-sm uppercase tracking-wider text-secondary font-bold text-xs">
                   Complementary Creations
                 </span>
-                <h2 className="font-headline-lg text-primary font-medium mt-1">
+                <h2 className="font-headline-lg text-lg sm:text-2xl text-primary font-medium mt-0.5">
                   Similar Designs from the Atelier
                 </h2>
               </div>
               <Link
                 href={`/${product.category}`}
-                className="font-label-md text-primary hover:underline font-semibold"
+                className="font-label-md text-primary hover:underline font-semibold text-xs sm:text-sm"
               >
                 View Category →
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {relatedProducts.slice(0, 4).map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -443,6 +616,33 @@ export function ProductDetailView({
           </div>
         )}
       </section>
+
+      {/* Sticky Mobile Action Bar matching Stitch Screen 3 */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md px-4 py-2.5 pb-safe shadow-[0_-4px_16px_rgba(32,27,24,0.08)] flex items-center gap-2.5 lg:hidden border-t border-border/60">
+        {/* Artisan Call Button */}
+        <a
+          href={telHref}
+          aria-label="Call Sanwaliya Press Artisan"
+          className="shrink-0 flex flex-col items-center justify-center w-14 h-12 rounded-xl bg-surface-container text-foreground active:bg-surface-high transition-colors shadow-2xs border border-border/60"
+        >
+          <Phone className="w-4 h-4 text-primary" />
+          <span className="text-[10px] font-semibold mt-0.5">Call</span>
+        </a>
+
+        {/* Primary WhatsApp Quote Concierge CTA */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 h-12 rounded-xl bg-[#128C7E] hover:bg-[#0d6e63] active:scale-[0.98] text-white flex items-center justify-center gap-2 px-3 shadow-md transition-all"
+        >
+          <MessageCircle className="w-5 h-5 shrink-0" />
+          <div className="flex flex-col text-left leading-tight">
+            <span className="font-label-lg text-xs font-bold">Enquire on WhatsApp</span>
+            <span className="text-[10px] text-white/90 font-devanagari">व्हाट्सएप पर भाव व प्रूफ पूछें</span>
+          </div>
+        </a>
+      </div>
     </div>
   );
 }
