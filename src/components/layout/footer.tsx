@@ -64,7 +64,7 @@ export function Footer() {
       </div>
 
       {/* Main Footer Columns */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-14 pb-24 lg:pb-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
           {/* Col 1: Brand & Studio Heritage (5 cols) */}
           <div className="lg:col-span-5 space-y-4">
@@ -187,29 +187,29 @@ export function Footer() {
         </div>
 
         {/* Bottom Copyright & Disclaimer */}
-        <div className="pt-6 mt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <div>
-            © 1994 – {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <span>सांवलिया प्रिंटिंग प्रेस • सुवासरा (मंदसौर)</span>
-            <span className="text-border">|</span>
-            <Link href="/custom-enquiry" className="hover:text-primary underline">
+        <div className="pt-6 mt-6 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1.5 text-center md:text-left">
+            <span>
+              © 1994 – {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+            </span>
+            <span className="hidden sm:inline text-border">•</span>
+            <span className="font-devanagari text-foreground/80">
+              सांवलिया प्रिंटिंग प्रेस • सुवासरा (मंदसौर)
+            </span>
+            <span className="hidden sm:inline text-border">•</span>
+            <Link
+              href="/custom-enquiry"
+              className="text-foreground/90 hover:text-primary transition-colors underline underline-offset-2"
+            >
               Custom Orders
             </Link>
-            <span className="text-border">|</span>
-            <Link
-              href="/admin/login"
-              className="hover:text-primary transition-colors text-muted-foreground/70 hover:underline"
-              title="Shopkeeper Management Portal"
-            >
-              Admin Desk
-            </Link>
-            <span className="text-border">|</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground font-medium">Theme:</span>
-              <ThemeToggle />
-            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 self-center md:self-auto">
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+              Theme:
+            </span>
+            <ThemeToggle />
           </div>
         </div>
       </div>

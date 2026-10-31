@@ -10,12 +10,14 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
   display: "swap",
+  fallback: ["Georgia", "Times New Roman", "serif"],
 });
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
   display: "swap",
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
 });
 
 const notoDevanagari = Noto_Sans_Devanagari({
@@ -23,6 +25,7 @@ const notoDevanagari = Noto_Sans_Devanagari({
   variable: "--font-devanagari",
   display: "swap",
   weight: ["400", "500", "600", "700"],
+  fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
 
 export const metadata: Metadata = {
