@@ -135,12 +135,20 @@ export function ProductCardList({
             <div className="flex items-center justify-between pt-2 border-t border-border/50 text-label-sm">
               <div className="flex items-center gap-1.5 text-muted-foreground text-[12px]">
                 <Clock className="w-3.5 h-3.5" />
-                <span>{product.updatedAt}</span>
+                <span>
+                  {product.updatedAt
+                    ? new Date(product.updatedAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "—"}
+                </span>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <Link
-                  href={`/category/${product.category}/${product.slug}`}
+                  href={`/${product.category}/${product.slug}`}
                   target="_blank"
                   className="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
                   title="View on live website"

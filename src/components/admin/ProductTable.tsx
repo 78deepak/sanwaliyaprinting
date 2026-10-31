@@ -122,10 +122,10 @@ export function ProductTable({
       {/* Main Table Container */}
       <div className="w-full bg-surface-lowest rounded-xl border border-border shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[960px] border-collapse">
+          <table className="w-full text-left min-w-[1000px] border-collapse">
             <thead>
-              <tr className="bg-surface-container text-muted-foreground text-label-sm uppercase tracking-wider border-b border-border">
-                <th className="w-12 px-4 py-3.5 text-center">
+              <tr className="bg-surface-container text-muted-foreground text-xs uppercase tracking-wider border-b border-border">
+                <th className="w-12 px-3 py-3 text-center">
                   <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -138,13 +138,27 @@ export function ProductTable({
                     />
                   </label>
                 </th>
-                <th className="px-4 py-3.5 font-semibold text-foreground">Design & Nomenclature</th>
-                <th className="px-4 py-3.5 font-semibold text-foreground">SKU / Code</th>
-                <th className="px-4 py-3.5 font-semibold text-foreground">Category</th>
-                <th className="px-4 py-3.5 font-semibold text-foreground">Catalog State</th>
-                <th className="px-4 py-3.5 text-center font-semibold text-foreground">Showcase</th>
-                <th className="px-4 py-3.5 font-semibold text-foreground">Modified</th>
-                <th className="px-4 py-3.5 text-right font-semibold text-foreground">Actions</th>
+                <th className="min-w-[280px] px-3.5 py-3 font-semibold text-foreground text-xs uppercase tracking-wider">
+                  Product
+                </th>
+                <th className="w-36 px-3 py-3 font-semibold text-foreground text-xs uppercase tracking-wider">
+                  SKU
+                </th>
+                <th className="w-44 px-3 py-3 font-semibold text-foreground text-xs uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="w-32 px-3 py-3 font-semibold text-foreground text-xs uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="w-20 px-2 py-3 text-center font-semibold text-foreground text-xs uppercase tracking-wider">
+                  Featured
+                </th>
+                <th className="w-28 px-3 py-3 font-semibold text-foreground text-xs uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="w-28 px-3 py-3 text-right pr-4 font-semibold text-foreground text-xs uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
 
@@ -153,35 +167,35 @@ export function ProductTable({
                 // Skeletons
                 Array.from({ length: pageSize > 6 ? 6 : pageSize }).map((_, i) => (
                   <tr key={`skeleton-${i}`} className="animate-pulse">
-                    <td className="px-4 py-4 text-center">
+                    <td className="w-12 px-3 py-3 text-center">
                       <div className="w-4 h-4 rounded bg-surface-container-high mx-auto" />
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3.5 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-14 h-14 rounded-lg bg-surface-container-high shrink-0" />
-                        <div className="flex flex-col gap-2 flex-1">
-                          <div className="w-3/4 h-4 rounded bg-surface-container-high" />
-                          <div className="w-1/2 h-3 rounded bg-surface-container" />
+                        <div className="w-11 h-11 rounded-lg bg-surface-container-high shrink-0" />
+                        <div className="flex flex-col gap-1.5 flex-1 max-w-sm">
+                          <div className="w-3/4 h-3.5 rounded bg-surface-container-high" />
+                          <div className="w-1/2 h-2.5 rounded bg-surface-container" />
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="w-36 px-3 py-3">
                       <div className="w-20 h-5 rounded bg-surface-container" />
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="w-44 px-3 py-3">
                       <div className="w-24 h-5 rounded bg-surface-container" />
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="w-32 px-3 py-3">
                       <div className="w-20 h-5 rounded-full bg-surface-container" />
                     </td>
-                    <td className="px-4 py-4 text-center">
+                    <td className="w-20 px-2 py-3 text-center">
                       <div className="w-6 h-6 rounded-full bg-surface-container mx-auto" />
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="w-28 px-3 py-3">
                       <div className="w-20 h-4 rounded bg-surface-container" />
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="w-16 h-8 rounded bg-surface-container ml-auto" />
+                    <td className="w-28 px-3 py-3 text-right pr-4">
+                      <div className="w-16 h-7 rounded bg-surface-container ml-auto" />
                     </td>
                   </tr>
                 ))
@@ -209,7 +223,7 @@ export function ProductTable({
                       }`}
                     >
                       {/* Checkbox */}
-                      <td className="px-4 py-3.5 text-center">
+                      <td className="w-12 px-3 py-3 text-center">
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -218,102 +232,108 @@ export function ProductTable({
                         />
                       </td>
 
-                      {/* Design & Nomenclature */}
-                      <td className="px-4 py-3.5">
+                      {/* Product */}
+                      <td className="px-3.5 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-surface-container shrink-0 border border-border shadow-xs group">
+                          <div className="relative w-11 h-11 rounded-lg overflow-hidden bg-surface-container shrink-0 border border-border/80 shadow-2xs">
                             <Image
                               src={heroImage.url}
                               alt={heroImage.alt}
                               fill
-                              className="object-cover group-hover:scale-105 transition-transform"
+                              className="object-cover"
                             />
                           </div>
 
-                          <div className="flex flex-col min-w-0 max-w-sm">
+                          <div className="flex flex-col min-w-0 max-w-xs md:max-w-sm">
                             <Link
                               href={`/admin/products/${product.id}/edit`}
-                              className="font-headline-sm text-base text-primary font-bold hover:underline truncate leading-snug"
+                              className="text-xs md:text-sm font-semibold text-foreground hover:text-primary hover:underline truncate leading-snug"
                             >
                               {product.name}
                             </Link>
 
-                            <span className="text-body-sm text-muted-foreground truncate">
+                            <span className="text-[11px] text-muted-foreground truncate">
                               {product.nameHi || product.shortDescription}
                             </span>
                           </div>
                         </div>
                       </td>
 
-                      {/* SKU / Code */}
-                      <td className="px-4 py-3.5">
-                        <span className="font-mono text-label-sm font-bold bg-surface-container px-2 py-1 rounded text-foreground border border-border/50">
+                      {/* SKU */}
+                      <td className="w-36 px-3 py-3 whitespace-nowrap">
+                        <span className="inline-block font-mono text-xs font-semibold bg-surface-container px-2 py-0.5 rounded text-foreground border border-border/50 whitespace-nowrap">
                           {product.productCode}
                         </span>
                       </td>
 
                       {/* Category */}
-                      <td className="px-4 py-3.5">
-                        <span className="text-label-md font-semibold text-foreground capitalize truncate inline-block max-w-[160px]">
+                      <td className="w-44 px-3 py-3 whitespace-nowrap">
+                        <span className="text-xs text-muted-foreground capitalize">
                           {product.category.replace(/-/g, " ")}
                         </span>
                       </td>
 
                       {/* Status */}
-                      <td className="px-4 py-3.5">
+                      <td className="w-32 px-3 py-3 whitespace-nowrap">
                         <StatusBadge status={product.status} />
                       </td>
 
                       {/* Featured Showcase */}
-                      <td className="px-4 py-3.5 text-center">
+                      <td className="w-20 px-2 py-3 text-center whitespace-nowrap">
                         <button
                           type="button"
                           onClick={() => onToggleFeatured(product.id)}
-                          className={`w-8 h-8 rounded-lg hover:bg-surface-container inline-flex items-center justify-center transition-colors ${
+                          className={`w-7 h-7 rounded-md hover:bg-surface-container inline-flex items-center justify-center transition-colors ${
                             product.featured
                               ? "text-secondary hover:text-secondary/80"
                               : "text-muted-foreground/30 hover:text-secondary"
                           }`}
                           title={product.featured ? "Featured on Home" : "Pin to Featured"}
                         >
-                          <Star className={`w-4 h-4 ${product.featured ? "fill-current" : ""}`} />
+                          <Star className={`w-3.5 h-3.5 ${product.featured ? "fill-current" : ""}`} />
                         </button>
                       </td>
 
-                      {/* Modified */}
-                      <td className="px-4 py-3.5">
-                        <span className="text-label-sm text-muted-foreground whitespace-nowrap">
-                          {product.updatedAt}
+                      {/* Date */}
+                      <td className="w-28 px-3 py-3 whitespace-nowrap">
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {product.createdAt
+                            ? new Date(product.createdAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })
+                            : "—"}
                         </span>
                       </td>
 
                       {/* Actions */}
-                      <td className="px-4 py-3.5 text-right">
-                        <div className="inline-flex items-center gap-1.5">
+                      <td className="w-28 px-3 py-3 text-right pr-4 whitespace-nowrap">
+                        <div className="inline-flex items-center gap-1 justify-end">
                           <Link
-                            href={`/category/${product.category}/${product.slug}`}
+                            href={`/${product.category}/${product.slug}`}
                             target="_blank"
-                            className="w-8 h-8 rounded-lg hover:bg-surface-container text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+                            className="w-7 h-7 rounded-md hover:bg-surface-container text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
                             title="Preview Public Page"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" />
                           </Link>
 
                           <Link
                             href={`/admin/products/${product.id}/edit`}
-                            className="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-bold text-label-sm flex items-center gap-1 transition-colors"
+                            className="h-7 px-2 rounded-md bg-surface-container hover:bg-surface-container-high text-primary font-bold text-xs flex items-center gap-1 transition-colors"
                           >
-                            <Edit3 className="w-3.5 h-3.5" />
+                            <Edit3 className="w-3 h-3" />
                             <span>Edit</span>
                           </Link>
 
                           <button
                             type="button"
                             onClick={() => onDeleteClick(product)}
-                            className="w-8 h-8 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors"
+                            className="w-7 h-7 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors"
                             title="Delete Product"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>

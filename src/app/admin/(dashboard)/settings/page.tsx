@@ -186,47 +186,22 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
-      {/* Top Editorial Header & Status Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-surface-container-high border border-border p-6 md:p-8 shadow-sm">
-        <div className="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-secondary/15 blur-3xl pointer-events-none" />
-        <div className="absolute right-12 bottom-4 opacity-5 pointer-events-none select-none hidden lg:block">
-          <span className="font-display-lg text-[130px] font-bold text-primary leading-none">
-            सांवलिया
-          </span>
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+            Shop Settings
+          </h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+            Manage your store details, WhatsApp hotline, working hours, and admin credentials.
+          </p>
         </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="max-w-2xl flex flex-col gap-1.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-lowest text-secondary text-label-sm uppercase tracking-widest font-bold border border-border w-fit">
-              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-              <span>Atelier Registry • सुवासरा मुख्यालय</span>
-            </div>
-
-            <h1 className="font-headline-lg text-2xl md:text-3xl text-primary tracking-tight font-bold flex items-baseline gap-3 flex-wrap">
-              <span>Shop Settings</span>
-              <span className="font-headline-md text-xl md:text-2xl text-muted-foreground font-normal">
-                (दुकान की सेटिंग्स)
-              </span>
-            </h1>
-
-            <p className="text-body-md text-muted-foreground mt-1 leading-relaxed">
-              Manage your business profile, WhatsApp hotline, working hours, catalogue quote templates, and admin desk credentials.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 self-start md:self-auto bg-surface-lowest p-3 rounded-xl border border-border shadow-xs">
-            <div className="flex flex-col text-right">
-              <span className="text-[11px] font-label-sm text-muted-foreground uppercase">
-                Last Synced to Live Site
-              </span>
-              <span className="text-label-md text-primary font-bold">
-                {lastSynced}
-              </span>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary">
-              <RefreshCw className="w-4 h-4" />
-            </div>
-          </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto bg-surface-lowest px-3 py-1.5 rounded-lg border border-border shadow-2xs">
+          <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">
+            Status: <span className="font-semibold text-foreground">{lastSynced}</span>
+          </span>
         </div>
       </div>
 
@@ -242,17 +217,14 @@ export default function AdminSettingsPage() {
                   <Store className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-headline-sm text-lg text-primary font-bold">
+                  <h2 className="text-base font-bold text-foreground">
                     Business Profile & Contact Information
                   </h2>
-                  <p className="text-body-sm text-muted-foreground">
-                    Core details shown on royal wedding stationery invoices & web footers.
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Store details displayed on your public website and customer inquiries.
                   </p>
                 </div>
               </div>
-              <span className="px-2.5 py-1 rounded-full bg-secondary/15 text-secondary text-label-sm font-semibold">
-                Atlas Synced
-              </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -391,8 +363,8 @@ export default function AdminSettingsPage() {
               {/* Address */}
               <div className="flex flex-col gap-1.5 md:col-span-2">
                 <label className="text-label-md text-foreground font-semibold flex items-center justify-between">
-                  <span>Full Atelier Postal Address (पूरा पता)</span>
-                  <span className="text-label-sm text-secondary font-medium">Mandsaur District</span>
+                  <span>Store Postal Address (पूरा पता)</span>
+                  <span className="text-label-sm text-muted-foreground font-medium">Suwasra, Mandsaur</span>
                 </label>
                 <textarea
                   rows={2}
@@ -438,17 +410,14 @@ export default function AdminSettingsPage() {
                   <MessageCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-headline-sm text-lg text-primary font-bold">
-                    WhatsApp Enquiry Message Configuration
+                  <h2 className="text-base font-bold text-foreground">
+                    WhatsApp Enquiry Message Template
                   </h2>
-                  <p className="text-body-sm text-muted-foreground">
-                    Dynamic merge fields populated when a client clicks &apos;Enquire on WhatsApp&apos;.
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Pre-filled message when a customer clicks &apos;Enquire on WhatsApp&apos;.
                   </p>
                 </div>
               </div>
-              <span className="text-secondary font-label-sm font-bold px-2.5 py-1 rounded-md bg-secondary/15">
-                v2.4 Engine
-              </span>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -695,14 +664,14 @@ export default function AdminSettingsPage() {
               </div>
             </div>
 
-            <span className="text-[11px] font-label-sm tracking-widest text-secondary font-bold uppercase">
-              Heritage Print Atelier
+            <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+              Sanwaliya Printing Press
             </span>
-            <h3 className="font-headline-md text-xl text-primary font-bold mt-1">
-              Admin Control Desk Sign In
+            <h3 className="text-base text-foreground font-bold mt-1">
+              Admin Login Preview
             </h3>
-            <p className="text-body-sm text-muted-foreground mt-0.5">
-              {settings.businessNameHi} • सुवासरा (मंदसौर)
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {settings.businessNameHi}
             </p>
 
             <div className="w-full mt-4 flex flex-col gap-3.5 text-left">

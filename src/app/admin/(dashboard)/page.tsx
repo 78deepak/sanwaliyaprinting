@@ -4,26 +4,20 @@ import Image from "next/image";
 import {
   CheckCircle2,
   Clock,
-  PlusCircle,
   Package,
-  Layers,
   Star,
-  ExternalLink,
-  MessageCircle,
   Edit3,
   Eye,
-  Store,
-  Camera,
-  Languages,
   PhoneCall,
   ArrowRight,
   ShieldCheck,
+  FolderTree,
 } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import { getDashboardStats, getAdminProducts } from "@/lib/products";
 import { getSiteSettingsAction } from "@/app/admin/actions";
 import { categories } from "@/data/categories";
-import { shopkeeperNotes, adminMetrics, AdminProduct } from "@/data/admin-mock";
+import { AdminProduct } from "@/data/admin-mock";
 import { StatCard } from "@/components/admin/StatCard";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 
@@ -52,191 +46,96 @@ export default async function AdminDashboardPage() {
   const published = stats.publishedCount;
   const drafts = stats.draftCount;
   const featured = stats.featuredCount;
-  const healthPercent = total > 0 ? Math.round((published / total) * 100) : 100;
-
   return (
-    <div className="flex flex-col w-full gap-8">
-      {/* Top Welcome & Atelier Status Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-surface-lowest border border-border p-6 md:p-8 shadow-sm">
-        {/* Ambient glow backgrounds matching Stitch screen */}
-        <div className="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-gradient-to-br from-secondary/15 via-primary/5 to-transparent blur-2xl pointer-events-none" />
-        <div className="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-primary/5 blur-xl pointer-events-none" />
+    <div className="flex flex-col w-full gap-7">
+      {/* Four Operational Metric Cards */}
 
-        <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
-          <div className="flex flex-col gap-1.5 max-w-2xl">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-secondary/15 text-secondary text-label-sm font-bold uppercase tracking-wider border border-secondary/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                {adminMetrics.atelierStatus}
-              </span>
-              <span className="text-label-sm text-muted-foreground font-medium">
-                {adminMetrics.branch}
-              </span>
-            </div>
-
-            <h1 className="font-headline-lg text-2xl md:text-3xl text-primary font-bold tracking-tight">
-              Namaste {settings.ownerName ? settings.ownerName.replace(/\s*\(Owner\)/i, "").trim() : "Ramesh ji"}{" "}
-              <span className="font-headline-md text-xl md:text-2xl font-normal text-muted-foreground ml-1">
-                (दुकानदार डैशबोर्ड)
-              </span>
-            </h1>
-
-            <p className="text-body-md text-muted-foreground leading-relaxed">
-              Here is what&apos;s happening in your Suwasra printing catalogue and production desk today. {published} live client-facing suites are synchronized with MongoDB Atlas.
-            </p>
-          </div>
-
-          {/* Sync Status Badge Widget */}
-          <div className="flex items-center gap-3 self-start lg:self-auto bg-surface-container p-3 rounded-xl border border-border/50">
-            <div className="w-12 h-12 rounded-lg bg-surface-lowest flex items-center justify-center text-secondary shadow-xs">
-              <Store className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col pr-2">
-              <span className="text-[11px] font-label-sm uppercase tracking-wider text-muted-foreground">
-                Sync Status
-              </span>
-              <span className="text-label-md text-foreground font-bold flex items-center gap-1.5">
-                Atlas Connected
-                <span className="w-2 h-2 rounded-full bg-tertiary inline-block animate-pulse" />
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Four High-Impact Metrical Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+      {/* 2. Four Operational Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
-          title="Published Designs"
-          value={String(published).padStart(2, "0")}
-          total={`/ ${total} items`}
-          description="Live on public website catalog"
-          icon={CheckCircle2}
+          title="Total Designs"
+          value={String(total).padStart(2, "0")}
+          total="products"
+          description="Total items in Sanwaliya catalogue"
+          icon={Package}
           accentColor="primary"
-          badge={{ text: "Public", variant: "success" }}
         />
 
         <StatCard
-          title="Draft Items"
+          title="Live Published"
+          value={String(published).padStart(2, "0")}
+          total={`/ ${total} active`}
+          description="Visible to customers on the website"
+          icon={CheckCircle2}
+          accentColor="tertiary"
+          badge={{ text: "Live", variant: "success" }}
+        />
+
+        <StatCard
+          title="Draft / Review"
           value={String(drafts).padStart(2, "0")}
-          total="in progress"
-          description="Needs photos or client pricing"
+          total="pending"
+          description="Draft items requiring photos or pricing"
           icon={Clock}
           accentColor="secondary"
-          badge={{ text: "Action Needed", variant: "warning" }}
-        />
-
-        <StatCard
-          title="Product Categories"
-          value={String(categories.length).padStart(2, "0")}
-          total="sections"
-          description="Managed securely in master index"
-          icon={Layers}
-          accentColor="neutral"
-          badge={{ text: "Route Fixed", variant: "neutral" }}
+          badge={drafts > 0 ? { text: "Action Needed", variant: "warning" } : undefined}
         />
 
         <StatCard
           title="Featured on Home"
           value={String(featured).padStart(2, "0")}
           total="showcased"
-          description="Showcased in top homepage banner"
+          description="Highlighted on main website banner"
           icon={Star}
           accentColor="secondary"
           badge={{ text: "Hero Spot", variant: "warning" }}
         />
       </div>
 
-      {/* Primary Quick Actions Bar (Touch-Optimized CTA Row) */}
-      <div className="p-4 md:p-5 rounded-xl bg-surface-container-high border border-border shadow-xs">
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-            <span className="font-headline-sm text-lg text-primary font-bold">
-              Desk Actions
-            </span>
-            <span className="text-muted-foreground hidden sm:inline">•</span>
-            <span className="text-body-sm text-muted-foreground hidden sm:inline">
-              Frequent shop owner operations
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* + Add New Product */}
-            <Link
-              href="/admin/products/new"
-              className="min-h-[46px] px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-container text-white text-label-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98]"
-            >
-              <PlusCircle className="w-5 h-5" />
-              <span>+ Add New Product</span>
-            </Link>
-
-            {/* Manage All Products */}
-            <Link
-              href="/admin/products"
-              className="min-h-[46px] px-4 py-2.5 rounded-lg bg-surface-lowest hover:bg-surface-container border border-border text-primary text-label-lg font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]"
-            >
-              <Package className="w-5 h-5" />
-              <span>Manage Products ({total})</span>
-            </Link>
-
-            {/* View Public Website */}
-            <Link
-              href="/"
-              target="_blank"
-              className="min-h-[46px] px-4 py-2.5 rounded-lg bg-surface-lowest hover:bg-surface-container border border-border text-foreground hover:text-primary text-label-lg font-semibold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]"
-            >
-              <ExternalLink className="w-4 h-4 text-secondary" />
-              <span className="hidden sm:inline">View Public Website</span>
-              <span className="sm:hidden">Website</span>
-            </Link>
-
-            {/* WhatsApp Link */}
-            <a
-              href={`https://wa.me/${settings.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="min-h-[46px] px-4 py-2.5 rounded-lg bg-tertiary hover:bg-tertiary/90 text-white text-label-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98]"
-            >
-              <MessageCircle className="w-5 h-5" />
-              <span>WhatsApp Link</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Two-Column Editorial Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {/* 3. Main Two-Column Content: Left = Recent Products, Right = Category Inventory & Settings */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
         {/* Left Column: Recently Updated Designs (8 Cols) */}
         <div className="lg:col-span-8 flex flex-col gap-4">
           <div className="flex items-center justify-between p-4 bg-surface-lowest rounded-xl border border-border shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+              <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary">
                 <Package className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-headline-sm text-lg text-primary font-bold">
+                <h2 className="font-headline-sm text-base md:text-lg text-primary font-bold">
                   Recently Updated Designs
                 </h2>
-                <p className="text-body-sm text-muted-foreground">
-                  Wedding collections, commercial cards, and custom prints
+                <p className="text-body-sm text-muted-foreground text-xs">
+                  Latest items added or modified in the catalogue
                 </p>
               </div>
             </div>
 
             <Link
               href="/admin/products"
-              className="px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground hover:text-primary text-label-sm font-semibold transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground hover:text-primary text-xs font-semibold transition-colors"
             >
-              All Categories
+              Manage All ({total})
             </Link>
           </div>
 
           {/* Product List Stack */}
           <div className="bg-surface-lowest rounded-xl border border-border shadow-xs overflow-hidden flex flex-col divide-y divide-border/60">
             {products.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                No items found in database catalogue. Add your first design above!
+              <div className="p-10 text-center flex flex-col items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-muted-foreground">
+                  <Package className="w-6 h-6" />
+                </div>
+                <div className="text-sm font-semibold text-foreground">No products in catalogue yet</div>
+                <p className="text-xs text-muted-foreground max-w-sm">
+                  Add your first wedding card, visiting card, or flex design to start building your online catalogue.
+                </p>
+                <Link
+                  href="/admin/products/new"
+                  className="mt-2 px-4 py-2 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary-container transition-colors"
+                >
+                  + Add First Product
+                </Link>
               </div>
             ) : (
               products.map((product) => {
@@ -250,10 +149,10 @@ export default async function AdminDashboardPage() {
                 return (
                   <div
                     key={product.id}
-                    className="p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-surface-container/40 transition-colors"
+                    className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-surface-container/30 transition-colors"
                   >
-                    <div className="flex items-start gap-4 min-w-0">
-                      <div className="relative w-16 h-16 rounded-lg bg-surface-container shrink-0 overflow-hidden border border-border">
+                    <div className="flex items-start gap-3.5 min-w-0">
+                      <div className="relative w-14 h-14 rounded-lg bg-surface-container shrink-0 overflow-hidden border border-border/80">
                         <Image
                           src={heroImage.url}
                           alt={heroImage.alt}
@@ -264,22 +163,22 @@ export default async function AdminDashboardPage() {
 
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-label-sm font-bold capitalize">
+                          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold capitalize">
                             {product.category.replace(/-/g, " ")}
                           </span>
-                          <span className="px-2 py-0.5 rounded-full bg-surface-container font-mono text-muted-foreground text-label-sm font-semibold">
+                          <span className="px-2 py-0.5 rounded-full bg-surface-container font-mono text-muted-foreground text-[11px] font-semibold">
                             SKU: {product.productCode}
                           </span>
                           <StatusBadge status={product.status} />
                         </div>
 
-                        <h3 className="font-headline-sm text-base text-foreground font-bold truncate mt-1">
+                        <h3 className="font-headline-sm text-sm md:text-base text-foreground font-bold truncate mt-1">
                           {product.name}
                         </h3>
 
-                        <div className="flex items-center gap-3 text-body-sm text-muted-foreground mt-0.5 flex-wrap">
+                        <div className="flex items-center gap-2.5 text-xs text-muted-foreground mt-0.5 flex-wrap">
                           {product.price.show && product.price.startingFrom ? (
-                            <span className="text-label-md text-primary font-bold">
+                            <span className="text-xs text-primary font-bold">
                               ₹{product.price.startingFrom.toLocaleString("en-IN")}{" "}
                               {product.price.maxPrice
                                 ? `– ₹${product.price.maxPrice.toLocaleString("en-IN")}`
@@ -287,14 +186,21 @@ export default async function AdminDashboardPage() {
                               / {product.price.unit || "piece"}
                             </span>
                           ) : (
-                            <span className="text-label-md text-secondary font-bold">
+                            <span className="text-xs text-secondary font-bold">
                               Custom Quote
                             </span>
                           )}
                           <span>•</span>
-                          <span className="flex items-center gap-1 text-[13px]">
-                            <Clock className="w-3.5 h-3.5" />
-                            SKU: {product.productCode}
+                          <span className="flex items-center gap-1 text-[11px]">
+                            <Clock className="w-3 h-3 text-muted-foreground/70" />
+                            <span>
+                              {product.createdAt
+                                ? new Date(product.createdAt).toLocaleDateString("en-IN", {
+                                  day: "numeric",
+                                  month: "short",
+                                })
+                                : "Recent"}
+                            </span>
                           </span>
                         </div>
                       </div>
@@ -303,19 +209,19 @@ export default async function AdminDashboardPage() {
                     <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                       <Link
                         href={`/admin/products/${product.id}/edit`}
-                        className="px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary text-label-md font-bold flex items-center gap-1 transition-colors"
+                        className="h-8 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary text-xs font-bold flex items-center gap-1.5 transition-colors"
                       >
-                        <Edit3 className="w-4 h-4" />
+                        <Edit3 className="w-3.5 h-3.5" />
                         <span>Edit</span>
                       </Link>
 
                       <Link
                         href={`/${product.category}/${product.slug}`}
                         target="_blank"
-                        className="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+                        className="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
                         title="Preview Public Page"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
@@ -325,143 +231,126 @@ export default async function AdminDashboardPage() {
           </div>
 
           {/* Footer action below table */}
-          <div className="p-4 rounded-xl bg-surface-lowest border border-border flex items-center justify-between shadow-xs">
-            <span className="text-body-sm text-muted-foreground">
+          <div className="p-3.5 rounded-xl bg-surface-lowest border border-border flex items-center justify-between shadow-xs">
+            <span className="text-xs text-muted-foreground">
               Showing latest {products.length} of {total} printing suites
             </span>
             <Link
               href="/admin/products"
-              className="text-label-md font-bold text-primary hover:underline flex items-center gap-1.5"
+              className="text-xs font-bold text-primary hover:underline flex items-center gap-1.5"
             >
               <span>Go to complete catalogue</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
 
-        {/* Right Column: Shopkeeper Notes & Catalogue Health (4 Cols) */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          {/* Card: Ramesh ji's Notes & Reminders */}
-          <div className="p-6 rounded-xl bg-surface-lowest border border-border shadow-xs flex flex-col gap-4">
+        {/* Right Column: Live Category Distribution & Store Parameters (4 Cols) */}
+        <div className="lg:col-span-4 flex flex-col gap-5">
+          {/* Card 1: Live Catalogue Breakdown by Category (Interactive Quick Filters) */}
+          <div className="p-5 rounded-xl bg-surface-lowest border border-border shadow-xs flex flex-col gap-4">
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center font-bold">
-                  <Star className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                  <FolderTree className="w-4 h-4" />
                 </div>
-                <h2 className="font-headline-sm text-lg text-primary font-bold">
-                  Ramesh ji&apos;s Notes
+                <h2 className="font-headline-sm text-sm md:text-base text-primary font-bold">
+                  Categories Overview
                 </h2>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full bg-secondary/15 text-secondary text-label-sm font-semibold">
+              <span className="text-xs text-muted-foreground font-semibold">
+                {categories.length} Sections
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-2.5">
+              {categories.map((cat) => {
+                const count = stats.categoryCounts?.[cat.slug] || 0;
+                const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+
+                return (
+                  <Link
+                    key={cat.slug}
+                    href={`/admin/products?category=${cat.slug}`}
+                    className="p-2.5 rounded-lg bg-surface-container/50 hover:bg-surface-container flex flex-col gap-1.5 transition-colors group border border-border/40"
+                    title={`Click to view all ${cat.name} designs`}
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {cat.name}
+                        <span className="font-normal text-muted-foreground ml-1 font-devanagari">
+                          ({cat.nameHi})
+                        </span>
+                      </span>
+                      <span className="font-bold text-primary">
+                        {count} items
+                      </span>
+                    </div>
+
+                    <div className="w-full h-1.5 rounded-full bg-surface-container-high overflow-hidden">
+                      <div
+                        className="h-full bg-primary/80 group-hover:bg-primary rounded-full transition-all"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <Link
+              href="/admin/categories"
+              className="text-center text-xs font-semibold text-muted-foreground hover:text-primary transition-colors pt-1"
+            >
+              View Category Taxonomy Architecture →
+            </Link>
+          </div>
+
+          {/* Card 2: Store Hotline & Quick Settings Access */}
+          <div className="p-5 rounded-xl bg-surface-lowest border border-border shadow-xs flex flex-col gap-4">
+            <div className="flex items-center justify-between pb-2 border-b border-border/40">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-tertiary/15 text-tertiary flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <h2 className="font-headline-sm text-sm md:text-base text-foreground font-bold">
+                  Store Status
+                </h2>
+              </div>
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-tertiary/15 text-tertiary font-bold">
                 Active
               </span>
             </div>
 
-            <div className="flex flex-col gap-3">
-              {shopkeeperNotes.map((note) => (
-                <div
-                  key={note.id}
-                  className={`p-3.5 rounded-lg flex flex-col gap-1 border ${
-                    note.type === "warning"
-                      ? "bg-secondary/10 border-secondary/20 text-foreground"
-                      : "bg-primary/5 border-primary/20 text-foreground"
-                  }`}
-                >
-                  <span className="text-label-sm font-bold text-primary flex items-center gap-1.5">
-                    {note.title}
-                  </span>
-                  <p className="text-body-sm text-muted-foreground leading-relaxed">
-                    {note.content}
-                  </p>
-                  <span className="text-[11px] text-muted-foreground/80 mt-1">
-                    {note.date}
+            <div className="flex flex-col gap-3 text-xs">
+              <div className="p-3 rounded-lg bg-surface-container flex items-start gap-2.5 border border-border/40">
+                <PhoneCall className="w-4 h-4 text-tertiary shrink-0 mt-0.5" />
+                <div className="flex flex-col min-w-0">
+                  <span className="font-bold text-foreground">WhatsApp Hotline</span>
+                  <span className="text-muted-foreground">+{settings.whatsapp}</span>
+                  <span className="text-[11px] text-tertiary font-medium mt-0.5">
+                    Customer enquiry button routes here
                   </span>
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
 
-          {/* Card: Catalogue Health & Readiness */}
-          <div className="p-6 rounded-xl bg-surface-lowest border border-border shadow-xs flex flex-col gap-5">
-            <div className="flex items-center justify-between pb-2 border-b border-border/40">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-tertiary/15 text-tertiary flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <h2 className="font-headline-sm text-lg text-foreground font-bold">
-                  Catalogue Health
-                </h2>
+              <div className="flex justify-between items-center px-1 text-muted-foreground">
+                <span>Location:</span>
+                <span className="font-semibold text-foreground">Suwasra (Mandsaur), M.P.</span>
               </div>
-              <span className="text-label-sm font-bold text-tertiary">
-                {healthPercent}% Ready
-              </span>
-            </div>
 
-            {/* Metric 1: Published Suites */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-label-sm">
-                <span className="text-foreground font-semibold flex items-center gap-1.5">
-                  <Camera className="w-3.5 h-3.5 text-secondary" />
-                  Published Studio Suites
-                </span>
-                <span className="font-bold text-primary">{published} / {total} items</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all"
-                  style={{ width: `${total > 0 ? (published / total) * 100 : 0}%` }}
-                />
-              </div>
-              <span className="text-[11px] text-muted-foreground">
-                {drafts} draft items pending review
-              </span>
-            </div>
-
-            {/* Metric 2: Featured Showcases */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-label-sm">
-                <span className="text-foreground font-semibold flex items-center gap-1.5">
-                  <Languages className="w-3.5 h-3.5 text-secondary" />
-                  Homepage Featured Designs
-                </span>
-                <span className="font-bold text-primary">{featured} / {total} items</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                <div
-                  className="h-full bg-secondary rounded-full transition-all"
-                  style={{ width: `${total > 0 ? (featured / total) * 100 : 0}%` }}
-                />
-              </div>
-              <span className="text-[11px] text-muted-foreground">
-                High-visibility hero spotlight suites
-              </span>
-            </div>
-
-            {/* Metric 3: WhatsApp Routing Verification */}
-            <div className="p-3.5 rounded-lg bg-surface-container flex items-start gap-3 border border-border/50">
-              <div className="w-8 h-8 rounded-full bg-tertiary/15 text-tertiary flex items-center justify-center shrink-0 mt-0.5">
-                <PhoneCall className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-label-sm font-bold text-foreground">
-                  Direct WhatsApp Link Active
-                </span>
-                <span className="text-body-sm text-muted-foreground truncate">
-                  Linked to +{settings.whatsapp}
-                </span>
-                <span className="text-label-sm text-tertiary font-semibold mt-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary" /> All catalogue suites route here
-                </span>
+              <div className="flex justify-between items-center px-1 text-muted-foreground">
+                <span>Working Hours:</span>
+                <span className="font-semibold text-foreground">{settings.openingHours || "10:00 AM – 8:30 PM"}</span>
               </div>
             </div>
 
-            {/* Quick Metadata Audit button */}
             <Link
               href="/admin/settings"
-              className="w-full min-h-[42px] px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground hover:text-primary text-label-md font-bold flex items-center justify-center gap-2 transition-colors border border-border/50"
+              className="w-full h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground hover:text-primary text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-border/50 mt-1"
             >
-              <span>Manage Store Parameters</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Manage Store & Password Settings</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>

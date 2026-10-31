@@ -5,16 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Menu,
-  Store,
-  User,
   LayoutDashboard,
   Package,
   PlusCircle,
   Settings,
-  Sun,
-  Moon,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { Sidebar } from "./Sidebar";
 import { MobileDrawer } from "./MobileDrawer";
 
@@ -26,7 +21,6 @@ interface AdminShellProps {
 export function AdminShell({ children, ownerName }: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -58,48 +52,12 @@ export function AdminShell({ children, ownerName }: AdminShellProps) {
 
               <div className="flex items-center gap-2">
                 <span className="text-label-md text-muted-foreground hidden sm:inline">
-                  Sanwaliya Royal Mudran
+                  Sanwaliya Printing Press
                 </span>
                 <span className="text-muted-foreground/60 hidden sm:inline">/</span>
                 <span className="font-headline-sm text-base md:text-lg text-primary font-bold">
                   Console
                 </span>
-              </div>
-            </div>
-
-            {/* Right: Atelier Desk indicator, Public Catalog link, Profile */}
-            <div className="flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container border border-border/50 text-muted-foreground text-label-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                <span>Atelier Control Desk • Suwasra</span>
-              </div>
-
-              {/* Theme toggle quick button */}
-              <button
-                type="button"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
-                title="Toggle Theme"
-              >
-                {theme === "dark" ? (
-                  <Sun className="w-4 h-4 text-secondary" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
-              </button>
-
-              <Link
-                href="/"
-                target="_blank"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-primary hover:bg-surface-container text-label-md font-semibold transition-colors"
-              >
-                <Store className="w-4 h-4" />
-                <span>View Live Catalog</span>
-              </Link>
-
-              {/* User Avatar */}
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-xs">
-                <User className="w-4 h-4" />
               </div>
             </div>
           </div>
@@ -114,11 +72,10 @@ export function AdminShell({ children, ownerName }: AdminShellProps) {
         <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-lowest/95 backdrop-blur-md border-t border-border z-40 px-3 flex items-center justify-around shadow-lg">
           <Link
             href="/admin"
-            className={`flex flex-col items-center justify-center gap-1 w-16 py-1 rounded-lg text-[11px] font-bold transition-colors ${
-              pathname === "/admin"
-                ? "text-primary font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`flex flex-col items-center justify-center gap-1 w-16 py-1 rounded-lg text-[11px] font-bold transition-colors ${pathname === "/admin"
+              ? "text-primary font-bold"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             <LayoutDashboard className="w-5 h-5" />
             <span>Dashboard</span>
@@ -126,11 +83,10 @@ export function AdminShell({ children, ownerName }: AdminShellProps) {
 
           <Link
             href="/admin/products"
-            className={`flex flex-col items-center justify-center gap-1 w-16 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
-              pathname.startsWith("/admin/products") && pathname !== "/admin/products/new"
-                ? "text-primary font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`flex flex-col items-center justify-center gap-1 w-16 py-1 rounded-lg text-[11px] font-semibold transition-colors ${pathname.startsWith("/admin/products") && pathname !== "/admin/products/new"
+              ? "text-primary font-bold"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             <Package className="w-5 h-5" />
             <span>Products</span>
@@ -149,11 +105,10 @@ export function AdminShell({ children, ownerName }: AdminShellProps) {
 
           <Link
             href="/admin/settings"
-            className={`flex flex-col items-center justify-center gap-1 w-16 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
-              pathname.startsWith("/admin/settings")
-                ? "text-primary font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`flex flex-col items-center justify-center gap-1 w-16 py-1 rounded-lg text-[11px] font-semibold transition-colors ${pathname.startsWith("/admin/settings")
+              ? "text-primary font-bold"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             <Settings className="w-5 h-5" />
             <span>Settings</span>

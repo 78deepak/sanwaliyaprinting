@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   PlusCircle,
   Search,
@@ -25,7 +26,10 @@ import { ProductCardList } from "@/components/admin/ProductCardList";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
-export default function AdminProductsPage() {
+function AdminProductsContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -33,7 +37,14 @@ export default function AdminProductsPage() {
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam || "all");
+
+  useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+      setCurrentPage(1);
+    }
+  }, [categoryParam]);
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedSort, setSelectedSort] = useState("newest");
   const [featuredOnly, setFeaturedOnly] = useState(false);
@@ -218,61 +229,44 @@ export default function AdminProductsPage() {
         onCancel={() => setBulkDeleteDialogOpen(false)}
       />
 
-      {/* Top Header & Page Title */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-6 rounded-full bg-secondary" />
-            <span className="text-label-sm uppercase tracking-widest text-secondary font-bold">
-              Atelier Master Index
-            </span>
-          </div>
-
-          <h1 className="font-headline-lg text-2xl md:text-3xl text-primary tracking-tight font-bold flex items-baseline gap-3 flex-wrap">
-            <span>Products Catalogue</span>
-            <span className="font-headline-md text-xl md:text-2xl text-muted-foreground font-normal">
-              (उत्पाद सूची)
-            </span>
+      {/* Top Header & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+            Products
           </h1>
-
-          <p className="text-body-md text-muted-foreground max-w-2xl">
-            Manage, search, filter, and curate your bespoke print designs, wedding suites, and commercial stationery inventory.
+          <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+            Manage your catalog items, pricing, and live website visibility ({totalItems} {totalItems === 1 ? "product" : "products"}).
           </p>
         </div>
 
-        {/* Quick Stats + Add Product CTA */}
-        <div className="flex items-center gap-3 self-start md:self-auto">
-          <div className="px-4 py-2 rounded-xl bg-surface-container border border-border flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-surface-lowest flex items-center justify-center text-primary shadow-xs">
-              <Layers className="w-4 h-4" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[11px] font-label-sm uppercase tracking-wider text-muted-foreground">
-                Total Found
-              </span>
-              <span className="text-label-md text-foreground font-bold leading-tight">
-                {totalItems} <span className="text-secondary font-medium">Items</span>
-              </span>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="h-9 px-3 rounded-lg border border-border bg-surface-lowest hover:bg-surface-container text-xs font-semibold text-foreground inline-flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Export products to CSV"
+          >
+            <FileDown className="w-3.5 h-3.5 text-muted-foreground" />
+            <span>Export CSV</span>
+          </button>
 
           <Link
             href="/admin/products/new"
-            className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-container text-white text-label-md font-bold shadow-md transition-all active:scale-[0.98]"
+            className="h-9 px-3.5 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition-all active:scale-95"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>+ Add New Product</span>
+            <span>+ Add Product</span>
           </Link>
         </div>
       </div>
 
-      {/* Primary Control Toolbar (Search, Dropdowns & Tabs) */}
-      <div className="flex flex-col gap-4 bg-surface-lowest p-4 md:p-6 rounded-xl border border-border shadow-xs">
-        {/* Row 1: Search, Category, Sort */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-center">
+      {/* Filter & Search Toolbar */}
+      <div className="p-3 bg-surface-lowest rounded-xl border border-border shadow-2xs flex flex-col gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2">
           {/* Search Input */}
           <div className="lg:col-span-5 relative">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -280,81 +274,76 @@ export default function AdminProductsPage() {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search by title, code (RM-W-101), or keyword (शादी कार्ड)..."
-              className="w-full min-h-[44px] pl-10 pr-12 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-body-md placeholder:text-muted-foreground focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 transition-all shadow-inner"
+              placeholder="Search by title or SKU code..."
+              className="w-full h-9 pl-9 pr-8 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm placeholder:text-muted-foreground focus:outline-none focus:bg-surface-lowest focus:border-primary/50 transition-colors"
             />
-            {searchQuery ? (
+            {searchQuery && (
               <button
                 type="button"
                 onClick={() => {
                   setSearchQuery("");
                   setCurrentPage(1);
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-label-sm font-semibold"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs font-medium"
               >
                 Clear
               </button>
-            ) : (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-container-high text-muted-foreground uppercase">
-                ⌘K
-              </span>
             )}
           </div>
 
           {/* Category Filter */}
-          <div className="lg:col-span-4 relative">
+          <div className="lg:col-span-4">
             <select
               value={selectedCategory}
               onChange={(e) => {
                 setSelectedCategory(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full min-h-[44px] px-3.5 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md font-medium focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+              className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm font-medium focus:outline-none focus:bg-surface-lowest focus:border-primary/50 transition-colors cursor-pointer"
             >
-              <option value="all">All Categories ({categories.length} Sections)</option>
+              <option value="all">All Categories ({categories.length})</option>
               {categories.map((cat) => (
                 <option key={cat.slug} value={cat.slug}>
-                  {cat.name} ({cat.nameHi})
+                  {cat.name}
                 </option>
               ))}
             </select>
           </div>
 
           {/* Sort Filter */}
-          <div className="lg:col-span-3 relative">
+          <div className="sm:col-span-2 lg:col-span-3">
             <select
               value={selectedSort}
               onChange={(e) => {
                 setSelectedSort(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full min-h-[44px] px-3.5 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md font-medium focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+              className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm font-medium focus:outline-none focus:bg-surface-lowest focus:border-primary/50 transition-colors cursor-pointer"
             >
-              <option value="newest">Sort: Newest First</option>
-              <option value="code_asc">Sort: Product Code (A-Z)</option>
-              <option value="name_asc">Sort: Title (A-Z)</option>
-              <option value="oldest">Sort: Oldest First</option>
+              <option value="newest">Newest First</option>
+              <option value="code_asc">Code (A-Z)</option>
+              <option value="name_asc">Title (A-Z)</option>
+              <option value="oldest">Oldest First</option>
             </select>
           </div>
         </div>
 
-        {/* Row 2: Status Segmented Tabs & Quick Toggles */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/40">
-          {/* Status Segmented Tabs */}
-          <div className="flex items-center p-1 rounded-lg bg-surface-container border border-border/50">
+        {/* Status Pills & Featured Filter */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/50">
+          <div className="flex items-center gap-1 bg-surface-container/60 p-0.5 rounded-lg border border-border/60">
             <button
               type="button"
               onClick={() => {
                 setSelectedStatus("all");
                 setCurrentPage(1);
               }}
-              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
+              className={`h-7 px-3 rounded-md text-xs font-medium transition-all ${
                 selectedStatus === "all"
-                  ? "bg-surface-lowest text-primary font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground font-semibold"
+                  ? "bg-surface-lowest text-foreground font-semibold shadow-2xs"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              All Products
+              All ({totalItems})
             </button>
 
             <button
@@ -363,10 +352,10 @@ export default function AdminProductsPage() {
                 setSelectedStatus("published");
                 setCurrentPage(1);
               }}
-              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
+              className={`h-7 px-3 rounded-md text-xs font-medium transition-all ${
                 selectedStatus === "published"
-                  ? "bg-surface-lowest text-primary font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground font-semibold"
+                  ? "bg-surface-lowest text-foreground font-semibold shadow-2xs"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Published
@@ -378,44 +367,31 @@ export default function AdminProductsPage() {
                 setSelectedStatus("draft");
                 setCurrentPage(1);
               }}
-              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
+              className={`h-7 px-3 rounded-md text-xs font-medium transition-all ${
                 selectedStatus === "draft"
-                  ? "bg-surface-lowest text-primary font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground font-semibold"
+                  ? "bg-surface-lowest text-foreground font-semibold shadow-2xs"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Drafts
             </button>
           </div>
 
-          {/* Quick Toggles */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setFeaturedOnly(!featuredOnly);
-                setCurrentPage(1);
-              }}
-              className={`min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-label-sm font-semibold transition-colors ${
-                featuredOnly
-                  ? "bg-secondary/15 text-secondary border-secondary/40 font-bold"
-                  : "bg-surface-container hover:bg-surface-container-high border-border text-foreground"
-              }`}
-            >
-              <Star className={`w-3.5 h-3.5 ${featuredOnly ? "fill-current" : ""}`} />
-              <span>Featured Only</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleExportCSV}
-              className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-border text-muted-foreground hover:text-foreground text-label-sm font-semibold transition-colors"
-              title="Export Products as CSV"
-            >
-              <FileDown className="w-3.5 h-3.5" />
-              <span>Export CSV</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setFeaturedOnly(!featuredOnly);
+              setCurrentPage(1);
+            }}
+            className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg border text-xs font-medium transition-colors ${
+              featuredOnly
+                ? "bg-secondary/15 text-secondary border-secondary/40 font-semibold"
+                : "bg-surface-container/40 hover:bg-surface-container border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Star className={`w-3 h-3 ${featuredOnly ? "fill-current" : ""}`} />
+            <span>Featured</span>
+          </button>
         </div>
       </div>
 
@@ -470,5 +446,20 @@ export default function AdminProductsPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col gap-4 p-8 items-center justify-center min-h-[400px]">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <span className="text-xs text-muted-foreground">Loading products catalogue...</span>
+        </div>
+      }
+    >
+      <AdminProductsContent />
+    </Suspense>
   );
 }
