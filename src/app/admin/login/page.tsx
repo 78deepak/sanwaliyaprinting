@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Stamp,
@@ -97,8 +98,15 @@ export default function AdminLoginPage() {
         <div className="flex flex-col items-center text-center">
           {/* Emblem Icon */}
           <div className="relative mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg">
-              <Stamp className="w-8 h-8 text-secondary-fixed" />
+            <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-surface-container flex items-center justify-center shadow-md p-2 border border-border/50">
+              <Image
+                src="/logo.png"
+                alt="Sanwaliya Printing Press Logo"
+                width={72}
+                height={72}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center shadow-xs">
               <CheckCircle2 className="w-3.5 h-3.5" />

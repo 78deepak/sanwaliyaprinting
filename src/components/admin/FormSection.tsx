@@ -20,21 +20,21 @@ export function FormSection({
 }: FormSectionProps) {
   return (
     <section
-      className={`bg-surface-lowest p-6 md:p-7 rounded-xl border border-border shadow-sm flex flex-col gap-5 relative ${className}`}
+      className={`bg-surface-lowest p-5 md:p-6 rounded-xl border border-border shadow-2xs flex flex-col gap-4 relative ${className}`}
     >
-      <div className="flex items-center justify-between pb-1 border-b border-border/40">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between pb-2 border-b border-border/50">
+        <div className="flex items-center gap-2.5">
           {Icon && (
-            <span className="w-9 h-9 rounded-lg bg-primary/10 text-primary dark:bg-primary/20 flex items-center justify-center font-semibold">
-              <Icon className="w-5 h-5" />
+            <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary dark:bg-primary/20 flex items-center justify-center shrink-0">
+              <Icon className="w-4 h-4" />
             </span>
           )}
           <div>
-            <h2 className="font-headline-sm text-lg md:text-xl text-foreground font-bold">
+            <h2 className="text-sm md:text-base text-foreground font-bold tracking-tight">
               {title}
             </h2>
             {titleHi && (
-              <p className="text-label-sm text-muted-foreground font-normal">
+              <p className="text-xs text-muted-foreground font-normal mt-0.5">
                 {titleHi}
               </p>
             )}
@@ -44,7 +44,7 @@ export function FormSection({
         {badge && <div>{badge}</div>}
       </div>
 
-      <div className="flex flex-col gap-4">{children}</div>
+      <div className="flex flex-col gap-3.5">{children}</div>
     </section>
   );
 }

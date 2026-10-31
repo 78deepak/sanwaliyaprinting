@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Store,
-  MessageCircle,
   Phone,
   Clock,
   Key,
@@ -11,11 +10,7 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
-  Sparkles,
-  HelpCircle,
-  Smartphone,
   Save,
-  Stamp,
   Copy,
   Terminal,
   User,
@@ -36,8 +31,7 @@ const initialDefaults: SiteSettingsValues = {
   addressHi: "स्टेशन रोड, बस स्टैंड के पास, सुवासरा, जिला मंदसौर (म.प्र.)",
   openingHours: "Mon – Sat: 9:00 AM – 8:30 PM (Sunday by Appointment)",
   openingHoursHi: "सोमवार से शनिवार: सुबह 9:00 से रात 8:30 बजे तक",
-  whatsappTemplate:
-    "Namaste Sanwaliya Press! I would like to inquire about [Product Name] (Code: [Code]). Could you please share card samples and printing quote for [Qty] pieces on [Paper Stock]?",
+  whatsappTemplate: "",
   tagline: "Fine Print Studio & Bespoke Wedding Stationery",
   taglineHi: "शाही विवाह पत्रिका, विजिटिंग कार्ड्स एवं कमर्शियल प्रिंटिंग",
   establishedYear: 1994,
@@ -84,12 +78,10 @@ export default function AdminSettingsPage() {
     fetchSettings();
   }, []);
 
-  // Insert variable into WhatsApp template textarea
-  const handleInsertVariable = (variable: string) => {
-    const current = settings.whatsappTemplate || "";
-    const updated = current + " " + variable;
-    setSettings({ ...settings, whatsappTemplate: updated });
-  };
+  // Compute dirty state
+  const isDirty = useMemo(() => {
+    return JSON.stringify(settings) !== JSON.stringify(initialSettings);
+  }, [settings, initialSettings]);
 
   // Password strength calculation
   const getPasswordStrength = (pass: string) => {
@@ -114,7 +106,8 @@ export default function AdminSettingsPage() {
     try {
       const res = await saveSiteSettingsAction(settings);
       if (res.ok) {
-        setToastMessage("Settings saved successfully! WhatsApp hotline and profile re-synchronized with Atlas.");
+        setInitialSettings(settings);
+        setToastMessage("Settings saved successfully! Store details synchronized with Atlas.");
         const now = new Date().toLocaleDateString("en-IN", {
           day: "numeric",
           month: "short",
@@ -174,20 +167,20 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="flex flex-col w-full gap-8 pb-16">
+    <div className="flex flex-col w-full max-w-4xl gap-6 pb-20">
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 bg-primary text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-top-4 border border-secondary/30">
-          <CheckCircle2 className="w-5 h-5 text-secondary" />
+          <CheckCircle2 className="w-5 h-5 text-secondary shrink-0" />
           <div className="flex flex-col">
-            <span className="text-label-md font-bold">Settings Saved</span>
+            <span className="text-label-md font-bold">Notification</span>
             <span className="text-body-sm text-white/90">{toastMessage}</span>
           </div>
         </div>
       )}
 
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border/40">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
             Shop Settings
@@ -205,529 +198,362 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      {/* Main 12-Column Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* LEFT 7 COLUMNS: Business Profile, WhatsApp Auto-Response, Security */}
-        <div className="lg:col-span-7 flex flex-col gap-8">
-          {/* CARD 1: Business Profile & Contact Information */}
-          <section className="bg-surface-lowest rounded-xl border border-border p-6 md:p-8 shadow-xs flex flex-col gap-5">
-            <div className="flex items-center justify-between pb-3 border-b border-border/40">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                  <Store className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-foreground">
-                    Business Profile & Contact Information
-                  </h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Store details displayed on your public website and customer inquiries.
-                  </p>
-                </div>
-              </div>
+      {/* SECTION 1: Business Profile & Contact Information */}
+      <section className="bg-surface-lowest rounded-xl border border-border p-5 md:p-7 shadow-xs flex flex-col gap-5">
+        <div className="flex items-center justify-between pb-3 border-b border-border/40">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Store className="w-5 h-5" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Shop Name Bilingual */}
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-label-md text-foreground font-semibold flex items-center justify-between">
-                  <span>Shop Name (English)</span>
-                  <span className="text-label-sm text-muted-foreground font-normal">
-                    Primary Legal Entity
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={settings.businessName}
-                  onChange={(e) => setSettings({ ...settings, businessName: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-label-md text-foreground font-semibold">
-                  Shop Name (Hindi / दुकान का नाम)
-                </label>
-                <input
-                  type="text"
-                  value={settings.businessNameHi}
-                  onChange={(e) => setSettings({ ...settings, businessNameHi: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              {/* Tagline */}
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-label-md text-foreground font-semibold">
-                  Brand Tagline & Atelier Heritage (English)
-                </label>
-                <input
-                  type="text"
-                  value={settings.tagline}
-                  onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-label-md text-foreground font-semibold">
-                  Brand Tagline (Hindi)
-                </label>
-                <input
-                  type="text"
-                  value={settings.taglineHi}
-                  onChange={(e) => setSettings({ ...settings, taglineHi: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              {/* Owner / Proprietor Name */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <User className="w-4 h-4 text-secondary" />
-                    <span>Owner Name (मालिक का नाम)</span>
-                  </span>
-                  <span className="text-label-sm text-secondary font-medium">
-                    Sidebar Badge
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={settings.ownerName || ""}
-                  onChange={(e) => setSettings({ ...settings, ownerName: e.target.value })}
-                  placeholder="e.g. Ramesh Patidar (Owner)"
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
-                />
-                <p className="text-[12px] text-muted-foreground leading-snug">
-                  Displayed on the verified owner badge in the Admin Sidebar & Console.
-                </p>
-              </div>
-
-              {/* Owner Email */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold">
-                  Owner Email (संचालक ईमेल)
-                </label>
-                <input
-                  type="email"
-                  value={settings.ownerEmail || ""}
-                  onChange={(e) => setSettings({ ...settings, ownerEmail: e.target.value })}
-                  placeholder="e.g. ramesh@sanwaliyapress.in"
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
-                />
-                <p className="text-[12px] text-muted-foreground leading-snug">
-                  Primary administrator email for store communications.
-                </p>
-              </div>
-
-              {/* WhatsApp Hotline */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-tertiary" />
-                  <span>WhatsApp Consultation Number</span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-label-sm text-tertiary font-bold tracking-wider">
-                    WA
-                  </span>
-                  <input
-                    type="text"
-                    value={settings.whatsapp}
-                    onChange={(e) => setSettings({ ...settings, whatsapp: e.target.value })}
-                    className="w-full pl-12 bg-surface-container border border-border text-foreground text-body-md pr-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-mono font-bold"
-                  />
-                </div>
-                <p className="text-[12px] text-muted-foreground leading-snug">
-                  Country code without + (e.g. <strong className="text-primary">919876543210</strong>). All catalogue inquiries route here.
-                </p>
-              </div>
-
-              {/* Primary Calling Phone */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold flex items-center gap-1.5">
-                  <Phone className="w-4 h-4 text-secondary" />
-                  <span>Primary Calling Phone</span>
-                </label>
-                <input
-                  type="text"
-                  value={settings.phone}
-                  onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
-                />
-                <p className="text-[12px] text-muted-foreground leading-snug">
-                  Displayed on top website header banner for local consultations.
-                </p>
-              </div>
-
-              {/* Address */}
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-label-md text-foreground font-semibold flex items-center justify-between">
-                  <span>Store Postal Address (पूरा पता)</span>
-                  <span className="text-label-sm text-muted-foreground font-medium">Suwasra, Mandsaur</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={settings.address}
-                  onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md p-3.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 leading-relaxed"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-label-md text-foreground font-semibold">
-                  Address in Hindi (हिंदी पता)
-                </label>
-                <textarea
-                  rows={2}
-                  value={settings.addressHi}
-                  onChange={(e) => setSettings({ ...settings, addressHi: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md p-3.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 leading-relaxed"
-                />
-              </div>
-
-              {/* Operating Hours */}
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-label-md text-foreground font-semibold flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-secondary" />
-                  <span>Operating Hours (दुकान का समय)</span>
-                </label>
-                <input
-                  type="text"
-                  value={settings.openingHours}
-                  onChange={(e) => setSettings({ ...settings, openingHours: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* CARD 2: WhatsApp Enquiry Message Configuration */}
-          <section className="bg-surface-lowest rounded-xl border border-border p-6 md:p-8 shadow-xs flex flex-col gap-5">
-            <div className="flex items-start justify-between pb-3 border-b border-border/40">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-tertiary/15 text-tertiary flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-foreground">
-                    WhatsApp Enquiry Message Template
-                  </h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Pre-filled message when a customer clicks &apos;Enquire on WhatsApp&apos;.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {/* Variable Chips */}
-              <div className="flex items-center flex-wrap gap-2 p-3 bg-surface-container rounded-lg border border-border/50">
-                <span className="text-label-sm text-muted-foreground font-bold uppercase tracking-wider">
-                  Insert Variables:
-                </span>
-                {["[Product Name]", "[Code]", "[Qty]", "[Paper Stock]"].map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => handleInsertVariable(v)}
-                    className="px-2.5 py-1 rounded bg-surface-lowest hover:bg-surface-container-high border border-border text-primary text-label-sm font-semibold shadow-2xs transition-all active:scale-95"
-                  >
-                    + {v}
-                  </button>
-                ))}
-              </div>
-
-              {/* Textarea */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold">
-                  Default Client Greeting Template
-                </label>
-                <textarea
-                  rows={4}
-                  value={settings.whatsappTemplate || ""}
-                  onChange={(e) => setSettings({ ...settings, whatsappTemplate: e.target.value })}
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md p-3.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 leading-relaxed font-sans"
-                />
-              </div>
-
-              {/* Live WhatsApp Bubble Simulator */}
-              <div className="p-4 rounded-xl bg-surface-container border border-border/60 flex flex-col gap-2">
-                <span className="text-label-sm text-muted-foreground font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <Smartphone className="w-4 h-4 text-tertiary" />
-                  Client Message Preview on Arrival
-                </span>
-
-                <div className="self-start max-w-lg bg-surface-lowest border border-border p-3.5 rounded-xl rounded-tl-none shadow-xs">
-                  <p className="text-body-sm text-foreground leading-relaxed">
-                    {(settings.whatsappTemplate || "")
-                      .replace(/\[Product Name\]/g, "Royal Ivory Farman Suite")
-                      .replace(/\[Code\]/g, "SW-904")
-                      .replace(/\[Qty\]/g, "350 Cards")
-                      .replace(/\[Paper Stock\]/g, "450 GSM Cotton")}
-                  </p>
-                  <div className="flex items-center justify-end gap-1 mt-1.5 text-muted-foreground text-[11px]">
-                    <span>10:42 AM</span>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-tertiary" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* CARD 3: Security & Admin Password Architecture */}
-          <section className="bg-surface-lowest rounded-xl border border-border p-6 md:p-8 shadow-xs flex flex-col gap-5">
-            <div className="flex items-center justify-between pb-3 border-b border-border/40">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                  <Key className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="font-headline-sm text-lg text-primary font-bold">
-                    Security & Admin Password
-                  </h2>
-                  <p className="text-body-sm text-muted-foreground">
-                    Zero-plaintext Bcrypt authentication architecture for single administrator access.
-                  </p>
-                </div>
-              </div>
-              <span className="px-2.5 py-1 rounded-full bg-surface-container text-muted-foreground text-label-sm font-semibold border border-border">
-                Bcrypt (Cost 12)
-              </span>
-            </div>
-
-            {/* Architecture Explainer Alert */}
-            <div className="p-4 rounded-xl bg-surface-container border border-border/60 flex flex-col gap-2.5">
-              <div className="flex items-center gap-2 text-primary font-bold text-label-md">
-                <Terminal className="w-4 h-4 text-secondary" />
-                <span>How Admin Passwords Are Stored Securely</span>
-              </div>
-              <p className="text-body-sm text-muted-foreground leading-relaxed">
-                For maximum security, passwords are <strong className="text-foreground">never stored in plaintext</strong> or in the MongoDB database. The master desk password is cryptographic hash-matched against the <code className="text-xs bg-surface-lowest px-1.5 py-0.5 rounded font-mono text-primary font-bold">ADMIN_PASSWORD_HASH</code> environment variable in your server’s <code className="text-xs bg-surface-lowest px-1.5 py-0.5 rounded font-mono">.env.local</code>.
+            <div>
+              <h2 className="text-base font-bold text-foreground">
+                Business Profile & Contact Information
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Store details displayed on your public website and customer inquiries.
               </p>
+            </div>
+          </div>
+        </div>
 
-              {/* CLI Command Helper */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 p-2.5 bg-surface-lowest rounded-lg border border-border mt-1">
-                <code className="font-mono text-body-sm text-foreground select-all px-2 py-1">
-                  npm run hash-password
-                </code>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+          {/* Shop Name English */}
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs sm:text-sm font-semibold text-foreground">
+              Shop Name (English)
+            </label>
+            <input
+              type="text"
+              value={settings.businessName}
+              onChange={(e) => setSettings({ ...settings, businessName: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          {/* Shop Name Hindi */}
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs sm:text-sm font-semibold text-foreground">
+              Shop Name (Hindi / दुकान का नाम)
+            </label>
+            <input
+              type="text"
+              value={settings.businessNameHi}
+              onChange={(e) => setSettings({ ...settings, businessNameHi: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          {/* Tagline English */}
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs sm:text-sm font-semibold text-foreground">
+              Brand Tagline (English)
+            </label>
+            <input
+              type="text"
+              value={settings.tagline}
+              onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          {/* Tagline Hindi */}
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs sm:text-sm font-semibold text-foreground">
+              Brand Tagline (Hindi)
+            </label>
+            <input
+              type="text"
+              value={settings.taglineHi}
+              onChange={(e) => setSettings({ ...settings, taglineHi: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          {/* Owner Name */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <span>Owner Name (मालिक का नाम)</span>
+            </label>
+            <input
+              type="text"
+              value={settings.ownerName || ""}
+              onChange={(e) => setSettings({ ...settings, ownerName: e.target.value })}
+              placeholder="e.g. Ramesh Patidar (Owner)"
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
+            />
+          </div>
+
+          {/* Owner Email */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs sm:text-sm font-semibold text-foreground">
+              Owner Email (संचालक ईमेल)
+            </label>
+            <input
+              type="email"
+              value={settings.ownerEmail || ""}
+              onChange={(e) => setSettings({ ...settings, ownerEmail: e.target.value })}
+              placeholder="e.g. ramesh@sanwaliyapress.in"
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          {/* WhatsApp Hotline */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>WhatsApp Consultation Number</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-emerald-600 dark:text-emerald-400 font-bold tracking-wider">
+                WA
+              </span>
+              <input
+                type="text"
+                value={settings.whatsapp}
+                onChange={(e) => setSettings({ ...settings, whatsapp: e.target.value })}
+                className="w-full pl-11 bg-surface-container border border-border text-foreground text-xs sm:text-sm pr-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-mono font-bold"
+              />
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              Country code without + (e.g. <strong className="text-primary font-mono">919876543210</strong>). All website enquiries route here.
+            </p>
+          </div>
+
+          {/* Primary Calling Phone */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <span>Primary Calling Phone</span>
+            </label>
+            <input
+              type="text"
+              value={settings.phone}
+              onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
+            />
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              Displayed on the top header bar for local voice calls.
+            </p>
+          </div>
+
+          {/* Address English */}
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs sm:text-sm font-semibold text-foreground">
+              Store Postal Address (पूरा पता)
+            </label>
+            <textarea
+              rows={2}
+              value={settings.address}
+              onChange={(e) => setSettings({ ...settings, address: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm p-3 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 leading-relaxed"
+            />
+          </div>
+
+          {/* Address Hindi */}
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs sm:text-sm font-semibold text-foreground">
+              Address in Hindi (हिंदी पता)
+            </label>
+            <textarea
+              rows={2}
+              value={settings.addressHi}
+              onChange={(e) => setSettings({ ...settings, addressHi: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm p-3 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 leading-relaxed"
+            />
+          </div>
+
+          {/* Operating Hours */}
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <span>Operating Hours (दुकान का समय)</span>
+            </label>
+            <input
+              type="text"
+              value={settings.openingHours}
+              onChange={(e) => setSettings({ ...settings, openingHours: e.target.value })}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 2: Security & Admin Password */}
+      <section className="bg-surface-lowest rounded-xl border border-border p-5 md:p-7 shadow-xs flex flex-col gap-5">
+        <div className="flex items-center justify-between pb-3 border-b border-border/40">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Key className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-foreground">
+                Security & Admin Password
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Generate secure Bcrypt password hashes for your server environment.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Architecture Explainer */}
+        <div className="p-3.5 rounded-lg bg-surface-container border border-border/60 flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-primary font-bold text-xs sm:text-sm">
+            <Terminal className="w-4 h-4 text-secondary shrink-0" />
+            <span>How Admin Passwords Work</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Admin passwords are encrypted using Bcrypt and matched against the <code className="text-[11px] bg-surface-lowest px-1.5 py-0.5 rounded font-mono text-primary font-bold">ADMIN_PASSWORD_HASH</code> environment variable in your <code className="text-[11px] bg-surface-lowest px-1.5 py-0.5 rounded font-mono">.env.local</code> file.
+          </p>
+        </div>
+
+        {passFeedback && (
+          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 flex items-start gap-2.5 text-xs font-semibold animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{passFeedback}</span>
+          </div>
+        )}
+
+        {/* In-Browser Bcrypt Hash Generator */}
+        <form onSubmit={handleGenerateHash} className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* New Password */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs sm:text-sm font-semibold text-foreground">
+                New Password (नया पासवर्ड)
+              </label>
+              <div className="relative">
+                <input
+                  type={showNewPass ? "text" : "password"}
+                  value={newPass}
+                  onChange={(e) => setNewPass(e.target.value)}
+                  placeholder="Minimum 8 characters"
+                  className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 pr-10 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest"
+                />
                 <button
                   type="button"
-                  onClick={() => copyToClipboard("npm run hash-password", true)}
-                  className="px-3 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-primary text-label-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                  onClick={() => setShowNewPass(!showNewPass)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{copiedCmd ? "Copied!" : "Copy CLI Command"}</span>
+                  {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {passFeedback && (
-              <div className="p-3.5 rounded-lg bg-tertiary/10 border border-tertiary/30 text-tertiary flex items-start gap-2.5 text-label-sm font-semibold animate-in fade-in">
-                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{passFeedback}</span>
+            {/* Confirm Password */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs sm:text-sm font-semibold text-foreground">
+                Confirm New Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPass ? "text" : "password"}
+                  value={confirmPass}
+                  onChange={(e) => setConfirmPass(e.target.value)}
+                  placeholder="Repeat new password"
+                  className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 pr-10 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPass(!showConfirmPass)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirmPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
-            )}
+            </div>
+          </div>
 
-            {/* In-Browser Bcrypt Hash Generator */}
-            <form onSubmit={handleGenerateHash} className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* New Password */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-label-md text-foreground font-semibold">
-                    New Password (नया पासवर्ड)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showNewPass ? "text" : "password"}
-                      value={newPass}
-                      onChange={(e) => setNewPass(e.target.value)}
-                      placeholder="Minimum 8 characters"
-                      className="w-full bg-surface-container border border-border text-foreground text-body-md px-3.5 pr-10 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPass(!showNewPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
+          {/* Password Strength Meter */}
+          <div className="p-3 rounded-lg bg-surface-container border border-border/50 flex flex-col gap-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-foreground font-semibold">Password Strength:</span>
+              <span className={passStrength.color}>{passStrength.label}</span>
+            </div>
+            <div className="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+              <div className={`h-full rounded-full ${passStrength.score >= 1 ? "bg-emerald-500" : "bg-border"}`} />
+              <div className={`h-full rounded-full ${passStrength.score >= 2 ? "bg-emerald-500" : "bg-border"}`} />
+              <div className={`h-full rounded-full ${passStrength.score >= 3 ? "bg-emerald-500" : "bg-border"}`} />
+              <div className={`h-full rounded-full ${passStrength.score >= 4 ? "bg-emerald-500" : "bg-border"}`} />
+            </div>
+          </div>
 
-                {/* Confirm Password */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-label-md text-foreground font-semibold">
-                    Confirm New Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPass ? "text" : "password"}
-                      value={confirmPass}
-                      onChange={(e) => setConfirmPass(e.target.value)}
-                      placeholder="Repeat new password"
-                      className="w-full bg-surface-container border border-border text-foreground text-body-md px-3.5 pr-10 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPass(!showConfirmPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showConfirmPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+            <span className="text-xs text-muted-foreground">
+              Generates an encrypted salted hash for your admin authentication.
+            </span>
+            <button
+              type="submit"
+              disabled={isGeneratingHash || !newPass}
+              className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs sm:text-sm font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span>{isGeneratingHash ? "Generating..." : "Generate Bcrypt Hash"}</span>
+            </button>
+          </div>
 
-              {/* Password Strength Meter */}
-              <div className="p-3.5 rounded-lg bg-surface-container border border-border/50 flex flex-col gap-2">
-                <div className="flex items-center justify-between text-label-sm">
-                  <span className="text-foreground font-semibold">Password Strength:</span>
-                  <span className={passStrength.color}>{passStrength.label}</span>
-                </div>
-                <div className="grid grid-cols-4 gap-1.5 h-1.5 w-full">
-                  <div className={`h-full rounded-full ${passStrength.score >= 1 ? "bg-tertiary" : "bg-border"}`} />
-                  <div className={`h-full rounded-full ${passStrength.score >= 2 ? "bg-tertiary" : "bg-border"}`} />
-                  <div className={`h-full rounded-full ${passStrength.score >= 3 ? "bg-tertiary" : "bg-border"}`} />
-                  <div className={`h-full rounded-full ${passStrength.score >= 4 ? "bg-tertiary" : "bg-border"}`} />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-                <span className="text-body-sm text-muted-foreground">
-                  Generates an encrypted 60-character salted hash using bcryptjs.
+          {/* Generated Hash Box */}
+          {generatedHash && (
+            <div className="p-4 rounded-xl bg-surface-container border border-secondary/40 flex flex-col gap-2 mt-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-secondary uppercase tracking-wider">
+                  Generated Bcrypt Hash:
                 </span>
                 <button
-                  type="submit"
-                  disabled={isGeneratingHash || !newPass}
-                  className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-container text-white text-label-md font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  type="button"
+                  onClick={() => copyToClipboard(generatedHash)}
+                  className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
                 >
-                  <Key className="w-4 h-4" />
-                  <span>{isGeneratingHash ? "Generating..." : "Generate Bcrypt Hash"}</span>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{copiedHash ? "Copied!" : "Copy Hash"}</span>
                 </button>
               </div>
-
-              {/* Generated Hash Box */}
-              {generatedHash && (
-                <div className="p-4 rounded-xl bg-surface-container border border-secondary/40 flex flex-col gap-2 mt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-label-sm font-bold text-secondary uppercase tracking-wider">
-                      Generated Bcrypt Hash:
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(generatedHash)}
-                      className="text-label-sm text-primary font-bold hover:underline flex items-center gap-1"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>{copiedHash ? "Copied!" : "Copy Hash"}</span>
-                    </button>
-                  </div>
-                  <pre className="font-mono text-body-sm p-3 bg-surface-lowest rounded-lg border border-border select-all break-all overflow-x-auto text-primary font-bold">
-                    {generatedHash}
-                  </pre>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed">
-                    Paste this line into your <strong className="text-foreground">.env.local</strong> file:
-                    <br />
-                    <code className="text-[11px] font-mono text-primary select-all">
-                      ADMIN_PASSWORD_HASH=&quot;{generatedHash}&quot;
-                    </code>
-                  </p>
-                </div>
-              )}
-            </form>
-          </section>
-        </div>
-
-        {/* RIGHT 5 COLUMNS: Live Authentication Preview Card & Help Tile */}
-        <div className="lg:col-span-5 flex flex-col gap-6 lg:sticky lg:top-20">
-          <div className="flex items-center justify-between">
-            <span className="text-label-md font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-secondary" />
-              Live Authentication Preview
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-surface-container text-muted-foreground text-label-sm">
-              Desktop Port (1:1)
-            </span>
-          </div>
-
-          {/* Mockup Card */}
-          <div className="relative bg-surface-lowest rounded-2xl p-6 md:p-8 border border-border shadow-xl overflow-hidden text-center">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-secondary to-primary" />
-
-            <div className="relative mb-3 flex justify-center">
-              <div className="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-md">
-                <Stamp className="w-7 h-7 text-secondary-fixed" />
-              </div>
-              <div className="absolute -bottom-1 right-1/2 translate-x-7 w-5 h-5 rounded-full bg-secondary text-white flex items-center justify-center">
-                <CheckCircle2 className="w-3 h-3" />
-              </div>
-            </div>
-
-            <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
-              Sanwaliya Printing Press
-            </span>
-            <h3 className="text-base text-foreground font-bold mt-1">
-              Admin Login Preview
-            </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {settings.businessNameHi}
-            </p>
-
-            <div className="w-full mt-4 flex flex-col gap-3.5 text-left">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between text-label-sm">
-                  <span className="font-semibold text-foreground">Master Desk Password</span>
-                  <span className="text-muted-foreground">Owner PIN</span>
-                </div>
-                <input
-                  type="password"
-                  disabled
-                  value="••••••••••••"
-                  className="w-full bg-surface-container border border-border text-foreground px-3.5 py-2.5 rounded-lg text-body-md tracking-widest"
-                />
-              </div>
-
-              <div className="w-full py-2.5 rounded-lg bg-primary text-white text-label-md font-bold shadow-xs text-center">
-                Sign In to Shop
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-border/40 text-[11px] text-muted-foreground flex items-center justify-between">
-              <span>Gateway Encrypted (TLS 1.3)</span>
-              <span className="text-secondary font-semibold">Suwasra Node</span>
-            </div>
-          </div>
-
-          {/* Quick Guidance Tile */}
-          <div className="rounded-xl bg-surface-container p-5 border border-border flex items-start gap-3">
-            <HelpCircle className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-            <div className="flex flex-col gap-1">
-              <span className="text-label-md font-bold text-foreground">
-                Need to reset master password?
-              </span>
-              <p className="text-body-sm text-muted-foreground leading-relaxed">
-                If locked out, run <code className="text-xs bg-surface-lowest px-1 rounded font-mono font-bold">npm run hash-password</code> in your project terminal and update the <code className="text-xs bg-surface-lowest px-1 rounded font-mono">ADMIN_PASSWORD_HASH</code> entry in <code className="text-xs bg-surface-lowest px-1 rounded font-mono">.env.local</code>.
+              <pre className="font-mono text-xs p-3 bg-surface-lowest rounded-lg border border-border select-all break-all overflow-x-auto text-primary font-bold">
+                {generatedHash}
+              </pre>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Paste this into your <strong className="text-foreground">.env.local</strong> file:
+                <br />
+                <code className="text-[11px] font-mono text-primary select-all">
+                  ADMIN_PASSWORD_HASH=&quot;{generatedHash}&quot;
+                </code>
               </p>
             </div>
-          </div>
-        </div>
-      </div>
+          )}
+        </form>
+      </section>
 
-      {/* Sticky Bottom Save Action Bar */}
-      <div className="sticky bottom-4 z-30 bg-surface-lowest/95 backdrop-blur-md p-4 rounded-xl border border-border shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 mt-6">
-        <div className="flex items-center gap-2.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse" />
-          <span className="text-label-sm text-muted-foreground">
-            Changes will update WhatsApp inquiries and site footer parameters immediately.
-          </span>
+      {/* STICKY BOTTOM SAVE ACTION BAR */}
+      <div
+        className={`sticky bottom-4 z-30 p-3 sm:p-4 rounded-xl border transition-all flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg ${
+          isDirty
+            ? "bg-surface-lowest border-amber-500/40 ring-1 ring-amber-500/20"
+            : "bg-surface-lowest/90 border-border"
+        }`}
+      >
+        <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+          {isDirty ? (
+            <>
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+              <span className="text-amber-600 dark:text-amber-400 font-semibold">
+                You have unsaved changes
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-muted-foreground">All settings saved</span>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           <button
             type="button"
+            disabled={!isDirty || isSaving}
             onClick={() => setSettings(initialSettings)}
-            className="px-4 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground text-label-md font-semibold transition-colors"
+            className="px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground text-xs sm:text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Discard Changes
           </button>
@@ -735,10 +561,10 @@ export default function AdminSettingsPage() {
           <button
             type="button"
             onClick={handleSaveSettings}
-            disabled={isSaving}
-            className="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-container text-white text-label-md font-bold shadow-md transition-all active:scale-[0.98] flex items-center gap-2 disabled:opacity-50"
+            disabled={!isDirty || isSaving}
+            className="px-5 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs sm:text-sm font-bold shadow-xs transition-all active:scale-[0.98] flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <Save className="w-4 h-4" />
+            <Save className="w-3.5 h-3.5" />
             <span>{isSaving ? "Saving..." : "Save Settings"}</span>
           </button>
         </div>

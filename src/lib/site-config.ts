@@ -3,6 +3,7 @@ export const siteConfig = {
   nameHindi: "सांवलिया प्रिंटिंग प्रेस",
   tagline: "Fine Print Studio & Bespoke Wedding Stationery",
   taglineHindi: "उत्कृष्ट डिज़ाइन और राजसी मुद्रण • Estd. 1994",
+  logo: "/logo.png",
   description:
     "Handcrafted bespoke wedding invitations, luxury gold foil visiting cards, hardbound bill books, and event banners. Browse our curated catalogue and consult directly with our master press artisans on WhatsApp.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.sanwaliyaprinting.in",

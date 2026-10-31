@@ -31,9 +31,9 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
   const isSelected = rajwadaProduct ? hasItem(rajwadaProduct.id) : false;
 
   return (
-    <section className="relative w-full overflow-hidden bg-background pt-0 sm:pt-8 pb-12 lg:py-20">
+    <section className="relative w-full overflow-hidden bg-background pt-1 sm:pt-2 lg:pt-2.5 pb-8 lg:pb-12">
       {/* Mobile Announcement Top Ticker matching Stitch Screen 1 */}
-      <aside className="sm:hidden w-full mb-4 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between shadow-xs">
+      <aside className="sm:hidden w-full mb-2.5 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-1.5 min-w-0 pr-2">
           <MapPin className="w-3.5 h-3.5 text-secondary shrink-0" />
           <p className="font-label-sm text-[11px] truncate tracking-wide text-primary-foreground/90">
@@ -54,26 +54,11 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
       <div className="pointer-events-none absolute right-0 top-1/4 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-10">
           {/* Left Column: Typographic Majesty (7 cols) */}
           <div className="flex flex-col items-start lg:col-span-7">
-            {/* Top Atelier Overline Badge */}
-            <div className="mb-4 sm:mb-5 flex flex-wrap items-center gap-2 sm:gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container px-3 sm:px-3.5 py-1 font-label-sm text-xs text-primary uppercase tracking-wider shadow-xs border border-border/50">
-                <Sparkles className="w-3.5 h-3.5 text-secondary" />
-                Sanwaliya Printing Press • सुवासरा (मंदसौर)
-              </span>
-              <a
-                href="#swatch-kit"
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-secondary-container px-3.5 py-1 font-label-sm font-bold text-secondary-foreground shadow-xs hover:opacity-90 transition-opacity"
-              >
-                <Package className="w-3.5 h-3.5" />
-                Free 12-Paper Swatch Kit
-              </a>
-            </div>
-
             {/* Bilingual Main Headline matching Stitch Screen 1 */}
-            <h1 className="font-display-lg text-2xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-[1.15] mb-3 sm:mb-4">
+            <h1 className="font-display-lg text-2xl sm:text-4xl lg:text-[42px] xl:text-5xl text-foreground tracking-tight leading-[1.12] mb-2 sm:mb-2">
               Beautiful Designs.
               <br />
               Quality Printing.
@@ -84,42 +69,38 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
             </h1>
 
             {/* Hindi Subtitle Ribbon */}
-            <div className="mb-4 sm:mb-6 flex items-center gap-3 rounded-lg bg-surface-container px-3.5 sm:px-4 py-2 sm:py-2.5 shadow-xs border border-border/60">
-              <span className="h-5 sm:h-6 w-1 rounded-full bg-secondary shrink-0" />
+            <div className="mb-2 sm:mb-2.5 flex items-center gap-2.5 sm:gap-3 rounded-lg bg-surface-container px-3 sm:px-3.5 py-1.5 shadow-xs border border-border/60">
+              <span className="h-4 sm:h-4.5 w-1 rounded-full bg-secondary shrink-0" />
               <p className="font-headline-sm text-xs sm:text-sm text-secondary font-medium tracking-normal font-devanagari">
                 उत्कृष्ट डिज़ाइन और राजसी मुद्रण — आपकी खास यादों के लिए।
               </p>
             </div>
 
             {/* Editorial Narrative */}
-            <p className="font-body-lg text-xs sm:text-base text-muted-foreground max-w-2xl mb-6 sm:mb-8 leading-relaxed">
+            <p className="font-body-lg text-xs sm:text-[14px] text-muted-foreground max-w-2xl mb-2.5 sm:mb-3 leading-relaxed">
               Handcrafted bespoke wedding invitations, luxury gold foil visiting cards, hardbound bill books, and event banners. Browse our curated catalogue at Sanwaliya Printing Press, Suwasra, and consult directly with our master press artisans on WhatsApp.
             </p>
 
             {/* CTAs Bar: 2-column on mobile, flex on sm */}
-            <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-row items-stretch sm:items-center w-full sm:w-auto mb-6 sm:mb-8">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row items-stretch sm:items-center w-full sm:w-auto mb-3 sm:mb-4">
               <Link
                 href="/wedding-cards"
-                className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg bg-primary px-4 sm:px-7 py-3 sm:py-3.5 font-label-md sm:font-label-lg text-xs sm:text-sm text-primary-foreground shadow-md hover:bg-primary-container transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg bg-primary px-4 sm:px-6 py-2.5 sm:py-3 font-label-md sm:font-label-lg text-xs sm:text-sm text-primary-foreground shadow-md hover:bg-primary-container transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Explore Designs</span>
                 <ArrowRight className="w-4 h-4 shrink-0" />
               </Link>
 
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0.5">
                 <a
                   href={buildGeneralEnquiryUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg bg-[#128C7E] px-4 sm:px-6 py-3 sm:py-3.5 font-label-md sm:font-label-lg text-xs sm:text-sm text-white shadow-md hover:bg-[#0e7064] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 rounded-lg bg-[#128C7E] px-4 sm:px-5 py-2.5 sm:py-3 font-label-md sm:font-label-lg text-xs sm:text-sm text-white shadow-md hover:bg-[#0e7064] transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                   <span>WhatsApp Quote</span>
                 </a>
-                <span className="hidden sm:flex text-center sm:text-left font-label-sm text-muted-foreground items-center justify-center sm:justify-start gap-1.5 pt-0.5">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse" />
-                  Typically replies in 15 mins
-                </span>
               </div>
             </div>
 
@@ -190,27 +171,13 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
             </div>
 
             {/* Atelier Quality Tickers (Desktop) */}
-            <div className="hidden sm:flex flex-wrap items-center gap-2.5 pt-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1 font-label-sm text-foreground border border-border/50 shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5 text-secondary" /> Bespoke Foil Stamping
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1 font-label-sm text-foreground border border-border/50 shadow-2xs">
-                <Layers className="w-3.5 h-3.5 text-secondary" /> 600+ GSM Cotton Rag
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1 font-label-sm text-foreground border border-border/50 shadow-2xs">
-                <Printer className="w-3.5 h-3.5 text-secondary" /> Screen &amp; Letterpress
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1 font-label-sm text-foreground border border-border/50 shadow-2xs">
-                <Languages className="w-3.5 h-3.5 text-secondary" /> English • हिन्दी • संस्कृत
-              </span>
-            </div>
           </div>
 
           {/* Right Column: Multi-Card Layered Collage (5 cols) */}
-          <div className="relative lg:col-span-5 flex flex-col items-center">
+          <div className="relative lg:col-span-5 flex flex-col items-center lg:items-end w-full">
             {/* Card 1: Jodhpur Royal Kundan Box */}
-            <div className="relative z-30 w-full max-w-md rounded-xl bg-card p-5 shadow-xl border border-border transition-transform hover:-translate-y-1">
-              <div className="relative mb-3.5 h-52 w-full overflow-hidden rounded-lg bg-surface-container">
+            <div className="relative z-30 w-full max-w-md rounded-xl bg-card p-4 sm:p-4.5 shadow-xl border border-border transition-transform hover:-translate-y-1">
+              <div className="relative mb-3 h-44 sm:h-48 xl:h-52 w-full overflow-hidden rounded-lg bg-surface-container">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7xmMr9SleZ6bDf7rpGfHAW3s_yLVNoSTU3DTydj1x6TKaJp8f1DLll0d4-j4OMFZoNX2zU9JZD11droCKgU7gmID92FkWAtfrJFKCBejywZH0AcsE2Z71UNNEF1tJu6-TAaTGLhg-MXlgjhIk5K2cjmljTYCqDP3bGX1Ru7CObl5dibBeOf5VyzQS4QR4_2Ut4uOOSc1sgROfMfVMD4OXzVYZQ0vh7bNqpxE0O85tcej4gG3tJQVW0w"
@@ -241,9 +208,8 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
                     aria-label="Shortlist design"
                   >
                     <Heart
-                      className={`w-5 h-5 ${
-                        isSelected ? "fill-current text-primary" : ""
-                      }`}
+                      className={`w-5 h-5 ${isSelected ? "fill-current text-primary" : ""
+                        }`}
                     />
                   </button>
                 )}

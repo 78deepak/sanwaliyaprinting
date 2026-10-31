@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   MapPin,
   Phone,
@@ -69,8 +70,14 @@ export function Footer() {
           {/* Col 1: Brand & Studio Heritage (5 cols) */}
           <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground">
-                <Sparkles className="w-4 h-4 text-secondary" />
+              <div className="relative w-11 h-11 shrink-0 flex items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="Sanwaliya Printing Press Logo"
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <span className="font-serif text-2xl font-bold tracking-tight text-primary">

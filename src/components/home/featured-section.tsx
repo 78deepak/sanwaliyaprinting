@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Info } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/products/product-card";
 import { Product } from "@/types/product";
 
@@ -17,12 +17,12 @@ export function FeaturedSection({ products = [] }: FeaturedSectionProps) {
   const displayProducts = featuredWeddingCards.length > 0 ? featuredWeddingCards : products.slice(0, 4);
 
   return (
-    <section className="w-full bg-background py-16 px-4 sm:px-8 lg:px-12" id="wedding-catalog">
+    <section className="w-full bg-background py-14 sm:py-16 px-4 sm:px-8 lg:px-12" id="wedding-catalog">
       <div className="mx-auto max-w-7xl">
-        {/* Section Header & Notice Banner */}
-        <div className="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        {/* Section Header */}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 font-label-sm uppercase tracking-widest text-secondary font-bold mb-2">
+            <div className="flex items-center gap-2 font-label-sm uppercase tracking-widest text-secondary font-bold mb-1.5">
               <Sparkles className="w-4 h-4" />
               <span>Regal Nuptials • शाही विवाह संकलन</span>
             </div>
@@ -33,14 +33,13 @@ export function FeaturedSection({ products = [] }: FeaturedSectionProps) {
               Carefully curated masterworks combining time-honored Indian ornamentation with modern European letterpress artistry.
             </p>
           </div>
-
-          {/* Distinct Atelier Notice Banner */}
-          <div className="flex items-center gap-3 rounded-xl bg-surface-container p-4 shadow-xs max-w-lg border border-border/50">
-            <Info className="w-6 h-6 text-secondary shrink-0" />
-            <p className="font-body-sm text-muted-foreground">
-              <strong className="text-primary font-semibold">No Cart or Rigid Checkout:</strong> Every order is tailored to your exact guest count, paper GSM, and custom bilingual script proofs on WhatsApp.
-            </p>
-          </div>
+          <Link
+            href="/wedding-cards"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-container transition-colors shrink-0 group pb-0.5"
+          >
+            <span>View All Designs</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
 
         {/* 4-Item Responsive Product Grid: 2 columns on mobile */}

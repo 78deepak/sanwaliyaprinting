@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -162,6 +163,32 @@ export function ProductForm({
   const watchedShowPrice = watch("showPrice");
   const watchedShortDesc = watch("shortDescription");
   const watchedCategory = watch("category");
+
+  // Track if custom option arrays or uploads differ from initial
+  const isCustomDirty = React.useMemo(() => {
+    if (!initialProduct) {
+      return Boolean(watchedName || watchedSlug || images.length > 0);
+    }
+    const initImgs = initialProduct.images || [];
+    if (images.length !== initImgs.length) return true;
+    if (images.some((img, i) => img.url !== initImgs[i]?.url || Boolean(img.isPrimary) !== Boolean(initImgs[i]?.isPrimary))) return true;
+
+    const initTags = initialProduct.tags || [];
+    if (tags.length !== initTags.length || tags.some((t, i) => t !== initTags[i])) return true;
+
+    const initSizes = initialProduct.availableOptions?.sizes || [];
+    if (sizes.length !== initSizes.length || sizes.some((s, i) => s !== initSizes[i])) return true;
+
+    const initPapers = initialProduct.availableOptions?.papers || [];
+    if (papers.length !== initPapers.length || papers.some((p, i) => p !== initPapers[i])) return true;
+
+    const initFinishes = initialProduct.availableOptions?.finishes || [];
+    if (finishes.length !== initFinishes.length || finishes.some((f, i) => f !== initFinishes[i])) return true;
+
+    return false;
+  }, [images, tags, sizes, papers, finishes, initialProduct, watchedName, watchedSlug]);
+
+  const hasUnsavedChanges = isDirty || isCustomDirty;
 
   // Auto generate slug if user hasn't explicitly typed one yet
   const handleAutoSlug = () => {
@@ -339,33 +366,32 @@ export function ProductForm({
       />
 
       {/* Breadcrumb & Title Ribbon */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border mb-6">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-label-sm text-muted-foreground">
-            <span>Admin</span>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Link href="/admin" className="hover:text-foreground">Admin</Link>
             <span>/</span>
-            <span>Products</span>
+            <Link href="/admin/products" className="hover:text-foreground">Products</Link>
             <span>/</span>
-            <span className="text-primary font-semibold">
-              {isEditMode ? `Edit ${initialProduct?.productCode}` : "New Product"}
+            <span className="text-foreground font-medium">
+              {isEditMode ? `Edit ${initialProduct?.productCode || ""}` : "New Product"}
             </span>
           </div>
-          <h1 className="font-headline-lg text-2xl md:text-3xl text-primary font-bold tracking-tight">
-            {isEditMode ? `Edit Product: ${initialProduct?.name}` : "Add New Print Design"}
+          <h1 className="text-xl md:text-2xl text-foreground font-bold tracking-tight">
+            {isEditMode ? `Edit Product: ${initialProduct?.name}` : "Add New Product"}
           </h1>
         </div>
 
         {isEditMode && initialProduct && (
           <div className="flex items-center gap-2">
-            <a
-              href={`/category/${initialProduct.category}/${initialProduct.slug}`}
+            <Link
+              href={`/${initialProduct.category}/${initialProduct.slug}`}
               target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground text-label-md font-semibold transition-colors"
+              className="h-9 px-3 rounded-lg border border-border bg-surface-lowest hover:bg-surface-container text-foreground text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-2xs"
             >
-              <ExternalLink className="w-4 h-4 text-secondary" />
-              <span>View on Public Website</span>
-            </a>
+              <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+              <span>View Live Product</span>
+            </Link>
           </div>
         )}
       </div>
@@ -373,37 +399,37 @@ export function ProductForm({
       {/* Main 12-Column Form Layout */}
       <form
         onSubmit={handleSubmit((data) => onSubmit(data))}
-        className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+        className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start"
       >
         {/* Left Column (8 cols): Core Information & Media */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
+        <div className="lg:col-span-8 flex flex-col gap-5">
           {/* SECTION 1: Basic Information */}
           <FormSection
             title="Basic Information"
-            titleHi="उत्पाद की मुख्य जानकारी एवं विवरण"
+            titleHi="Product title, code, and descriptions"
             icon={BookOpen}
             badge={
-              <span className="text-label-sm text-secondary bg-secondary/10 px-2.5 py-1 rounded-md border border-secondary/20">
-                Required Fields *
+              <span className="text-xs text-muted-foreground bg-surface-container px-2 py-0.5 rounded border border-border">
+                Required *
               </span>
             }
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Product Name */}
               <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold">
+                <label className="text-xs md:text-sm text-foreground font-semibold">
                   Product Name (English) *
                 </label>
                 <input
                   type="text"
                   {...register("name")}
                   placeholder="e.g. Rajwada Velvet Box Suite"
-                  className={`w-full px-4 py-2.5 rounded-lg bg-surface-container border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all ${
+                  className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
                     errors.name ? "border-destructive ring-1 ring-destructive" : "border-border"
                   }`}
                 />
                 {errors.name && (
-                  <span className="text-destructive text-label-sm flex items-center gap-1">
+                  <span className="text-destructive text-xs flex items-center gap-1">
                     <AlertTriangle className="w-3.5 h-3.5" />
                     {errors.name.message}
                   </span>
@@ -412,30 +438,30 @@ export function ProductForm({
 
               {/* Hindi Name */}
               <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold flex items-center justify-between">
-                  <span>Devanagari Name (हिंदी नाम)</span>
-                  <span className="text-label-sm text-secondary font-normal">
-                    Helps local buyers search in Hindi
+                <label className="text-xs md:text-sm text-foreground font-semibold flex items-center justify-between">
+                  <span>Hindi Name (हिंदी नाम)</span>
+                  <span className="text-xs text-muted-foreground font-normal">
+                    Helps buyers search in Hindi
                   </span>
                 </label>
                 <input
                   type="text"
                   {...register("nameHi")}
                   placeholder="e.g. राजवाड़ा वेलवेट बॉक्स निमंत्रण"
-                  className="w-full px-4 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all"
+                  className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all"
                 />
               </div>
 
               {/* URL Slug */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-label-md text-foreground font-semibold">
-                    Product URL Slug *
+                  <label className="text-xs md:text-sm text-foreground font-semibold">
+                    URL Slug *
                   </label>
                   <button
                     type="button"
                     onClick={handleAutoSlug}
-                    className="text-label-sm text-primary hover:underline flex items-center gap-1"
+                    className="text-xs text-primary hover:underline flex items-center gap-1"
                   >
                     <Sparkles className="w-3 h-3" />
                     <span>Auto-generate</span>
@@ -448,21 +474,21 @@ export function ProductForm({
                     {...register("slug")}
                     onBlur={() => handleCheckSlug(watchedSlug)}
                     placeholder="rajwada-velvet-box-suite"
-                    className={`w-full px-4 py-2.5 rounded-lg bg-surface-container border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all ${
+                    className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
                       errors.slug || slugStatus.available === false
                         ? "border-destructive ring-1 ring-destructive"
                         : "border-border"
                     }`}
                   />
                   {watchedSlug && !errors.slug && slugStatus.available !== false && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-label-sm flex items-center gap-1">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-1">
                       <CheckCircle2 className="w-4 h-4" />
                     </span>
                   )}
                 </div>
 
                 {slugStatus.available === false && slugStatus.suggestedSlug && (
-                  <div className="flex items-center gap-2 text-label-sm text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1.5 rounded-md border border-amber-500/30">
+                  <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1.5 rounded-md border border-amber-500/30">
                     <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                     <span>Slug already taken!</span>
                     <button
@@ -482,50 +508,50 @@ export function ProductForm({
                 )}
 
                 {errors.slug ? (
-                  <span className="text-destructive text-label-sm flex items-center gap-1">
+                  <span className="text-destructive text-xs flex items-center gap-1">
                     <AlertTriangle className="w-3.5 h-3.5" />
                     {errors.slug.message}
                   </span>
                 ) : (
-                  <span className="text-muted-foreground text-label-sm truncate">
-                    sanwaliyapress.in/product/{watchedSlug || "..."}
+                  <span className="text-muted-foreground text-xs truncate">
+                    sanwaliyaprinting.in/{watchedCategory || "category"}/{watchedSlug || "..."}
                   </span>
                 )}
               </div>
 
-              {/* Atelier Item Code (SKU) */}
+              {/* Item Code (SKU) */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold">
-                  Atelier SKU / Item Code *
+                <label className="text-xs md:text-sm text-foreground font-semibold">
+                  Product Code (SKU) *
                 </label>
                 <input
                   type="text"
                   {...register("productCode")}
                   placeholder="e.g. RM-W-101"
-                  className={`w-full px-4 py-2.5 rounded-lg bg-surface-container border font-mono uppercase font-bold text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all ${
+                  className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border font-mono uppercase font-semibold text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
                     errors.productCode ? "border-destructive ring-1 ring-destructive" : "border-border"
                   }`}
                 />
                 {errors.productCode ? (
-                  <span className="text-destructive text-label-sm flex items-center gap-1">
+                  <span className="text-destructive text-xs flex items-center gap-1">
                     <AlertTriangle className="w-3.5 h-3.5" />
                     {errors.productCode.message}
                   </span>
                 ) : (
-                  <span className="text-muted-foreground text-label-sm">
-                    Master serial code for printing plates
+                  <span className="text-muted-foreground text-xs">
+                    Unique catalog code for printing
                   </span>
                 )}
               </div>
 
               {/* Category Hierarchy */}
               <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold">
-                  Category Section *
+                <label className="text-xs md:text-sm text-foreground font-semibold">
+                  Category *
                 </label>
                 <select
                   {...register("category")}
-                  className="w-full px-4 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all cursor-pointer"
+                  className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all cursor-pointer"
                 >
                   {categories.map((cat) => (
                     <option key={cat.slug} value={cat.slug}>
@@ -534,7 +560,7 @@ export function ProductForm({
                   ))}
                 </select>
                 {errors.category && (
-                  <span className="text-destructive text-label-sm">
+                  <span className="text-destructive text-xs">
                     {errors.category.message}
                   </span>
                 )}
@@ -543,23 +569,23 @@ export function ProductForm({
               {/* Short Description */}
               <div className="md:col-span-2 flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-label-md text-foreground font-semibold">
+                  <label className="text-xs md:text-sm text-foreground font-semibold">
                     Short Description (For Catalog Cards) *
                   </label>
-                  <span className="text-label-sm text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {watchedShortDesc?.length || 0} / 160 chars
                   </span>
                 </div>
                 <textarea
                   rows={2}
                   {...register("shortDescription")}
-                  placeholder="e.g. Luxurious Dutch maroon velvet casing with 24k gold foil leafing and 3 ceremony inserts."
-                  className={`w-full p-3.5 rounded-lg bg-surface-container border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all ${
+                  placeholder="e.g. Luxurious maroon velvet casing with gold foil leafing and ceremony inserts."
+                  className={`w-full p-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
                     errors.shortDescription ? "border-destructive ring-1 ring-destructive" : "border-border"
                   }`}
                 />
                 {errors.shortDescription && (
-                  <span className="text-destructive text-label-sm">
+                  <span className="text-destructive text-xs">
                     {errors.shortDescription.message}
                   </span>
                 )}
@@ -567,19 +593,19 @@ export function ProductForm({
 
               {/* Full Description */}
               <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold">
-                  Full Artisanal Description & Specifications *
+                <label className="text-xs md:text-sm text-foreground font-semibold">
+                  Full Description & Specifications *
                 </label>
                 <textarea
-                  rows={5}
+                  rows={4}
                   {...register("description")}
-                  placeholder="Describe board thickness (GSM), velvet texture, foil stamp die casting details, inserts, and accessories..."
-                  className={`w-full p-3.5 rounded-lg bg-surface-container border text-foreground text-body-md focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all ${
+                  placeholder="Describe board thickness (GSM), velvet texture, foil stamping details, inserts, and accessories..."
+                  className={`w-full p-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
                     errors.description ? "border-destructive ring-1 ring-destructive" : "border-border"
                   }`}
                 />
                 {errors.description && (
-                  <span className="text-destructive text-label-sm">
+                  <span className="text-destructive text-xs">
                     {errors.description.message}
                   </span>
                 )}
@@ -589,12 +615,12 @@ export function ProductForm({
 
           {/* SECTION 2: Product Images & Gallery */}
           <FormSection
-            title="Product Images & Gallery"
-            titleHi="क्लाउडिनरी अनुकूलित तस्वीरें (Cloudinary CDN f_auto, q_auto)"
+            title="Product Images"
+            titleHi="Upload up to 8 high quality product photos"
             icon={ImageIcon}
             badge={
-              <span className="text-label-sm text-muted-foreground">
-                {images.length} of 8 Uploaded
+              <span className="text-xs text-muted-foreground">
+                {images.length} of 8 uploaded
               </span>
             }
           >
@@ -603,21 +629,21 @@ export function ProductForm({
 
           {/* SECTION 3: Options, Paper & Finishes */}
           <FormSection
-            title="Product Options & Finishes"
-            titleHi="विकल्प, कागज़ व फिनिश विन्यास"
+            title="Options & Finishes"
+            titleHi="Sizes, material paper stocks, and special finishes"
             icon={Layers}
           >
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-4">
               {/* Available Sizes */}
-              <div className="flex flex-col gap-2">
-                <label className="text-label-md text-foreground font-semibold">
-                  Available Dimensions & Silhouette Sizes
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs md:text-sm text-foreground font-semibold">
+                  Available Sizes & Dimensions
                 </label>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {sizes.map((size, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container border border-border text-foreground text-xs"
                     >
                       <span>{size}</span>
                       <button
@@ -625,24 +651,24 @@ export function ProductForm({
                         onClick={() => setSizes(sizes.filter((_, i) => i !== idx))}
                         className="text-muted-foreground hover:text-destructive"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-3 h-3" />
                       </button>
                     </span>
                   ))}
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <input
                       type="text"
                       value={newSizeInput}
                       onChange={(e) => setNewSizeInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddSize())}
                       placeholder="Add size (e.g. 8x6 in)"
-                      className="px-3 py-1.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md focus:outline-none"
+                      className="h-8 px-2.5 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={handleAddSize}
-                      className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-label-md font-bold transition-colors"
+                      className="h-8 px-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors"
                     >
                       + Add
                     </button>
@@ -651,40 +677,40 @@ export function ProductForm({
               </div>
 
               {/* Paper Stocks */}
-              <div className="flex flex-col gap-2">
-                <label className="text-label-md text-foreground font-semibold">
-                  Stock & Paper Weights (GSM)
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs md:text-sm text-foreground font-semibold">
+                  Paper Stock & Board Types
                 </label>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {papers.map((paper, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/15 text-secondary border border-secondary/30 text-label-md font-medium"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container border border-border text-foreground text-xs"
                     >
                       <span>{paper}</span>
                       <button
                         type="button"
                         onClick={() => setPapers(papers.filter((_, i) => i !== idx))}
-                        className="text-secondary hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-3 h-3" />
                       </button>
                     </span>
                   ))}
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <input
                       type="text"
                       value={newPaperInput}
                       onChange={(e) => setNewPaperInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddPaper())}
-                      placeholder="Add paper stock (e.g. 450 GSM Cotton)"
-                      className="px-3 py-1.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md focus:outline-none"
+                      placeholder="Add paper stock (e.g. 350 GSM Textured)"
+                      className="h-8 px-2.5 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={handleAddPaper}
-                      className="px-3 py-1.5 rounded-lg bg-secondary/15 text-secondary hover:bg-secondary/25 text-label-md font-bold transition-colors"
+                      className="h-8 px-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors"
                     >
                       + Add
                     </button>
@@ -693,15 +719,15 @@ export function ProductForm({
               </div>
 
               {/* Foil Finishes */}
-              <div className="flex flex-col gap-2">
-                <label className="text-label-md text-foreground font-semibold">
-                  Foil & Print Finishes
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs md:text-sm text-foreground font-semibold">
+                  Finishes & Effects
                 </label>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {finishes.map((finish, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container border border-border text-foreground text-xs"
                     >
                       <span>{finish}</span>
                       <button
@@ -709,24 +735,24 @@ export function ProductForm({
                         onClick={() => setFinishes(finishes.filter((_, i) => i !== idx))}
                         className="text-muted-foreground hover:text-destructive"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-3 h-3" />
                       </button>
                     </span>
                   ))}
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <input
                       type="text"
                       value={newFinishInput}
                       onChange={(e) => setNewFinishInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddFinish())}
-                      placeholder="Add finish (e.g. Copper Foil)"
-                      className="px-3 py-1.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md focus:outline-none"
+                      placeholder="Add finish (e.g. Gold Foil)"
+                      className="h-8 px-2.5 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={handleAddFinish}
-                      className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-label-md font-bold transition-colors"
+                      className="h-8 px-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors"
                     >
                       + Add
                     </button>
@@ -738,15 +764,15 @@ export function ProductForm({
 
           {/* SECTION 4: Search Keywords & SEO */}
           <FormSection
-            title="Search, Hindi Keywords & SEO"
-            titleHi="सर्च डिस्कवरी व गूगल प्रीव्यू"
+            title="Search & SEO"
+            titleHi="Keywords for catalog search and Google preview"
             icon={Search}
           >
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5">
               <TagInput
                 tags={tags}
                 onChange={setTags}
-                label="English & Devanagari Search Keywords"
+                label="Search Keywords (English & Hindi)"
               />
 
               <SeoPreview
@@ -761,27 +787,27 @@ export function ProductForm({
           {/* SECTION 5: Danger Zone (Edit Mode only) */}
           {isEditMode && initialProduct && (
             <FormSection
-              title="Danger Zone"
-              titleHi="हटाने का विकल्प एवं अपरिवर्तनीय कार्य"
+              title="Delete Product"
+              titleHi="Permanently remove this item from the catalog"
               icon={AlertTriangle}
-              className="border-destructive/40 bg-destructive/5"
+              className="border-destructive/30 bg-destructive/5"
             >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex flex-col gap-1 max-w-md">
-                  <span className="text-label-md text-destructive font-bold">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex flex-col gap-0.5 max-w-md">
+                  <span className="text-xs md:text-sm text-destructive font-bold">
                     Permanently delete this product
                   </span>
-                  <p className="text-body-sm text-muted-foreground">
-                    This will delete product code {initialProduct.productCode} and remove it from all customer catalogs immediately.
+                  <p className="text-xs text-muted-foreground">
+                    This will delete product code {initialProduct.productCode} and remove it from all catalogs immediately.
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setDeleteDialogOpen(true)}
-                  className="px-4 py-2 rounded-lg bg-destructive hover:bg-destructive/90 text-white text-label-md font-bold flex items-center gap-1.5 shadow-xs transition-colors shrink-0"
+                  className="h-9 px-3.5 rounded-lg bg-destructive hover:bg-destructive/90 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors shrink-0"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete Product</span>
                 </button>
               </div>
@@ -790,24 +816,24 @@ export function ProductForm({
         </div>
 
         {/* Right Sidebar Column (4 cols): Pricing, Status & Publish Controls */}
-        <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-20">
+        <div className="lg:col-span-4 flex flex-col gap-5 lg:sticky lg:top-20">
           {/* PRICING & ORDER SPECIFICATIONS */}
-          <div className="bg-surface-lowest p-6 rounded-xl border border-border shadow-sm flex flex-col gap-5">
-            <div className="flex items-center gap-2.5 pb-2 border-b border-border/40">
-              <DollarSign className="w-5 h-5 text-secondary" />
-              <h3 className="font-headline-sm text-lg text-foreground font-bold">
-                Pricing & Minimum Quantity
+          <div className="bg-surface-lowest p-5 rounded-xl border border-border shadow-2xs flex flex-col gap-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+              <DollarSign className="w-4 h-4 text-primary" />
+              <h3 className="text-sm md:text-base text-foreground font-bold">
+                Pricing & Order Details
               </h3>
             </div>
 
             {/* Switch: Show Price on Public Site */}
-            <div className="flex items-center justify-between p-3.5 rounded-lg bg-surface-container border border-border/50">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-surface-container/40 border border-border/50">
               <div className="flex flex-col">
-                <span className="text-label-md text-foreground font-semibold">
-                  Show price on public site
+                <span className="text-xs md:text-sm text-foreground font-semibold">
+                  Show price on website
                 </span>
-                <span className="text-label-sm text-muted-foreground">
-                  Visible to catalog visitors
+                <span className="text-xs text-muted-foreground">
+                  Display estimated quote range
                 </span>
               </div>
 
@@ -817,117 +843,117 @@ export function ProductForm({
                   {...register("showPrice")}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
+                <div className="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary" />
               </label>
             </div>
 
             {/* Price Range inputs (Shown ONLY when Show Price is ON) */}
             {watchedShowPrice ? (
-              <div className="flex flex-col gap-3 animate-in fade-in duration-200">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-label-md text-foreground font-semibold">
+              <div className="flex flex-col gap-2.5 animate-in fade-in duration-200">
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-foreground font-semibold">
                       Starting Price (₹) *
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold text-xs">
                         ₹
                       </span>
                       <input
                         type="number"
                         {...register("startingFrom", { valueAsNumber: true })}
                         placeholder="750"
-                        className={`w-full pl-7 pr-3 py-2 rounded-lg bg-surface-container border text-foreground font-headline-sm text-lg font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                        className={`w-full h-9 pl-6 pr-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm font-semibold focus:outline-none focus:border-primary/50 ${
                           errors.startingFrom ? "border-destructive" : "border-border"
                         }`}
                       />
                     </div>
                     {errors.startingFrom && (
-                      <span className="text-destructive text-label-sm">
+                      <span className="text-destructive text-xs">
                         {errors.startingFrom.message}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-label-md text-foreground font-semibold">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-foreground font-semibold">
                       Max Price (₹)
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold text-xs">
                         ₹
                       </span>
                       <input
                         type="number"
                         {...register("maxPrice", { valueAsNumber: true })}
                         placeholder="1150"
-                        className="w-full pl-7 pr-3 py-2 rounded-lg bg-surface-container border border-border text-foreground font-headline-sm text-lg font-bold focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="w-full h-9 pl-6 pr-2.5 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm font-semibold focus:outline-none focus:border-primary/50"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/20 text-body-sm text-secondary leading-snug">
-                  Visitors see: <span className="font-bold">Estimated quote range</span>. Exact pricing customized via WhatsApp.
-                </div>
+                <p className="text-[11px] text-muted-foreground leading-snug">
+                  Visitors see an estimated quote range. Exact price finalized on WhatsApp.
+                </p>
               </div>
             ) : (
-              <div className="p-3 rounded-lg bg-surface-container border border-border text-body-sm text-muted-foreground">
-                Pricing is hidden. Card displays <strong className="text-secondary font-semibold">&quot;Custom Quote on WhatsApp&quot;</strong>.
+              <div className="p-2.5 rounded-lg bg-surface-container/40 border border-border text-xs text-muted-foreground">
+                Price is hidden. Public card displays &quot;Custom Quote on WhatsApp&quot;.
               </div>
             )}
 
             {/* Minimum Order Quantity (MOQ) */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-label-md text-foreground font-semibold">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-foreground font-semibold">
                 Minimum Order Quantity (MOQ)
               </label>
               <input
                 type="number"
                 {...register("minimumQuantity", { valueAsNumber: true })}
                 placeholder="50"
-                className="w-full px-4 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm focus:outline-none focus:border-primary/50"
               />
-              <span className="text-label-sm text-muted-foreground">
-                Minimum batch sets required for offset/die casting
+              <span className="text-[11px] text-muted-foreground">
+                Minimum batch sets required for print run
               </span>
             </div>
           </div>
 
           {/* STATUS & SHOWCASE CONTROLS */}
-          <div className="bg-surface-lowest p-6 rounded-xl border border-border shadow-sm flex flex-col gap-4">
-            <h3 className="font-headline-sm text-lg text-foreground font-bold pb-2 border-b border-border/40">
-              Publishing State
+          <div className="bg-surface-lowest p-5 rounded-xl border border-border shadow-2xs flex flex-col gap-3.5">
+            <h3 className="text-sm md:text-base text-foreground font-bold pb-2 border-b border-border/50">
+              Visibility & Publishing
             </h3>
 
             {/* Status Selector */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-label-md text-foreground font-semibold">
-                Catalog State
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-foreground font-semibold">
+                Catalog Status
               </label>
               <select
                 {...register("status")}
-                className="w-full px-3.5 py-2.5 rounded-lg bg-surface-container border border-border text-foreground text-label-md font-semibold cursor-pointer focus:outline-none"
+                className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm font-medium cursor-pointer focus:outline-none focus:border-primary/50"
               >
                 <option value="published">Published (Live on Website)</option>
-                <option value="draft">Draft (Work in Progress)</option>
-                <option value="archived">Archived (Hidden from Catalog)</option>
+                <option value="draft">Draft (Hidden from Catalog)</option>
+                <option value="archived">Archived</option>
               </select>
             </div>
 
             {/* Feature on Home Carousel */}
-            <label className="flex items-center gap-3 p-3 rounded-lg bg-surface-container border border-border/40 cursor-pointer">
+            <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-container/40 border border-border/50 cursor-pointer hover:bg-surface-container/60 transition-colors">
               <input
                 type="checkbox"
                 {...register("featured")}
                 className="w-4 h-4 rounded text-primary accent-primary cursor-pointer"
               />
               <div className="flex flex-col">
-                <span className="text-label-md text-foreground font-semibold">
+                <span className="text-xs text-foreground font-semibold">
                   Feature on Homepage
                 </span>
-                <span className="text-label-sm text-muted-foreground">
-                  Pins product to top showcase carousel
+                <span className="text-[11px] text-muted-foreground">
+                  Highlights item on home carousel
                 </span>
               </div>
             </label>
@@ -937,12 +963,19 @@ export function ProductForm({
         {/* Sticky Save Bar */}
         <div className="lg:col-span-12">
           <StickySaveBar
-            isDirty={isDirty}
+            isDirty={hasUnsavedChanges}
             isSubmitting={isSubmitting}
+            statusText={
+              hasUnsavedChanges
+                ? "Unsaved changes"
+                : isEditMode
+                ? "All changes saved"
+                : "Fill in product details to save"
+            }
             onDiscard={() => router.push("/admin/products")}
             onSaveDraft={handleSubmit((data) => onSubmit(data, "draft"))}
             onPublish={handleSubmit((data) => onSubmit(data, "published"))}
-            saveButtonText={isEditMode ? "Save & Publish" : "Create & Publish"}
+            saveButtonText={isEditMode ? "Save Changes" : "Create Product"}
           />
         </div>
       </form>

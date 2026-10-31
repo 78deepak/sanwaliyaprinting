@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -116,8 +117,14 @@ export function MobileDrawer({
           {/* Header */}
           <div className="p-5 flex items-center justify-between border-b border-border/40">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-md">
-                <Stamp className="w-5 h-5 text-secondary-fixed" />
+              <div className="relative w-10 h-10 shrink-0 flex items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="Sanwaliya Admin Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-headline-sm text-base text-primary font-bold">

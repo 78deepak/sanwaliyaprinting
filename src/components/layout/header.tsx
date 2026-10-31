@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   MapPin,
@@ -88,8 +89,15 @@ export function Header() {
         <div className="h-16 sm:h-20 max-w-[1536px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 flex items-center justify-between gap-2 xl:gap-4">
           {/* Logo & Brand Identity */}
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 shrink-0 group">
-            <div className="w-9 h-9 xl:w-10 xl:h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-xs group-hover:scale-105 transition-transform shrink-0">
-              <Sparkles className="w-4.5 h-4.5 xl:w-5 xl:h-5 text-secondary" />
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 xl:w-11 xl:h-11 shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
+              <Image
+                src="/logo.png"
+                alt="Sanwaliya Printing Press Logo"
+                width={44}
+                height={44}
+                className="w-full h-full object-contain drop-shadow-xs"
+                priority
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-serif text-base sm:text-lg xl:text-xl font-bold tracking-tight text-primary leading-tight whitespace-nowrap">

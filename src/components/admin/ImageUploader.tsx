@@ -247,28 +247,24 @@ export function ImageUploader({
           onChange={(e) => handleFiles(e.target.files)}
         />
 
-        <div className="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary mb-3 shadow-xs">
+        <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary mb-2 shadow-2xs">
           {isUploading ? (
-            <Loader2 className="w-7 h-7 animate-spin text-secondary" />
+            <Loader2 className="w-5 h-5 animate-spin text-secondary" />
           ) : (
-            <UploadCloud className="w-7 h-7" />
+            <UploadCloud className="w-5 h-5" />
           )}
         </div>
 
-        <h4 className="font-headline-sm text-lg text-foreground font-bold">
-          {isUploading ? "Uploading to Cloudinary..." : "Drag & drop atelier photographs here"}
+        <h4 className="text-sm md:text-base text-foreground font-semibold">
+          {isUploading ? "Uploading image..." : "Drag & drop product images here"}
         </h4>
-        <p className="text-body-sm text-muted-foreground mt-1 max-w-sm">
-          or <span className="text-primary font-semibold underline">browse local files</span>. Automatically optimized via Cloudinary (WebP/AVIF auto-format & compression).
+        <p className="text-xs text-muted-foreground mt-0.5 max-w-sm">
+          or <span className="text-primary font-semibold underline">browse local files</span> (JPG, PNG, WebP up to 10MB)
         </p>
 
-        <div className="flex items-center gap-2 mt-3">
-          <span className="text-label-sm text-secondary font-semibold bg-secondary/10 px-3 py-1 rounded-full border border-secondary/20">
-            {images.length + uploadingFiles.length} of {maxImages} images added
-          </span>
-          <span className="text-label-sm text-tertiary font-semibold bg-tertiary/10 px-3 py-1 rounded-full border border-tertiary/20 flex items-center gap-1">
-            <Cloud className="w-3.5 h-3.5" />
-            <span>Cloudinary CDN</span>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-xs text-muted-foreground font-medium bg-surface-container px-2.5 py-0.5 rounded-full border border-border">
+            {images.length + uploadingFiles.length} of {maxImages} uploaded
           </span>
         </div>
       </div>
