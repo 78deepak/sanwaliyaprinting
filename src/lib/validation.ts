@@ -49,7 +49,7 @@ export const productFormSchema = z
       .string()
       .min(10, "Short description must be at least 10 characters")
       .max(300, "Short description cannot exceed 300 characters"),
-    description: z.string().min(10, "Detailed description must be at least 10 characters"),
+    description: z.string().optional().default(""),
     images: z.array(productImageSchema).min(1, "At least one product image is required"),
     availableOptions: z
       .object({

@@ -35,7 +35,7 @@ export interface IProduct extends Document {
   productCode: string;
   category: string;
   shortDescription: string;
-  description: string;
+  description?: string;
   images: IProductImage[];
   availableOptions: IAvailableOptions;
   minimumQuantity: number;
@@ -131,7 +131,8 @@ const ProductSchema = new Schema<IProduct>(
     },
     description: {
       type: String,
-      required: [true, "Detailed description is required"],
+      required: false,
+      default: "",
       trim: true,
     },
     images: {

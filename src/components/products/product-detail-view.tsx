@@ -207,7 +207,7 @@ export function ProductDetailView({
                 </div>
               )}
               <p className="font-body-md text-muted-foreground pt-1 leading-relaxed">
-                {product.description}
+                {product.description || product.shortDescription}
               </p>
             </div>
 

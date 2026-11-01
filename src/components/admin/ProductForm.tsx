@@ -18,6 +18,9 @@ import {
   X,
   Trash2,
   Sparkles,
+  Tag,
+  Check,
+  Plus,
 } from "lucide-react";
 import { AdminProduct, ProductStatus } from "@/data/admin-mock";
 import {
@@ -27,6 +30,7 @@ import {
   checkSlugUniquenessAction,
 } from "@/app/admin/actions";
 import { categories } from "@/data/categories";
+import { getSeoTagsForCategory, getCategorySeoMeta } from "@/data/category-seo";
 import { FormSection } from "./FormSection";
 import { ImageUploader, UploadedImage } from "./ImageUploader";
 import { TagInput } from "./TagInput";
@@ -52,9 +56,7 @@ const productFormSchema = z
       .string()
       .min(5, "Short description is required for catalog preview cards")
       .max(160, "Short description should be under 160 characters"),
-    description: z
-      .string()
-      .min(10, "Full description must be at least 10 characters"),
+    description: z.string().optional(),
     showPrice: z.boolean(),
     startingFrom: z.number().optional(),
     maxPrice: z.number().optional(),
@@ -103,13 +105,9 @@ export function ProductForm({
   const [images, setImages] = useState<UploadedImage[]>(
     initialProduct?.images || []
   );
+  const initialCategory = initialProduct?.category || categories[0]?.slug || "wedding-cards";
   const [tags, setTags] = useState<string[]>(
-    initialProduct?.tags || [
-      "24k Gold Foil",
-      "Dutch Velvet",
-      "Handmade Rag",
-      "शादी कार्ड",
-    ]
+    initialProduct?.tags || getSeoTagsForCategory(initialCategory).slice(0, 5)
   );
   const [sizes, setSizes] = useState<string[]>(
     initialProduct?.availableOptions.sizes || [
@@ -141,6 +139,7 @@ export function ProductForm({
     formState: { errors, isDirty },
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
+    mode: "onChange",
     defaultValues: {
       name: initialProduct?.name || "",
       nameHi: initialProduct?.nameHi || "",
@@ -160,9 +159,96 @@ export function ProductForm({
 
   const watchedName = watch("name");
   const watchedSlug = watch("slug");
-  const watchedShowPrice = watch("showPrice");
-  const watchedShortDesc = watch("shortDescription");
+  const watchedProductCode = watch("productCode");
   const watchedCategory = watch("category");
+  const watchedShortDesc = watch("shortDescription");
+  const watchedShowPrice = watch("showPrice");
+  const watchedStartingFrom = watch("startingFrom");
+  const watchedMinimumQuantity = watch("minimumQuantity");
+
+  // Track all missing required fields so save button is disabled until all entries are filled
+  const missingRequiredFields = React.useMemo(() => {
+    const missing: string[] = [];
+    if (!watchedName || watchedName.trim().length < 2) {
+      missing.push("Product Name");
+    }
+    if (!watchedSlug || watchedSlug.trim().length < 2) {
+      missing.push("URL Slug");
+    }
+    if (!watchedProductCode || watchedProductCode.trim().length < 2) {
+      missing.push("Product Code (SKU)");
+    }
+    if (!watchedCategory || watchedCategory.trim().length === 0) {
+      missing.push("Category");
+    }
+    if (!watchedShortDesc || watchedShortDesc.trim().length < 5) {
+      missing.push("Short Description");
+    }
+    if (images.length === 0) {
+      missing.push("At least 1 Image");
+    }
+    if (watchedShowPrice && (!watchedStartingFrom || watchedStartingFrom <= 0)) {
+      missing.push("Starting Price");
+    }
+    if (!watchedMinimumQuantity || watchedMinimumQuantity < 1) {
+      missing.push("Minimum Quantity");
+    }
+    return missing;
+  }, [
+    watchedName,
+    watchedSlug,
+    watchedProductCode,
+    watchedCategory,
+    watchedShortDesc,
+    images.length,
+    watchedShowPrice,
+    watchedStartingFrom,
+    watchedMinimumQuantity,
+  ]);
+
+  const isFormComplete = missingRequiredFields.length === 0;
+
+  // Save button is enabled ONLY when all required entries are filled completely!
+  const canSave = isEditMode
+    ? isFormComplete && isDirty
+    : isFormComplete;
+
+  const saveBarStatusText = React.useMemo(() => {
+    if (!isFormComplete) {
+      if (missingRequiredFields.length === 1) {
+        return `Please enter ${missingRequiredFields[0]} to enable saving`;
+      }
+      return `Fill required fields: ${missingRequiredFields.slice(0, 2).join(", ")}${missingRequiredFields.length > 2 ? ` (+${missingRequiredFields.length - 2} more)` : ""
+        }`;
+    }
+    if (isDirty) {
+      return "All required fields complete • Ready to save";
+    }
+    return "All changes saved";
+  }, [isFormComplete, missingRequiredFields, isDirty]);
+
+  // Dynamic Category SEO Meta & Matched Tags
+  const categorySeoMeta = React.useMemo(
+    () => getCategorySeoMeta(watchedCategory),
+    [watchedCategory]
+  );
+  const recommendedCategoryTags = React.useMemo(
+    () => getSeoTagsForCategory(watchedCategory),
+    [watchedCategory]
+  );
+
+  const handleAddCategoryTag = (tagToAdd: string) => {
+    if (!tags.includes(tagToAdd)) {
+      setTags((prev) => [...prev, tagToAdd]);
+    }
+  };
+
+  const handleAddAllCategoryTags = () => {
+    const toAdd = recommendedCategoryTags.filter((t) => !tags.includes(t));
+    if (toAdd.length > 0) {
+      setTags((prev) => [...prev, ...toAdd]);
+    }
+  };
 
   // Track if custom option arrays or uploads differ from initial
   const isCustomDirty = React.useMemo(() => {
@@ -252,7 +338,7 @@ export function ProductForm({
         productCode: data.productCode.toUpperCase().trim(),
         category: data.category,
         shortDescription: data.shortDescription,
-        description: data.description,
+        description: data.description || "",
         images: images.map((img, idx) => ({
           url: img.url,
           alt: img.alt || data.name,
@@ -325,7 +411,7 @@ export function ProductForm({
   };
 
   return (
-    <div className="flex flex-col w-full pb-16">
+    <div className="flex flex-col w-full pb-32 md:pb-36">
       {/* Toast alert */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 bg-primary text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in slide-in-from-top-4">
@@ -408,11 +494,11 @@ export function ProductForm({
             title="Basic Information"
             titleHi="Product title, code, and descriptions"
             icon={BookOpen}
-            badge={
-              <span className="text-xs text-muted-foreground bg-surface-container px-2 py-0.5 rounded border border-border">
-                Required *
-              </span>
-            }
+          // badge={
+          //   <span className="text-xs text-muted-foreground bg-surface-container px-2 py-0.5 rounded border border-border">
+          //     Required *
+          //   </span>
+          // }
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Product Name */}
@@ -424,9 +510,8 @@ export function ProductForm({
                   type="text"
                   {...register("name")}
                   placeholder="e.g. Rajwada Velvet Box Suite"
-                  className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
-                    errors.name ? "border-destructive ring-1 ring-destructive" : "border-border"
-                  }`}
+                  className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${errors.name ? "border-destructive ring-1 ring-destructive" : "border-border"
+                    }`}
                 />
                 {errors.name && (
                   <span className="text-destructive text-xs flex items-center gap-1">
@@ -474,11 +559,10 @@ export function ProductForm({
                     {...register("slug")}
                     onBlur={() => handleCheckSlug(watchedSlug)}
                     placeholder="rajwada-velvet-box-suite"
-                    className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
-                      errors.slug || slugStatus.available === false
+                    className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${errors.slug || slugStatus.available === false
                         ? "border-destructive ring-1 ring-destructive"
                         : "border-border"
-                    }`}
+                      }`}
                   />
                   {watchedSlug && !errors.slug && slugStatus.available !== false && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-1">
@@ -528,9 +612,8 @@ export function ProductForm({
                   type="text"
                   {...register("productCode")}
                   placeholder="e.g. RM-W-101"
-                  className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border font-mono uppercase font-semibold text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
-                    errors.productCode ? "border-destructive ring-1 ring-destructive" : "border-border"
-                  }`}
+                  className={`w-full h-9 px-3 rounded-lg bg-surface-container/40 border font-mono uppercase font-semibold text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${errors.productCode ? "border-destructive ring-1 ring-destructive" : "border-border"
+                    }`}
                 />
                 {errors.productCode ? (
                   <span className="text-destructive text-xs flex items-center gap-1">
@@ -551,7 +634,7 @@ export function ProductForm({
                 </label>
                 <select
                   {...register("category")}
-                  className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all cursor-pointer"
+                  className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all cursor-pointer font-medium"
                 >
                   {categories.map((cat) => (
                     <option key={cat.slug} value={cat.slug}>
@@ -563,6 +646,52 @@ export function ProductForm({
                   <span className="text-destructive text-xs">
                     {errors.category.message}
                   </span>
+                )}
+
+                {/* Live Category-Matched SEO Tags preview strip */}
+                {categorySeoMeta && (
+                  <div className="mt-1 p-2.5 rounded-lg bg-surface-container/50 border border-border/80 flex flex-col gap-1.5 animate-in fade-in duration-150">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-primary flex items-center gap-1.5 text-[11px]">
+                        <Sparkles className="w-3.5 h-3.5 text-secondary" />
+                        Matched SEO Tags for {categorySeoMeta.categoryName}:
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleAddAllCategoryTags}
+                        disabled={recommendedCategoryTags.every((t) => tags.includes(t))}
+                        className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 disabled:opacity-40 disabled:no-underline"
+                      >
+                        {recommendedCategoryTags.every((t) => tags.includes(t))
+                          ? "✓ All Tags Added"
+                          : "+ Add All to Tags"}
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {recommendedCategoryTags.map((catTag) => {
+                        const isAdded = tags.includes(catTag);
+                        return (
+                          <button
+                            key={catTag}
+                            type="button"
+                            onClick={() => handleAddCategoryTag(catTag)}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-all ${isAdded
+                                ? "bg-primary/10 text-primary border border-primary/25 cursor-default font-semibold"
+                                : "bg-surface-lowest text-foreground hover:bg-surface-container-high border border-border cursor-pointer hover:border-primary/40 active:scale-95"
+                              }`}
+                          >
+                            {isAdded ? (
+                              <Check className="w-3 h-3 text-primary" />
+                            ) : (
+                              <Plus className="w-3 h-3 text-muted-foreground" />
+                            )}
+                            <span>{catTag}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -580,9 +709,8 @@ export function ProductForm({
                   rows={2}
                   {...register("shortDescription")}
                   placeholder="e.g. Luxurious maroon velvet casing with gold foil leafing and ceremony inserts."
-                  className={`w-full p-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
-                    errors.shortDescription ? "border-destructive ring-1 ring-destructive" : "border-border"
-                  }`}
+                  className={`w-full p-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${errors.shortDescription ? "border-destructive ring-1 ring-destructive" : "border-border"
+                    }`}
                 />
                 {errors.shortDescription && (
                   <span className="text-destructive text-xs">
@@ -593,22 +721,21 @@ export function ProductForm({
 
               {/* Full Description */}
               <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-xs md:text-sm text-foreground font-semibold">
-                  Full Description & Specifications *
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs md:text-sm text-foreground font-semibold">
+                    Full Description & Specifications
+                  </label>
+                  <span className="text-xs text-muted-foreground font-normal">
+                    Optional
+                  </span>
+                </div>
                 <textarea
                   rows={4}
                   {...register("description")}
-                  placeholder="Describe board thickness (GSM), velvet texture, foil stamping details, inserts, and accessories..."
-                  className={`w-full p-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${
-                    errors.description ? "border-destructive ring-1 ring-destructive" : "border-border"
-                  }`}
+                  placeholder="Describe board thickness (GSM), velvet texture, foil stamping details, inserts, and accessories (optional)..."
+                  className={`w-full p-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm focus:bg-surface-lowest focus:border-primary/50 focus:outline-none transition-all ${errors.description ? "border-destructive ring-1 ring-destructive" : "border-border"
+                    }`}
                 />
-                {errors.description && (
-                  <span className="text-destructive text-xs">
-                    {errors.description.message}
-                  </span>
-                )}
               </div>
             </div>
           </FormSection>
@@ -769,9 +896,72 @@ export function ProductForm({
             icon={Search}
           >
             <div className="flex flex-col gap-5">
+              {/* Category-Matched SEO Tags Interactive Panel */}
+              {categorySeoMeta && (
+                <div className="p-4 rounded-xl bg-surface-container/50 border border-primary/25 flex flex-col gap-3 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <Tag className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs md:text-sm font-bold text-foreground flex items-center gap-2">
+                          <span>Matched SEO Keywords for {categorySeoMeta.categoryName}</span>
+                          <span className="font-devanagari text-secondary font-normal text-xs">
+                            ({categorySeoMeta.categoryNameHi})
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground">
+                          Click any keyword below to add it to this product&apos;s active indexing tags
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleAddAllCategoryTags}
+                      disabled={recommendedCategoryTags.every((t) => tags.includes(t))}
+                      className="px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 self-start sm:self-auto shrink-0"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-secondary" />
+                      <span>
+                        {recommendedCategoryTags.every((t) => tags.includes(t))
+                          ? "All Tags Added"
+                          : `+ Add All Category Tags (${recommendedCategoryTags.filter((t) => !tags.includes(t)).length})`}
+                      </span>
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    {recommendedCategoryTags.map((catTag) => {
+                      const isAdded = tags.includes(catTag);
+                      return (
+                        <button
+                          key={catTag}
+                          type="button"
+                          onClick={() => handleAddCategoryTag(catTag)}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${isAdded
+                              ? "bg-primary/15 text-primary border border-primary/30 font-semibold cursor-default"
+                              : "bg-surface-lowest text-foreground hover:bg-surface-container-high border border-border hover:border-primary/50 shadow-2xs active:scale-95 cursor-pointer"
+                            }`}
+                        >
+                          {isAdded ? (
+                            <Check className="w-3.5 h-3.5 text-primary" />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+                          )}
+                          <span>{catTag}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <TagInput
                 tags={tags}
                 onChange={setTags}
+                suggestions={recommendedCategoryTags}
                 label="Search Keywords (English & Hindi)"
               />
 
@@ -816,7 +1006,7 @@ export function ProductForm({
         </div>
 
         {/* Right Sidebar Column (4 cols): Pricing, Status & Publish Controls */}
-        <div className="lg:col-span-4 flex flex-col gap-5 lg:sticky lg:top-20">
+        <div className="lg:col-span-4 flex flex-col gap-5">
           {/* PRICING & ORDER SPECIFICATIONS */}
           <div className="bg-surface-lowest p-5 rounded-xl border border-border shadow-2xs flex flex-col gap-4">
             <div className="flex items-center gap-2 pb-2 border-b border-border/50">
@@ -863,9 +1053,8 @@ export function ProductForm({
                         type="number"
                         {...register("startingFrom", { valueAsNumber: true })}
                         placeholder="750"
-                        className={`w-full h-9 pl-6 pr-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm font-semibold focus:outline-none focus:border-primary/50 ${
-                          errors.startingFrom ? "border-destructive" : "border-border"
-                        }`}
+                        className={`w-full h-9 pl-6 pr-2.5 rounded-lg bg-surface-container/40 border text-foreground text-xs md:text-sm font-semibold focus:outline-none focus:border-primary/50 ${errors.startingFrom ? "border-destructive" : "border-border"
+                          }`}
                       />
                     </div>
                     {errors.startingFrom && (
@@ -921,19 +1110,19 @@ export function ProductForm({
           </div>
 
           {/* STATUS & SHOWCASE CONTROLS */}
-          <div className="bg-surface-lowest p-5 rounded-xl border border-border shadow-2xs flex flex-col gap-3.5">
+          <div className="bg-surface-lowest p-5 rounded-xl border border-border shadow-2xs flex flex-col gap-4">
             <h3 className="text-sm md:text-base text-foreground font-bold pb-2 border-b border-border/50">
               Visibility & Publishing
             </h3>
 
             {/* Status Selector */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               <label className="text-xs text-foreground font-semibold">
                 Catalog Status
               </label>
               <select
                 {...register("status")}
-                className="w-full h-9 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm font-medium cursor-pointer focus:outline-none focus:border-primary/50"
+                className="w-full h-10 px-3 rounded-lg bg-surface-container/40 border border-border text-foreground text-xs md:text-sm font-medium cursor-pointer focus:outline-none focus:border-primary/50"
               >
                 <option value="published">Published (Live on Website)</option>
                 <option value="draft">Draft (Hidden from Catalog)</option>
@@ -942,36 +1131,34 @@ export function ProductForm({
             </div>
 
             {/* Feature on Home Carousel */}
-            <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-container/40 border border-border/50 cursor-pointer hover:bg-surface-container/60 transition-colors">
+            <label className="flex items-center justify-between p-3.5 rounded-xl bg-surface-container/40 border border-border/70 cursor-pointer hover:bg-surface-container/70 transition-colors">
+              <div className="flex flex-col gap-0.5 pr-2">
+                <span className="text-xs md:text-sm text-foreground font-semibold">
+                  Feature on Homepage
+                </span>
+                <span className="text-[11px] text-muted-foreground leading-snug">
+                  Showcase design in curated homepage collection
+                </span>
+              </div>
               <input
                 type="checkbox"
                 {...register("featured")}
-                className="w-4 h-4 rounded text-primary accent-primary cursor-pointer"
+                className="w-5 h-5 rounded text-primary accent-primary cursor-pointer shrink-0"
               />
-              <div className="flex flex-col">
-                <span className="text-xs text-foreground font-semibold">
-                  Feature on Homepage
-                </span>
-                <span className="text-[11px] text-muted-foreground">
-                  Highlights item on home carousel
-                </span>
-              </div>
             </label>
           </div>
         </div>
+
+        {/* Clearance Spacer so content never overlaps behind sticky save bar */}
+        <div className="hidden lg:block lg:col-span-12 h-6" />
 
         {/* Sticky Save Bar */}
         <div className="lg:col-span-12">
           <StickySaveBar
             isDirty={hasUnsavedChanges}
             isSubmitting={isSubmitting}
-            statusText={
-              hasUnsavedChanges
-                ? "Unsaved changes"
-                : isEditMode
-                ? "All changes saved"
-                : "Fill in product details to save"
-            }
+            canSave={canSave}
+            statusText={saveBarStatusText}
             onDiscard={() => router.push("/admin/products")}
             onSaveDraft={handleSubmit((data) => onSubmit(data, "draft"))}
             onPublish={handleSubmit((data) => onSubmit(data, "published"))}

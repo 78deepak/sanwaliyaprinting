@@ -108,7 +108,7 @@ export function TagInput({
           <span className="text-label-sm text-muted-foreground mr-1">Suggestions:</span>
           {suggestions
             .filter((s) => !tags.includes(s))
-            .slice(0, 6)
+            .slice(0, 10)
             .map((suggestion) => (
               <button
                 key={suggestion}
