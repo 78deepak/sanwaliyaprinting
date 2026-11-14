@@ -127,8 +127,8 @@ export const siteSettingsSchema = z.object({
   tagline: z.string().min(3, "Tagline is required"),
   taglineHi: z.string().min(3, "Hindi tagline is required"),
   establishedYear: z.number().default(1994),
-  ownerName: z.string().min(2, "Owner name must be at least 2 characters").default("Ramesh Patidar (Owner)"),
-  ownerEmail: z.string().email("Please enter a valid email address").optional().or(z.literal("")).default("ramesh@sanwaliyapress.in"),
+  ownerName: z.string().min(2, "Owner name must be at least 2 characters").default("Owner"),
+  ownerEmail: z.string().email("Please enter a valid email address").optional().or(z.literal("")).default(""),
   socialLinks: z
     .object({
       instagram: z.string().optional().default(""),

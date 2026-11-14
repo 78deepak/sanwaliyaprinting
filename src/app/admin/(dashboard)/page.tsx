@@ -70,7 +70,7 @@ export default async function AdminDashboardPage() {
             </div>
 
             <h1 className="font-headline-lg text-xl md:text-2xl text-primary font-bold tracking-tight">
-              Namaste {settings.ownerName ? settings.ownerName.replace(/\s*\(Owner\)/i, "").trim() : "Ramesh ji"}{" "}
+              Namaste {settings.ownerName ? settings.ownerName.replace(/\s*\(Owner\)/i, "").trim() : "Shopkeeper"}{" "}
               <span className="font-headline-md text-lg md:text-xl font-normal text-muted-foreground ml-1">
                 (दुकानदार डैशबोर्ड)
               </span>

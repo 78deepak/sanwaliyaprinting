@@ -89,7 +89,7 @@ export function CustomEnquiryClient() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Ramesh Patidar"
+                placeholder="e.g. Rahul Sharma"
                 className="w-full bg-surface-low px-4 py-3 rounded-xl text-xs text-foreground placeholder:text-muted-foreground border border-border/70 outline-none focus:border-primary"
               />
             </div>

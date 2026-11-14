@@ -99,12 +99,12 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
     },
     ownerName: {
       type: String,
-      default: "Ramesh Patidar (Owner)",
+      default: "Owner",
       trim: true,
     },
     ownerEmail: {
       type: String,
-      default: "ramesh@sanwaliyapress.in",
+      default: "",
       trim: true,
     },
   },

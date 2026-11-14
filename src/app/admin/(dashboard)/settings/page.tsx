@@ -35,8 +35,8 @@ const initialDefaults: SiteSettingsValues = {
   tagline: "Fine Print Studio & Bespoke Wedding Stationery",
   taglineHi: "शाही विवाह पत्रिका, विजिटिंग कार्ड्स एवं कमर्शियल प्रिंटिंग",
   establishedYear: 1994,
-  ownerName: "Ramesh Patidar (Owner)",
-  ownerEmail: "ramesh@sanwaliyapress.in",
+  ownerName: "",
+  ownerEmail: "",
   socialLinks: {
     instagram: "https://instagram.com/sanwaliyapress",
     facebook: "https://facebook.com/sanwaliyapress",
@@ -279,7 +279,7 @@ export default function AdminSettingsPage() {
               type="text"
               value={settings.ownerName || ""}
               onChange={(e) => setSettings({ ...settings, ownerName: e.target.value })}
-              placeholder="e.g. Ramesh Patidar (Owner)"
+              placeholder="e.g. Gotam Patidar (Owner)"
               className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
             />
           </div>
@@ -293,7 +293,7 @@ export default function AdminSettingsPage() {
               type="email"
               value={settings.ownerEmail || ""}
               onChange={(e) => setSettings({ ...settings, ownerEmail: e.target.value })}
-              placeholder="e.g. ramesh@sanwaliyapress.in"
+              placeholder="e.g. contact@sanwaliyapress.in"
               className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
             />
           </div>
@@ -526,11 +526,10 @@ export default function AdminSettingsPage() {
 
       {/* STICKY BOTTOM SAVE ACTION BAR */}
       <div
-        className={`sticky bottom-4 z-30 p-3 sm:p-4 rounded-xl border transition-all flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg ${
-          isDirty
+        className={`sticky bottom-4 z-30 p-3 sm:p-4 rounded-xl border transition-all flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg ${isDirty
             ? "bg-surface-lowest border-amber-500/40 ring-1 ring-amber-500/20"
             : "bg-surface-lowest/90 border-border"
-        }`}
+          }`}
       >
         <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
           {isDirty ? (
