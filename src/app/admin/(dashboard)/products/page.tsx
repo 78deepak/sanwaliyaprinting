@@ -221,12 +221,12 @@ export default function AdminProductsPage() {
       {/* Top Header & Page Title */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <span className="w-1.5 h-6 rounded-full bg-secondary" />
             <span className="text-label-sm uppercase tracking-widest text-secondary font-bold">
               Atelier Master Index
             </span>
-          </div>
+          </div> */}
 
           <h1 className="font-headline-lg text-2xl md:text-3xl text-primary tracking-tight font-bold flex items-baseline gap-3 flex-wrap">
             <span>Products Catalogue</span>
@@ -235,9 +235,9 @@ export default function AdminProductsPage() {
             </span>
           </h1>
 
-          <p className="text-body-md text-muted-foreground max-w-2xl">
+          {/* <p className="text-body-md text-muted-foreground max-w-2xl">
             Manage, search, filter, and curate your bespoke print designs, wedding suites, and commercial stationery inventory.
-          </p>
+          </p> */}
         </div>
 
         {/* Quick Stats + Add Product CTA */}
@@ -348,11 +348,10 @@ export default function AdminProductsPage() {
                 setSelectedStatus("all");
                 setCurrentPage(1);
               }}
-              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
-                selectedStatus === "all"
-                  ? "bg-surface-lowest text-primary font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground font-semibold"
-              }`}
+              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${selectedStatus === "all"
+                ? "bg-surface-lowest text-primary font-bold shadow-xs"
+                : "text-muted-foreground hover:text-foreground font-semibold"
+                }`}
             >
               All Products
             </button>
@@ -363,11 +362,10 @@ export default function AdminProductsPage() {
                 setSelectedStatus("published");
                 setCurrentPage(1);
               }}
-              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
-                selectedStatus === "published"
-                  ? "bg-surface-lowest text-primary font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground font-semibold"
-              }`}
+              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${selectedStatus === "published"
+                ? "bg-surface-lowest text-primary font-bold shadow-xs"
+                : "text-muted-foreground hover:text-foreground font-semibold"
+                }`}
             >
               Published
             </button>
@@ -378,11 +376,10 @@ export default function AdminProductsPage() {
                 setSelectedStatus("draft");
                 setCurrentPage(1);
               }}
-              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${
-                selectedStatus === "draft"
-                  ? "bg-surface-lowest text-primary font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground font-semibold"
-              }`}
+              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${selectedStatus === "draft"
+                ? "bg-surface-lowest text-primary font-bold shadow-xs"
+                : "text-muted-foreground hover:text-foreground font-semibold"
+                }`}
             >
               Drafts
             </button>
@@ -396,11 +393,10 @@ export default function AdminProductsPage() {
                 setFeaturedOnly(!featuredOnly);
                 setCurrentPage(1);
               }}
-              className={`min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-label-sm font-semibold transition-colors ${
-                featuredOnly
-                  ? "bg-secondary/15 text-secondary border-secondary/40 font-bold"
-                  : "bg-surface-container hover:bg-surface-container-high border-border text-foreground"
-              }`}
+              className={`min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-label-sm font-semibold transition-colors ${featuredOnly
+                ? "bg-secondary/15 text-secondary border-secondary/40 font-bold"
+                : "bg-surface-container hover:bg-surface-container-high border-border text-foreground"
+                }`}
             >
               <Star className={`w-3.5 h-3.5 ${featuredOnly ? "fill-current" : ""}`} />
               <span>Featured Only</span>

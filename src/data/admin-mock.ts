@@ -86,7 +86,7 @@ export const adminMetrics: AdminMetrics = {
   catalogueHealth: 88,
   atelierStatus: "Atelier Operational",
   syncStatus: "Live Website Online",
-  branch: "Suwasra Mandi Branch",
+  branch: "Suwasra Mandi",
 };
 
 export const shopkeeperNotes: ShopkeeperNote[] = [
@@ -573,10 +573,10 @@ export async function saveMockAdminProduct(productData: Partial<AdminProduct>): 
     mockProductsState = mockProductsState.map((p) =>
       p.id === productData.id
         ? ({
-            ...p,
-            ...productData,
-            updatedAt: "Just now",
-          } as AdminProduct)
+          ...p,
+          ...productData,
+          updatedAt: "Just now",
+        } as AdminProduct)
         : p
     );
     const updated = mockProductsState.find((p) => p.id === productData.id)!;

@@ -16,7 +16,7 @@ import {
   Loader2,
   ShieldAlert,
 } from "lucide-react";
-import { loginAction, checkLockoutStatusAction } from "@/app/admin/auth-actions";
+import { loginAction, checkLockoutStatusAction, resetLockoutAction } from "@/app/admin/auth-actions";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -119,18 +119,33 @@ export default function AdminLoginPage() {
           {/* Error Banner */}
           {error && (
             <div
-              className={`w-full mt-5 p-3.5 rounded-lg border flex items-center gap-2.5 text-left text-body-sm animate-in fade-in ${
+              className={`w-full mt-5 p-3.5 rounded-lg border flex flex-col gap-2 text-left text-body-sm animate-in fade-in ${
                 isLocked
                   ? "bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300"
                   : "bg-destructive/10 border-destructive/30 text-destructive"
               }`}
             >
-              {isLocked ? (
-                <ShieldAlert className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" />
-              ) : (
-                <AlertCircle className="w-5 h-5 shrink-0" />
+              <div className="flex items-center gap-2.5">
+                {isLocked ? (
+                  <ShieldAlert className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 shrink-0" />
+                )}
+                <span>{error}</span>
+              </div>
+              {isLocked && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await resetLockoutAction();
+                    setIsLocked(false);
+                    setError(null);
+                  }}
+                  className="self-start text-xs font-bold text-primary dark:text-secondary underline hover:opacity-80 transition-opacity ml-7 cursor-pointer"
+                >
+                  Unlock control desk now
+                </button>
               )}
-              <span>{error}</span>
             </div>
           )}
 
