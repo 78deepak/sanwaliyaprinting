@@ -202,15 +202,15 @@ export default async function AdminDashboardPage() {
             </Link>
 
             {/* WhatsApp Link */}
-            <a
-              href={`https://wa.me/${settings.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-8.5 sm:h-9 px-3 rounded-lg bg-tertiary hover:bg-tertiary/90 text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] whitespace-nowrap shrink-0"
-            >
-              <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>WhatsApp Link</span>
-            </a>
+            {/* <a
+                href={`https://wa.me/${settings.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-8.5 sm:h-9 px-3 rounded-lg bg-tertiary hover:bg-tertiary/90 text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] whitespace-nowrap shrink-0"
+              >
+                <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>WhatsApp Link</span>
+              </a> */}
           </div>
         </div>
       </div>
@@ -232,12 +232,12 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          <Link
+          {/* <Link
             href="/admin/products"
             className="px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground hover:text-primary text-label-sm font-semibold transition-colors shrink-0"
           >
             All Products ({total})
-          </Link>
+          </Link> */}
         </div>
 
         {/* Product List Stack */}
