@@ -229,15 +229,26 @@ function AdminProductsContent() {
         onCancel={() => setBulkDeleteDialogOpen(false)}
       />
 
-      {/* Top Header & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
-            Products
+      {/* Top Header & Page Title */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          {/* <div className="flex items-center gap-2">
+            <span className="w-1.5 h-6 rounded-full bg-secondary" />
+            <span className="text-label-sm uppercase tracking-widest text-secondary font-bold">
+              Atelier Master Index
+            </span>
+          </div> */}
+
+          <h1 className="font-headline-lg text-2xl md:text-3xl text-primary tracking-tight font-bold flex items-baseline gap-3 flex-wrap">
+            <span>Products Catalogue</span>
+            <span className="font-headline-md text-xl md:text-2xl text-muted-foreground font-normal">
+              (उत्पाद सूची)
+            </span>
           </h1>
-          <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-            Manage your catalog items, pricing, and live website visibility ({totalItems} {totalItems === 1 ? "product" : "products"}).
-          </p>
+
+          {/* <p className="text-body-md text-muted-foreground max-w-2xl">
+            Manage, search, filter, and curate your bespoke print designs, wedding suites, and commercial stationery inventory.
+          </p> */}
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
@@ -337,11 +348,10 @@ function AdminProductsContent() {
                 setSelectedStatus("all");
                 setCurrentPage(1);
               }}
-              className={`h-7 px-3 rounded-md text-xs font-medium transition-all ${
-                selectedStatus === "all"
-                  ? "bg-surface-lowest text-foreground font-semibold shadow-2xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${selectedStatus === "all"
+                ? "bg-surface-lowest text-primary font-bold shadow-xs"
+                : "text-muted-foreground hover:text-foreground font-semibold"
+                }`}
             >
               All ({totalItems})
             </button>
@@ -352,11 +362,10 @@ function AdminProductsContent() {
                 setSelectedStatus("published");
                 setCurrentPage(1);
               }}
-              className={`h-7 px-3 rounded-md text-xs font-medium transition-all ${
-                selectedStatus === "published"
-                  ? "bg-surface-lowest text-foreground font-semibold shadow-2xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${selectedStatus === "published"
+                ? "bg-surface-lowest text-primary font-bold shadow-xs"
+                : "text-muted-foreground hover:text-foreground font-semibold"
+                }`}
             >
               Published
             </button>
@@ -367,31 +376,42 @@ function AdminProductsContent() {
                 setSelectedStatus("draft");
                 setCurrentPage(1);
               }}
-              className={`h-7 px-3 rounded-md text-xs font-medium transition-all ${
-                selectedStatus === "draft"
-                  ? "bg-surface-lowest text-foreground font-semibold shadow-2xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`min-h-[34px] px-3.5 py-1 rounded-md text-label-md transition-all ${selectedStatus === "draft"
+                ? "bg-surface-lowest text-primary font-bold shadow-xs"
+                : "text-muted-foreground hover:text-foreground font-semibold"
+                }`}
             >
               Drafts
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setFeaturedOnly(!featuredOnly);
-              setCurrentPage(1);
-            }}
-            className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg border text-xs font-medium transition-colors ${
-              featuredOnly
-                ? "bg-secondary/15 text-secondary border-secondary/40 font-semibold"
-                : "bg-surface-container/40 hover:bg-surface-container border-border text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Star className={`w-3 h-3 ${featuredOnly ? "fill-current" : ""}`} />
-            <span>Featured</span>
-          </button>
+          {/* Quick Toggles */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setFeaturedOnly(!featuredOnly);
+                setCurrentPage(1);
+              }}
+              className={`min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-label-sm font-semibold transition-colors ${featuredOnly
+                ? "bg-secondary/15 text-secondary border-secondary/40 font-bold"
+                : "bg-surface-container hover:bg-surface-container-high border-border text-foreground"
+                }`}
+            >
+              <Star className={`w-3.5 h-3.5 ${featuredOnly ? "fill-current" : ""}`} />
+              <span>Featured Only</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-border text-muted-foreground hover:text-foreground text-label-sm font-semibold transition-colors"
+              title="Export Products as CSV"
+            >
+              <FileDown className="w-3.5 h-3.5" />
+              <span>Export CSV</span>
+            </button>
+          </div>
         </div>
       </div>
 

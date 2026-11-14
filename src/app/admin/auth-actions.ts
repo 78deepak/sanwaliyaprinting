@@ -117,3 +117,12 @@ export async function logoutAction(): Promise<void> {
   await clearAdminSessionCookie();
   redirect("/admin/login");
 }
+
+/**
+ * Manually reset lockout for the current client IP (recovery action).
+ */
+export async function resetLockoutAction(): Promise<{ success: boolean }> {
+  const ip = await getClientIp();
+  await resetLoginRateLimit(ip);
+  return { success: true };
+}

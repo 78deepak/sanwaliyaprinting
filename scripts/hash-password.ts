@@ -27,10 +27,11 @@ async function main() {
     try {
       const saltRounds = 10;
       const hash = await bcrypt.hash(trimmed, saltRounds);
+      const escapedHash = hash.replace(/\$/g, "\\$");
 
       console.log("\n✅ Hash generated successfully!");
       console.log("\nCopy and paste this into your .env.local file:\n");
-      console.log(`ADMIN_PASSWORD_HASH=${hash}\n`);
+      console.log(`ADMIN_PASSWORD_HASH="${escapedHash}"\n`);
       console.log("⚠️ Keep this hash secret. Never commit .env.local to Git!\n");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Unknown error";

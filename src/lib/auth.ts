@@ -64,20 +64,40 @@ function getAdminPasswordHash(): string | undefined {
  * Verify plaintext password against the stored bcrypt hash.
  */
 export async function verifyAdminPassword(password: string): Promise<boolean> {
-  // Allow direct password match in dev if ADMIN_PASSWORD is set
-  if (process.env.ADMIN_PASSWORD && password === process.env.ADMIN_PASSWORD) {
-    return true;
-  }
+  let hash = process.env.ADMIN_PASSWORD_HASH;
 
-  const hash = getAdminPasswordHash();
+  // Next.js uses dotenv-expand which clears strings containing '$' unless escaped with '\'
+  if (!hash || hash.trim() === "") {
+    try {
+      const fs = await import("fs");
+      const path = await import("path");
+      const envPath = path.join(process.cwd(), ".env.local");
+      if (fs.existsSync(envPath)) {
+        const content = fs.readFileSync(envPath, "utf8");
+        const match = content.match(/ADMIN_PASSWORD_HASH\s*=\s*["']?([^"'\r\n]+)["']?/);
+        if (match && match[1]) {
+          hash = match[1].replaceAll("\\$", "$");
+        }
+      }
+    } catch (e) {
+      console.warn("Could not read fallback from .env.local:", e);
+    }
+  }
 
   if (!hash) {
     console.error("❌ ADMIN_PASSWORD_HASH is not configured in environment variables.");
     return false;
   }
 
+  // Ensure clean hash without residual escape backslashes or wrapping quotes
+  const cleanHash = hash
+    .replaceAll("\\$", "$")
+    .replace(/^"(.*)"$/, "$1")
+    .replace(/^'(.*)'$/, "$1")
+    .trim();
+
   try {
-    return await bcrypt.compare(password, hash);
+    return await bcrypt.compare(password, cleanHash);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     console.error("❌ Bcrypt password verification failed:", msg);
