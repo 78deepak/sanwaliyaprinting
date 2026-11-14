@@ -142,14 +142,14 @@ describe("2. Zod Validation Schemas", () => {
       whatsapp: "916264350165",
       address: "Sadar Bazar, Suwasra",
       addressHi: "सदर बाजार, सुवासरा",
-      openingHours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      openingHours: "Mon - Sun: 10:00 AM - 8:30 PM",
       establishedYear: 1994,
     };
 
     const result = siteSettingsSchema.safeParse(validSettings);
     assert.equal(result.success, true, "Valid settings must pass schema validation");
     if (result.success) {
-      assert.equal(result.data.ownerName, "Ramesh Patidar (Owner)", "Defaults ownerName when omitted");
+      assert.equal(result.data.ownerName, "Owner", "Defaults ownerName when omitted");
     }
 
     // Custom owner name test

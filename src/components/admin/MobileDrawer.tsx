@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { logoutAction } from "@/app/admin/auth-actions";
+import { useSiteSettings } from "@/lib/use-settings";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -32,10 +33,11 @@ export function MobileDrawer({
   isOpen,
   onClose,
   totalProductsCount = 48,
-  ownerName = "Ramesh Patidar (Owner)",
+  ownerName: initialOwnerName,
 }: MobileDrawerProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { ownerName } = useSiteSettings(initialOwnerName);
 
   // Close drawer on path change
   useEffect(() => {
@@ -143,8 +145,8 @@ export function MobileDrawer({
             <div className="p-2 rounded-lg bg-surface-container flex items-center justify-between border border-border/30">
               <div className="flex items-center gap-2 min-w-0 pr-1">
                 <CheckCircle2 className="w-4 h-4 text-secondary shrink-0" />
-                <span className="text-label-sm font-semibold text-foreground truncate" title={ownerName}>
-                  {ownerName}
+                <span className="text-label-sm font-semibold text-foreground truncate" title={ownerName || "Store Owner"}>
+                  {ownerName || "Store Owner"}
                 </span>
               </div>
               <span className="w-2 h-2 rounded-full bg-secondary" />

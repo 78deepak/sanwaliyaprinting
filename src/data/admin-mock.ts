@@ -115,11 +115,11 @@ export const mockShopSettings: ShopSettings = {
   callingPhone: "+91 98765 43210",
   address:
     "Ramsnehi Patidar Complex, Sadar Bazar near Sabha Chok, Suwasra, Teh. Suwasra, Dist. Mandsaur, Madhya Pradesh",
-  operatingHours: "Mon - Sat: 10:00 AM - 8:30 PM | Sunday: By Appointment",
+  operatingHours: "Mon - Sun: 10:00 AM - 8:30 PM | Sunday: By Appointment",
   whatsappTemplate:
     "Namaste Sanwaliya Printing Press, I would like to inquire about [Product Name] (Code: [Code]). Estimated quantity: [Qty]. Please provide pricing and gold foil stamping timeline for Suwasra dispatch.",
-  ownerName: "Ramesh Patidar (Owner)",
-  ownerEmail: "ramesh@sanwaliyapress.in",
+  ownerName: "Owner",
+  ownerEmail: "owner@sanwaliyapress.in",
   lastSynced: "Today, 04:15 PM IST",
 };
 

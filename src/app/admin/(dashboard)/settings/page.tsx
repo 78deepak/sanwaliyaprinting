@@ -41,8 +41,8 @@ const initialDefaults: SiteSettingsValues = {
   tagline: "Fine Print Studio & Bespoke Wedding Stationery",
   taglineHi: "शाही विवाह पत्रिका, विजिटिंग कार्ड्स एवं कमर्शियल प्रिंटिंग",
   establishedYear: 1994,
-  ownerName: "Ramesh Patidar (Owner)",
-  ownerEmail: "ramesh@sanwaliyapress.in",
+  ownerName: "",
+  ownerEmail: "",
   socialLinks: {
     instagram: "https://instagram.com/sanwaliyapress",
     facebook: "https://facebook.com/sanwaliyapress",
@@ -309,44 +309,33 @@ export default function AdminSettingsPage() {
                 />
               </div>
 
-              {/* Owner / Proprietor Name */}
+              {/* Owner Name */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <User className="w-4 h-4 text-secondary" />
-                    <span>Owner Name (मालिक का नाम)</span>
-                  </span>
-                  <span className="text-label-sm text-secondary font-medium">
-                    Sidebar Badge
-                  </span>
+                <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-secondary shrink-0" />
+                  <span>Owner Name (मालिक का नाम)</span>
                 </label>
                 <input
                   type="text"
                   value={settings.ownerName || ""}
                   onChange={(e) => setSettings({ ...settings, ownerName: e.target.value })}
-                  placeholder="e.g. Ramesh Patidar (Owner)"
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
+                  placeholder="e.g. Gotam Patidar (Owner)"
+                  className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
                 />
-                <p className="text-[12px] text-muted-foreground leading-snug">
-                  Displayed on the verified owner badge in the Admin Sidebar & Console.
-                </p>
               </div>
 
               {/* Owner Email */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-label-md text-foreground font-semibold">
+                <label className="text-xs sm:text-sm font-semibold text-foreground">
                   Owner Email (संचालक ईमेल)
                 </label>
                 <input
                   type="email"
                   value={settings.ownerEmail || ""}
                   onChange={(e) => setSettings({ ...settings, ownerEmail: e.target.value })}
-                  placeholder="e.g. ramesh@sanwaliyapress.in"
-                  className="w-full bg-surface-container border border-border text-foreground text-body-md px-4 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
+                  placeholder="e.g. contact@sanwaliyapress.in"
+                  className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20"
                 />
-                <p className="text-[12px] text-muted-foreground leading-snug">
-                  Primary administrator email for store communications.
-                </p>
               </div>
 
               {/* WhatsApp Hotline */}

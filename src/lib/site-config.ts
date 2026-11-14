@@ -10,7 +10,7 @@ export const siteConfig = {
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "916264350165", // International format without plus or symbols
   address: "Ramsnehi Patidar Complex, Sadar Bazar, Suwasra (Dist. Mandsaur, M.P.)",
   addressShort: "Sadar Bazar, Suwasra (M.P.)",
-  hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+  hours: "Mon - Sun: 10:00 AM - 8:30 PM",
   googleMapsUrl: "https://maps.google.com/?q=Suwasra+Mandsaur+Madhya+Pradesh",
   serviceAreas: ["Suwasra", "Shamgarh", "Garoth", "Sitamau", "Mandsaur", "Jaora", "Ratlam", "Indore", "All India Shipping"],
   establishedYear: "1994",

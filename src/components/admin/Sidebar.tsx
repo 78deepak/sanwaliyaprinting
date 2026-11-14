@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { logoutAction } from "@/app/admin/auth-actions";
+import { useSiteSettings } from "@/lib/use-settings";
 
 interface SidebarProps {
   className?: string;
@@ -29,10 +30,11 @@ interface SidebarProps {
 export function Sidebar({
   className = "",
   totalProductsCount = 48,
-  ownerName = "Ramesh Patidar (Owner)",
+  ownerName: initialOwnerName,
 }: SidebarProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { ownerName } = useSiteSettings(initialOwnerName);
 
   const navItems = [
     {
@@ -106,8 +108,8 @@ export function Sidebar({
           <div className="p-2.5 rounded-lg bg-surface-container flex items-center justify-between border border-border/40">
             <div className="flex items-center gap-2 min-w-0 pr-1">
               <CheckCircle2 className="w-4 h-4 text-secondary shrink-0" />
-              <span className="text-label-sm text-foreground font-semibold truncate" title={ownerName}>
-                {ownerName}
+              <span className="text-label-sm text-foreground font-semibold truncate" title={ownerName || "Store Owner"}>
+                {ownerName || "Store Owner"}
               </span>
             </div>
             <span className="w-2 h-2 rounded-full bg-secondary" />
