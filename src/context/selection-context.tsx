@@ -34,25 +34,32 @@ const SelectionContext = createContext<SelectionContextType | undefined>(undefin
 const STORAGE_KEY = "sanwaliya_shortlist_v1";
 
 export function SelectionProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<ShortlistItem[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [items, setItems] = useState<ShortlistItem[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Save to localStorage on change
+  // Load from localStorage only on client after mount to prevent SSR hydration mismatch
   useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setItems(JSON.parse(stored));
+      }
+    } catch {
+      // LocalStorage error handled
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save to localStorage on change, but only after initial load completes
+  useEffect(() => {
+    if (!isLoaded) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {
       // LocalStorage error handled
     }
-  }, [items]);
+  }, [items, isLoaded]);
 
   const hasItem = (productId: string) => {
     return items.some((item) => item.productId === productId);

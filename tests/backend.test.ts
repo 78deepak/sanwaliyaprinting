@@ -156,10 +156,12 @@ describe("2. Zod Validation Schemas", () => {
     const customOwnerResult = siteSettingsSchema.safeParse({
       ...validSettings,
       ownerName: "Deepak Patidar (Director)",
+      establishedYear: 1990,
     });
-    assert.equal(customOwnerResult.success, true, "Custom ownerName must pass schema validation");
+    assert.equal(customOwnerResult.success, true, "Custom ownerName & establishedYear must pass schema validation");
     if (customOwnerResult.success) {
       assert.equal(customOwnerResult.data.ownerName, "Deepak Patidar (Director)");
+      assert.equal(customOwnerResult.data.establishedYear, 1990);
     }
 
     const invalidSettings = {

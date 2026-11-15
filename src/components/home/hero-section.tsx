@@ -19,6 +19,7 @@ import {
 import { siteConfig } from "@/lib/site-config";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
 import { useSelection } from "@/context/selection-context";
+import { useSiteSettings } from "@/lib/use-settings";
 import { Product } from "@/types/product";
 
 interface HeroSectionProps {
@@ -27,6 +28,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ featuredProduct }: HeroSectionProps) {
   const { toggleItem, hasItem } = useSelection();
+  const { phone, establishedYear } = useSiteSettings();
   const rajwadaProduct = featuredProduct || null;
   const isSelected = rajwadaProduct ? hasItem(rajwadaProduct.id) : false;
 
@@ -41,7 +43,7 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
           </p>
         </div>
         <a
-          href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
+          href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
           className="shrink-0 flex items-center gap-1 bg-primary-container text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs active:scale-95 transition-transform"
         >
           <Phone className="w-3 h-3 text-secondary" />
@@ -262,7 +264,7 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
                   </p>
                 </div>
                 <span className="font-label-sm text-secondary font-bold">
-                  Estd. 1994
+                  Estd. {establishedYear}
                 </span>
               </div>
             </div>

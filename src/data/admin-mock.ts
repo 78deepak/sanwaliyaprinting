@@ -66,6 +66,7 @@ export interface ShopkeeperNote {
 export interface ShopSettings {
   shopName: string;
   tagline: string;
+  establishedYear?: number;
   whatsappNumber: string;
   callingPhone: string;
   address: string;
@@ -110,7 +111,8 @@ export const shopkeeperNotes: ShopkeeperNote[] = [
 
 export const mockShopSettings: ShopSettings = {
   shopName: "Sanwaliya Printing Press (सांवलिया प्रिंटिंग प्रेस)",
-  tagline: "Fine Print Studio & Wedding Invitation Atelier • Estd. 1994",
+  tagline: "Fine Print Studio & Wedding Invitation Atelier",
+  establishedYear: 1994,
   whatsappNumber: "919876543210",
   callingPhone: "+91 98765 43210",
   address:

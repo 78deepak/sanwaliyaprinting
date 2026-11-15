@@ -14,6 +14,7 @@ import {
   Copy,
   Terminal,
   User,
+  Calendar,
 } from "lucide-react";
 import {
   getSiteSettingsAction,
@@ -282,6 +283,31 @@ export default function AdminSettingsPage() {
               placeholder="e.g. Gotam Patidar (Owner)"
               className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
             />
+          </div>
+
+          {/* Established Year */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-secondary shrink-0" />
+              <span>Established Year (स्थापना वर्ष / Estd.)</span>
+            </label>
+            <input
+              type="number"
+              value={settings.establishedYear ?? 1994}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  establishedYear: parseInt(e.target.value, 10) || 1994,
+                })
+              }
+              placeholder="e.g. 1994"
+              min="1900"
+              max={new Date().getFullYear()}
+              className="w-full bg-surface-container border border-border text-foreground text-xs sm:text-sm px-3.5 py-2.5 rounded-lg focus:outline-none focus:bg-surface-lowest focus:ring-2 focus:ring-primary/20 font-semibold"
+            />
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              Appears on website header &amp; hero as &quot;Estd. {settings.establishedYear || 1994}&quot; and in footer copyright.
+            </p>
           </div>
 
           {/* Owner Email */}

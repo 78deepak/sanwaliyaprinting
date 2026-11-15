@@ -1,10 +1,14 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Sparkles, Home, Search, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/use-settings";
 
 export default function NotFound() {
+  const { phone } = useSiteSettings();
   return (
     <div className="min-h-[75vh] flex items-center justify-center pt-28 pb-16 px-4 sm:px-8">
       <div className="max-w-xl w-full bg-card p-8 sm:p-12 rounded-3xl border border-border/80 shadow-lg text-center space-y-6">
@@ -59,7 +63,7 @@ export default function NotFound() {
             className="inline-flex items-center gap-2 text-xs font-semibold text-tertiary hover:opacity-85 transition-opacity"
           >
             <MessageCircle className="w-4 h-4" />
-            <span>Ask our Master Pressman on WhatsApp ({siteConfig.phone})</span>
+            <span>Ask our Master Pressman on WhatsApp ({phone})</span>
           </a>
         </div>
       </div>

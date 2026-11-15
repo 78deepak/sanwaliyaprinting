@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,8 +17,13 @@ import { siteConfig } from "@/lib/site-config";
 import { categories } from "@/data/categories";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
 import { ThemeToggle } from "./theme-toggle";
+import { useSiteSettings } from "@/lib/use-settings";
 
 export function Footer() {
+  const { phone, establishedYear } = useSiteSettings();
+  const currentYear = new Date().getFullYear();
+  const yearsExperience = Math.max(1, currentYear - (establishedYear || 1994));
+
   return (
     <footer className="w-full bg-surface-low border-t border-border mt-20">
       {/* Upper Atelier Assurance Strip */}
@@ -27,8 +34,8 @@ export function Footer() {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-sm font-bold text-foreground">30+ Years Provenance</div>
-              <div className="text-xs text-muted-foreground">Serving Malwa since 1994</div>
+              <div className="text-sm font-bold text-foreground">{yearsExperience}+ Years Provenance</div>
+              <div className="text-xs text-muted-foreground">Serving Malwa since {establishedYear || 1994}</div>
             </div>
           </div>
 
@@ -156,10 +163,10 @@ export function Footer() {
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-secondary shrink-0" />
                 <a
-                  href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
+                  href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
                   className="hover:text-primary transition-colors font-medium text-foreground"
                 >
-                  {siteConfig.phone}
+                  {phone}
                 </a>
               </div>
 
@@ -197,7 +204,7 @@ export function Footer() {
         <div className="pt-6 mt-6 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1.5 text-center md:text-left">
             <span>
-              © 1994 – {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+              © {establishedYear || 1994} – {currentYear} {siteConfig.name}. All rights reserved.
             </span>
             <span className="hidden sm:inline text-border">•</span>
             <span className="font-devanagari text-foreground/80">

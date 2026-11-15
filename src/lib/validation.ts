@@ -126,7 +126,7 @@ export const siteSettingsSchema = z.object({
     ),
   tagline: z.string().min(3, "Tagline is required"),
   taglineHi: z.string().min(3, "Hindi tagline is required"),
-  establishedYear: z.number().default(1994),
+  establishedYear: z.coerce.number().min(1800).max(2100).default(1994),
   ownerName: z.string().min(2, "Owner name must be at least 2 characters").default("Owner"),
   ownerEmail: z.string().email("Please enter a valid email address").optional().or(z.literal("")).default(""),
   socialLinks: z

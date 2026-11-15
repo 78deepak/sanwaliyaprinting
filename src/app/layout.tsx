@@ -3,7 +3,9 @@ import { Playfair_Display, Plus_Jakarta_Sans, Noto_Sans_Devanagari } from "next/
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SelectionProvider } from "@/context/selection-context";
+import { SettingsProvider } from "@/lib/use-settings";
 import { PublicLayoutWrapper } from "@/components/layout/public-layout-wrapper";
+import { getSiteSettingsAction } from "@/app/admin/actions";
 import { siteConfig } from "@/lib/site-config";
 
 const playfair = Playfair_Display({
@@ -113,11 +115,24 @@ const localBusinessSchema = {
   sameAs: [siteConfig.googleMapsUrl],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let settings = null;
+  try {
+    settings = await getSiteSettingsAction();
+  } catch (err) {
+    console.warn("RootLayout failed to fetch settings:", err);
+  }
+
+  const dynamicSchema = {
+    ...localBusinessSchema,
+    name: settings?.businessName || siteConfig.name,
+    telephone: settings?.phone || siteConfig.phone,
+  };
+
   return (
     <html
       lang="en"
@@ -127,7 +142,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(dynamicSchema) }}
         />
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground antialiased selection:bg-secondary-container selection:text-secondary-foreground">
@@ -137,9 +152,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SelectionProvider>
-            <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
-          </SelectionProvider>
+          <SettingsProvider initialSettings={settings}>
+            <SelectionProvider>
+              <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
+            </SelectionProvider>
+          </SettingsProvider>
         </ThemeProvider>
       </body>
     </html>

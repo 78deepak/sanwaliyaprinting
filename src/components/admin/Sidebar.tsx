@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -36,6 +36,11 @@ export function Sidebar({
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { ownerName } = useSiteSettings(initialOwnerName);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navItems = [
     {
@@ -182,7 +187,7 @@ export function Sidebar({
             <button
               type="button"
               onClick={() => setTheme("light")}
-              className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${theme === "light"
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${mounted && theme === "light"
                 ? "bg-secondary/20 text-secondary"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -193,7 +198,7 @@ export function Sidebar({
             <button
               type="button"
               onClick={() => setTheme("dark")}
-              className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${theme === "dark"
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${mounted && theme === "dark"
                 ? "bg-secondary/20 text-secondary"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -204,7 +209,7 @@ export function Sidebar({
             <button
               type="button"
               onClick={() => setTheme("system")}
-              className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${theme === "system"
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${mounted && theme === "system"
                 ? "bg-secondary/20 text-secondary"
                 : "text-muted-foreground hover:text-foreground"
                 }`}

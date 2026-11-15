@@ -29,6 +29,7 @@ import { ProductGallery } from "./product-gallery";
 import { ProductCard } from "./product-card";
 import { useSelection } from "@/context/selection-context";
 import { buildProductEnquiryUrl } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/use-settings";
 
 interface ProductDetailViewProps {
   product: Product;
@@ -40,6 +41,7 @@ export function ProductDetailView({
   relatedProducts,
 }: ProductDetailViewProps) {
   const { hasItem, addItem } = useSelection();
+  const { phone } = useSiteSettings();
   const isShortlisted = hasItem(product.id);
 
   // Customizer state
@@ -98,7 +100,7 @@ export function ProductDetailView({
     currentUrl: typeof window !== "undefined" ? window.location.href : undefined,
   });
 
-  const telHref = `tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`;
+  const telHref = `tel:${phone.replace(/[^0-9+]/g, "")}`;
 
   return (
     <div className="w-full flex flex-col pt-16 sm:pt-28 pb-24 lg:pb-0">

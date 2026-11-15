@@ -1,11 +1,15 @@
+"use client";
+
 import React from "react";
 import { MapPin, Clock, Navigation, Phone, MessageSquare, Sparkles } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/use-settings";
 
 export function AtelierLocationCard() {
-  const telHref = `tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`;
-  const urgentWhatsappUrl = `${buildGeneralEnquiryUrl()}?text=${encodeURIComponent(
+  const { phone, whatsapp } = useSiteSettings();
+  const telHref = `tel:${phone.replace(/[^0-9+]/g, "")}`;
+  const urgentWhatsappUrl = `https://wa.me/${whatsapp}?text=${encodeURIComponent(
     "Namaste Sanwaliya Press, I need urgent custom design / same day printing."
   )}`;
 

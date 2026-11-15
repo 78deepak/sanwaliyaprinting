@@ -192,14 +192,14 @@ export default async function AdminDashboardPage() {
             </Link>
 
             {/* View Website */}
-            <Link
+            {/* <Link
               href="/"
               target="_blank"
               className="h-8.5 sm:h-9 px-3 rounded-lg bg-surface-lowest hover:bg-surface-container border border-border text-foreground hover:text-primary text-xs sm:text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] whitespace-nowrap shrink-0"
             >
               <ExternalLink className="w-3.5 h-3.5 text-secondary shrink-0" />
               <span>View Website</span>
-            </Link>
+            </Link> */}
 
             {/* WhatsApp Link */}
             {/* <a

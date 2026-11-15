@@ -20,13 +20,20 @@ import { useSelection } from "@/context/selection-context";
 import { SearchDialog } from "@/components/search/search-dialog";
 import { siteConfig } from "@/lib/site-config";
 import { buildGeneralEnquiryUrl } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/use-settings";
 
 export function Header() {
   const pathname = usePathname();
   const { count, openDrawer } = useSelection();
+  const { phone, establishedYear } = useSiteSettings();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [lang, setLang] = useState<"en" | "hi">("en");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Scroll detection to hide top notice bar
   useEffect(() => {
@@ -75,11 +82,11 @@ export function Header() {
             </div>
             <div className="flex items-center gap-4 ml-auto">
               <a
-                href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
+                href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
                 className="flex items-center gap-1.5 text-foreground hover:text-primary transition-colors font-semibold"
               >
                 <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
-                <span>{siteConfig.phone}</span>
+                <span>{phone}</span>
               </a>
             </div>
           </div>
@@ -105,7 +112,7 @@ export function Header() {
               </span>
               <span className="text-[10px] xl:text-[11px] uppercase tracking-wider text-secondary font-semibold font-devanagari whitespace-nowrap">
                 <span className="sm:hidden">{siteConfig.nameHindi} • सुवासरा</span>
-                <span className="hidden sm:inline">{siteConfig.nameHindi} • Estd. {siteConfig.establishedYear}</span>
+                <span className="hidden sm:inline">{siteConfig.nameHindi} • Estd. {establishedYear}</span>
               </span>
             </div>
           </Link>
@@ -290,7 +297,7 @@ export function Header() {
             >
               <div className="relative flex items-center justify-center">
                 <Heart className="w-4 h-4 text-primary" />
-                {count > 0 && (
+                {mounted && count > 0 && (
                   <span className="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-0.5 bg-secondary text-secondary-foreground text-[9px] rounded-full flex items-center justify-center font-bold animate-in zoom-in">
                     {count}
                   </span>
@@ -376,7 +383,7 @@ export function Header() {
           >
             <div className="relative">
               <Heart className="w-5 h-5 text-primary" />
-              {count > 0 && (
+              {mounted && count > 0 && (
                 <span className="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-0.5 bg-primary text-primary-foreground text-[9px] rounded-full flex items-center justify-center font-bold">
                   {count}
                 </span>

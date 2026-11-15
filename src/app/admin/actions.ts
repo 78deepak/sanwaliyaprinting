@@ -318,6 +318,7 @@ export async function saveSiteSettingsAction(input: unknown): Promise<ActionResu
     { upsert: true, new: true, runValidators: true }
   );
 
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/admin/settings");
   revalidatePath("/admin", "layout");
