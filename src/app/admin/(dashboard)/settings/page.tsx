@@ -15,6 +15,9 @@ import {
   Terminal,
   User,
   Calendar,
+  Palette,
+  Check,
+  Sparkles,
 } from "lucide-react";
 import {
   getSiteSettingsAction,
@@ -38,12 +41,87 @@ const initialDefaults: SiteSettingsValues = {
   establishedYear: 1994,
   ownerName: "",
   ownerEmail: "",
+  themePalette: "classic-cream",
   socialLinks: {
     instagram: "https://instagram.com/sanwaliyapress",
     facebook: "https://facebook.com/sanwaliyapress",
     googleMaps: "https://maps.google.com/?q=Sanwaliya+Printing+Press+Suwasra",
   },
 };
+
+interface ThemeOption {
+  id: "classic-cream" | "royal-blue" | "maroon-elegant" | "lavender-soft";
+  name: string;
+  badge: string;
+  tagline: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    background: string;
+    surface: string;
+    text: string;
+    accent: string;
+  };
+}
+
+const themeOptions: ThemeOption[] = [
+  {
+    id: "classic-cream",
+    name: "Classic Cream (Current)",
+    badge: "Theme 1",
+    tagline: "Warm, Traditional & Premium",
+    colors: {
+      primary: "#68061A",
+      secondary: "#B08D57",
+      background: "#FDF8F2",
+      surface: "#FFFFFF",
+      text: "#2B1F1B",
+      accent: "#EEDFB9",
+    },
+  },
+  {
+    id: "royal-blue",
+    name: "Royal Blue",
+    badge: "Theme 2",
+    tagline: "Clean, Professional & Trustworthy",
+    colors: {
+      primary: "#0D3B78",
+      secondary: "#3F6CB4",
+      background: "#F4F9FF",
+      surface: "#FFFFFF",
+      text: "#1F2D3D",
+      accent: "#E6EEF9",
+    },
+  },
+  {
+    id: "maroon-elegant",
+    name: "Maroon Elegant",
+    badge: "Theme 3",
+    tagline: "Rich, Festive & Traditional",
+    colors: {
+      primary: "#7A0E2E",
+      secondary: "#B74A5A",
+      background: "#FFF6F7",
+      surface: "#FFFFFF",
+      text: "#321A1A",
+      accent: "#F8DDE1",
+    },
+  },
+  {
+    id: "lavender-soft",
+    name: "Lavender Soft",
+    badge: "Theme 4",
+    tagline: "Modern, Soft & Elegant",
+    colors: {
+      primary: "#5B3C9B",
+      secondary: "#8B6CCF",
+      background: "#F8F5FF",
+      surface: "#FFFFFF",
+      text: "#2E1E4D",
+      accent: "#E8DFFC",
+    },
+  },
+];
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettingsValues>(initialDefaults);
@@ -405,7 +483,237 @@ export default function AdminSettingsPage() {
         </div>
       </section>
 
-      {/* SECTION 2: Security & Admin Password */}
+      {/* SECTION 2: Storefront Light Theme & Color Combinations */}
+      <section className="bg-surface-lowest rounded-xl border border-border p-5 md:p-7 shadow-xs flex flex-col gap-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border/40 gap-2">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+              <Palette className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-foreground">
+                Storefront Light Theme &amp; Color Combinations
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Select your preferred color combination from the 4 royal palettes. Click any card to preview live, then save.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-start sm:self-auto bg-surface-container px-3 py-1 rounded-full border border-border/50 text-[11px] font-semibold text-secondary">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Active: {themeOptions.find((t) => t.id === (settings.themePalette || "classic-cream"))?.name}</span>
+          </div>
+        </div>
+
+        {/* 4 Theme Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {themeOptions.map((theme) => {
+            const isSelected = (settings.themePalette || "classic-cream") === theme.id;
+
+            return (
+              <div
+                key={theme.id}
+                onClick={() => {
+                  setSettings({ ...settings, themePalette: theme.id });
+                  if (typeof document !== "undefined") {
+                    document.documentElement.setAttribute("data-palette", theme.id);
+                    try {
+                      localStorage.setItem("sanwaliya_theme_palette", theme.id);
+                    } catch {
+                      // LocalStorage handled
+                    }
+                  }
+                }}
+                className={`relative rounded-2xl border-2 transition-all cursor-pointer p-4 flex flex-col gap-3.5 ${
+                  isSelected
+                    ? "border-primary bg-surface-container/30 shadow-md ring-2 ring-primary/20 scale-[1.01]"
+                    : "border-border/70 hover:border-border hover:shadow-xs bg-surface-lowest"
+                }`}
+              >
+                {/* Theme Card Top Bar */}
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="px-2.5 py-1 rounded-full text-white text-[11px] font-bold shadow-xs tracking-wide"
+                      style={{ backgroundColor: theme.colors.primary }}
+                    >
+                      {theme.badge}: {theme.name}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground font-medium hidden sm:inline">
+                      {theme.tagline}
+                    </span>
+                  </div>
+
+                  {isSelected ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
+                      <Check className="w-3 h-3" />
+                      SELECTED
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-muted-foreground hover:text-foreground font-semibold">
+                      Click to Select
+                    </span>
+                  )}
+                </div>
+
+                {/* Theme Preview Box */}
+                <div
+                  className="rounded-xl p-3 border border-border/50 shadow-inner flex flex-col gap-2.5 overflow-hidden text-xs"
+                  style={{
+                    backgroundColor: theme.colors.background,
+                    color: theme.colors.text,
+                  }}
+                >
+                  {/* Miniature Atelier Top Bar */}
+                  <div
+                    className="flex items-center justify-between px-2.5 py-1 rounded-md text-[9px] font-semibold text-white shadow-2xs"
+                    style={{ backgroundColor: theme.colors.primary }}
+                  >
+                    <span>📍 Sadar Bazar, Suwasra</span>
+                    <span>📞 {settings.phone || "+91 98765 43210"}</span>
+                  </div>
+
+                  {/* Miniature Navbar */}
+                  <div
+                    className="flex items-center justify-between px-2.5 py-1.5 rounded-md border border-border/40 shadow-xs"
+                    style={{ backgroundColor: theme.colors.surface }}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                        style={{ backgroundColor: theme.colors.secondary }}
+                      >
+                        S
+                      </span>
+                      <span className="font-serif font-bold text-[10px]" style={{ color: theme.colors.primary }}>
+                        Sanwaliya Press
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] font-medium opacity-80">Weddings</span>
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[9px] font-bold text-white shadow-2xs"
+                        style={{ backgroundColor: theme.colors.primary }}
+                      >
+                        Custom Order
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Miniature Hero Banner */}
+                  <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-surface-lowest/70 backdrop-blur-xs border border-border/30">
+                    <div className="space-y-0.5">
+                      <div className="font-serif font-bold text-[11px] leading-tight">
+                        Beautiful Designs. Quality Printing.
+                      </div>
+                      <div className="font-serif italic text-[11px] font-bold" style={{ color: theme.colors.primary }}>
+                        Made Just for You.
+                      </div>
+                      <div
+                        className="text-[8px] font-devanagari px-1.5 py-0.5 rounded inline-block"
+                        style={{ backgroundColor: theme.colors.accent, color: theme.colors.text }}
+                      >
+                        उत्कृष्ट डिज़ाइन और राजसी मुद्रण
+                      </div>
+                    </div>
+
+                    {/* Miniature Product Card */}
+                    <div
+                      className="w-24 p-1.5 rounded-lg border border-border/40 shadow-xs flex flex-col gap-1 shrink-0"
+                      style={{ backgroundColor: theme.colors.surface }}
+                    >
+                      <div
+                        className="h-10 rounded bg-cover bg-center"
+                        style={{
+                          backgroundImage:
+                            "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCLzraG9KxV3OmCLV1hCeEkpV3aBJeob8LcvKXtiopMcuMPEEnkfZAkdgeMtjhbnp1o2Y3ooyhG0yHsCKUjkIOL7-HD-0ea7W85sDeuav4DsP8w9Ayi2f8MxD7qHYxhe74wEfMWsf7MSxtkKrr-RtSzJHIkZwvpGlZlIPjdSZvBEUi7PKSGJrzLR4Xf2GmQfDuSqoLtoSF8ZFP3sMTcb3xI1X2x2CJz_o30Mf5KqzSTtYNoCMYFZEgcQ')",
+                        }}
+                      />
+                      <div className="text-[8px] font-bold truncate">Kundan Box</div>
+                      <span
+                        className="text-[7px] font-bold px-1 rounded self-start"
+                        style={{ backgroundColor: theme.colors.accent }}
+                      >
+                        Velvet Monogram
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Theme Colors Palette Swatches */}
+                <div className="flex flex-col gap-1.5 pt-1 border-t border-border/40">
+                  <span className="text-[11px] font-bold text-foreground">Theme Colors:</span>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {/* Primary */}
+                    <div className="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container/60 border border-border/40">
+                      <div
+                        className="w-6 h-6 rounded-md shadow-2xs border border-black/10"
+                        style={{ backgroundColor: theme.colors.primary }}
+                      />
+                      <span className="text-[9px] font-medium text-muted-foreground">Primary</span>
+                      <span className="text-[9px] font-mono font-bold text-foreground">{theme.colors.primary}</span>
+                    </div>
+
+                    {/* Secondary */}
+                    <div className="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container/60 border border-border/40">
+                      <div
+                        className="w-6 h-6 rounded-md shadow-2xs border border-black/10"
+                        style={{ backgroundColor: theme.colors.secondary }}
+                      />
+                      <span className="text-[9px] font-medium text-muted-foreground">Secondary</span>
+                      <span className="text-[9px] font-mono font-bold text-foreground">{theme.colors.secondary}</span>
+                    </div>
+
+                    {/* Background */}
+                    <div className="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container/60 border border-border/40">
+                      <div
+                        className="w-6 h-6 rounded-md shadow-2xs border border-black/10"
+                        style={{ backgroundColor: theme.colors.background }}
+                      />
+                      <span className="text-[9px] font-medium text-muted-foreground">Background</span>
+                      <span className="text-[9px] font-mono font-bold text-foreground">{theme.colors.background}</span>
+                    </div>
+
+                    {/* Surface */}
+                    <div className="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container/60 border border-border/40">
+                      <div
+                        className="w-6 h-6 rounded-md shadow-2xs border border-black/10"
+                        style={{ backgroundColor: theme.colors.surface }}
+                      />
+                      <span className="text-[9px] font-medium text-muted-foreground">Surface</span>
+                      <span className="text-[9px] font-mono font-bold text-foreground">{theme.colors.surface}</span>
+                    </div>
+
+                    {/* Text */}
+                    <div className="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container/60 border border-border/40">
+                      <div
+                        className="w-6 h-6 rounded-md shadow-2xs border border-black/10"
+                        style={{ backgroundColor: theme.colors.text }}
+                      />
+                      <span className="text-[9px] font-medium text-muted-foreground">Text</span>
+                      <span className="text-[9px] font-mono font-bold text-foreground">{theme.colors.text}</span>
+                    </div>
+
+                    {/* Accent */}
+                    <div className="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container/60 border border-border/40">
+                      <div
+                        className="w-6 h-6 rounded-md shadow-2xs border border-black/10"
+                        style={{ backgroundColor: theme.colors.accent }}
+                      />
+                      <span className="text-[9px] font-medium text-muted-foreground">Accent</span>
+                      <span className="text-[9px] font-mono font-bold text-foreground">{theme.colors.accent}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* SECTION 3: Security & Admin Password */}
       <section className="bg-surface-lowest rounded-xl border border-border p-5 md:p-7 shadow-xs flex flex-col gap-5">
         <div className="flex items-center justify-between pb-3 border-b border-border/40">
           <div className="flex items-center gap-3">

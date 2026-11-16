@@ -1,50 +1,187 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
-    --background: #fff8f5;
-    --foreground: #201b18;
+  :root,
+  html[data-palette="classic-cream"]:not(.dark),
+  [data-palette="classic-cream"]:not(.dark) {
+    --background: #fdf8f2;
+    --foreground: #2b1f1b;
     
     --card: #ffffff;
-    --card-foreground: #201b18;
+    --card-foreground: #2b1f1b;
     
     --popover: #ffffff;
-    --popover-foreground: #201b18;
+    --popover-foreground: #2b1f1b;
     
-    --primary: #5b0617;
-    --primary-container: #7a1f2b;
+    --primary: #68061a;
+    --primary-container: #821128;
     --primary-foreground: #ffffff;
     
-    --secondary: #7d5700;
-    --secondary-container: #fcc665;
-    --secondary-foreground: #755100;
+    --secondary: #b08d57;
+    --secondary-container: #eedfb9;
+    --secondary-foreground: #4a3515;
     
     --tertiary: #128c7e;
     --tertiary-hover: #0e7064;
     --tertiary-foreground: #ffffff;
     
-    --surface: #fff8f5;
+    --surface: #fdf8f2;
     --surface-lowest: #ffffff;
-    --surface-low: #fdf1ec;
-    --surface-container: #f7ece6;
-    --surface-high: #f1e6e1;
-    --surface-highest: #ebe0db;
+    --surface-low: #f8f1ea;
+    --surface-container: #f2e8df;
+    --surface-high: #ebded3;
+    --surface-highest: #e4d4c7;
     
-    --muted: #f7ece6;
-    --muted-foreground: #564242;
+    --muted: #f2e8df;
+    --muted-foreground: #6e5d57;
     
-    --accent: #fcc665;
-    --accent-foreground: #755100;
+    --accent: #eedfb9;
+    --accent-foreground: #2b1f1b;
     
     --destructive: #ba1a1a;
     --destructive-foreground: #ffffff;
     
-    --border: #dcc0c0;
-    --border-subtle: #ebe0db;
-    --gold-border: #b8892e;
-    --ring: #7a1f2b;
+    --border: #e8d8cc;
+    --border-subtle: #f2e8df;
+    --gold-border: #b08d57;
+    --ring: #68061a;
     
     --radius: 0.5rem;
+  }
+
+  html[data-palette="royal-blue"]:not(.dark),
+  [data-palette="royal-blue"]:not(.dark) {
+    --background: #f4f9ff;
+    --foreground: #1f2d3d;
+    
+    --card: #ffffff;
+    --card-foreground: #1f2d3d;
+    
+    --popover: #ffffff;
+    --popover-foreground: #1f2d3d;
+    
+    --primary: #0d3b78;
+    --primary-container: #154e9b;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #3f6cb4;
+    --secondary-container: #e6eef9;
+    --secondary-foreground: #0d3b78;
+    
+    --tertiary: #128c7e;
+    --tertiary-hover: #0e7064;
+    --tertiary-foreground: #ffffff;
+    
+    --surface: #f4f9ff;
+    --surface-lowest: #ffffff;
+    --surface-low: #ebf3fc;
+    --surface-container: #e2ecf8;
+    --surface-high: #d8e4f2;
+    --surface-highest: #ccdced;
+    
+    --muted: #e2ecf8;
+    --muted-foreground: #506680;
+    
+    --accent: #e6eef9;
+    --accent-foreground: #1f2d3d;
+    
+    --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
+    
+    --border: #c8d8eb;
+    --border-subtle: #e2ecf8;
+    --gold-border: #3f6cb4;
+    --ring: #0d3b78;
+  }
+
+  html[data-palette="maroon-elegant"]:not(.dark),
+  [data-palette="maroon-elegant"]:not(.dark) {
+    --background: #fff6f7;
+    --foreground: #321a1a;
+    
+    --card: #ffffff;
+    --card-foreground: #321a1a;
+    
+    --popover: #ffffff;
+    --popover-foreground: #321a1a;
+    
+    --primary: #7a0e2e;
+    --primary-container: #961a3f;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #b74a5a;
+    --secondary-container: #f8dde1;
+    --secondary-foreground: #7a0e2e;
+    
+    --tertiary: #128c7e;
+    --tertiary-hover: #0e7064;
+    --tertiary-foreground: #ffffff;
+    
+    --surface: #fff6f7;
+    --surface-lowest: #ffffff;
+    --surface-low: #fcecef;
+    --surface-container: #f7e1e5;
+    --surface-high: #f1d4da;
+    --surface-highest: #e8c5cc;
+    
+    --muted: #f7e1e5;
+    --muted-foreground: #724c52;
+    
+    --accent: #f8dde1;
+    --accent-foreground: #321a1a;
+    
+    --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
+    
+    --border: #e8c5cc;
+    --border-subtle: #f7e1e5;
+    --gold-border: #b74a5a;
+    --ring: #7a0e2e;
+  }
+
+  html[data-palette="lavender-soft"]:not(.dark),
+  [data-palette="lavender-soft"]:not(.dark) {
+    --background: #f8f5ff;
+    --foreground: #2e1e4d;
+    
+    --card: #ffffff;
+    --card-foreground: #2e1e4d;
+    
+    --popover: #ffffff;
+    --popover-foreground: #2e1e4d;
+    
+    --primary: #5b3c9b;
+    --primary-container: #724ebd;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #8b6ccf;
+    --secondary-container: #e8dffc;
+    --secondary-foreground: #5b3c9b;
+    
+    --tertiary: #128c7e;
+    --tertiary-hover: #0e7064;
+    --tertiary-foreground: #ffffff;
+    
+    --surface: #f8f5ff;
+    --surface-lowest: #ffffff;
+    --surface-low: #f1ecfc;
+    --surface-container: #e8e0f7;
+    --surface-high: #ded3f2;
+    --surface-highest: #d2c4eb;
+    
+    --muted: #e8e0f7;
+    --muted-foreground: #675583;
+    
+    --accent: #e8dffc;
+    --accent-foreground: #2e1e4d;
+    
+    --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
+    
+    --border: #d2c4eb;
+    --border-subtle: #e8e0f7;
+    --gold-border: #8b6ccf;
+    --ring: #5b3c9b;
   }
 
   .dark {
@@ -284,4 +421,77 @@ body {
 .paper-elevation-hover:hover {
   transform: translateY(-2px);
   box-shadow: 0 16px 32px -8px rgba(91, 6, 23, 0.08), 0 4px 12px -2px rgba(32, 27, 24, 0.04);
+}
+
+/* ============================================================
+   Palette-Specific Public UI Transforms (Matching Theme Cards)
+   ============================================================ */
+
+/* Theme 1: Classic Cream */
+[data-palette="classic-cream"] .atelier-top-strip,
+:root .atelier-top-strip {
+  background-color: var(--surface-container);
+  color: var(--muted-foreground);
+  border-bottom-color: var(--border);
+}
+[data-palette="classic-cream"] .atelier-top-phone,
+:root .atelier-top-phone {
+  color: var(--foreground);
+}
+[data-palette="classic-cream"] .custom-order-nav-btn,
+:root .custom-order-nav-btn {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border: 1px solid var(--secondary);
+}
+
+/* Theme 2: Royal Blue */
+[data-palette="royal-blue"] .atelier-top-strip {
+  background-color: #0d3b78 !important;
+  color: #ffffff !important;
+  border-bottom-color: #154e9b !important;
+}
+[data-palette="royal-blue"] .atelier-top-strip span,
+[data-palette="royal-blue"] .atelier-top-strip a,
+[data-palette="royal-blue"] .atelier-top-phone {
+  color: #ffffff !important;
+}
+[data-palette="royal-blue"] .custom-order-nav-btn {
+  background-color: #0d3b78 !important;
+  color: #ffffff !important;
+  border: 1px solid #154e9b !important;
+}
+
+/* Theme 3: Maroon Elegant */
+[data-palette="maroon-elegant"] .atelier-top-strip {
+  background-color: #7a0e2e !important;
+  color: #ffffff !important;
+  border-bottom-color: #961a3f !important;
+}
+[data-palette="maroon-elegant"] .atelier-top-strip span,
+[data-palette="maroon-elegant"] .atelier-top-strip a,
+[data-palette="maroon-elegant"] .atelier-top-phone {
+  color: #ffffff !important;
+}
+[data-palette="maroon-elegant"] .custom-order-nav-btn {
+  background-color: #7a0e2e !important;
+  color: #ffffff !important;
+  border: 1px solid #961a3f !important;
+}
+
+/* Theme 4: Lavender Soft */
+[data-palette="lavender-soft"] .atelier-top-strip {
+  background-color: #5b3c9b !important;
+  color: #ffffff !important;
+  border-bottom-color: #724ebd !important;
+}
+[data-palette="lavender-soft"] .atelier-top-strip span,
+[data-palette="lavender-soft"] .atelier-top-strip a,
+[data-palette="lavender-soft"] .atelier-top-phone {
+  color: #ffffff !important;
+}
+[data-palette="lavender-soft"] .custom-order-nav-btn {
+  background-color: #5b3c9b !important;
+  color: #ffffff !important;
+  border: 1px solid #724ebd !important;
 }

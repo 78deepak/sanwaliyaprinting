@@ -4,12 +4,16 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { SiteSettingsValues } from "@/lib/validation";
 import { siteConfig } from "@/lib/site-config";
 
+export type ThemePalette = "classic-cream" | "royal-blue" | "maroon-elegant" | "lavender-soft";
+
 interface SettingsContextType {
   settings: SiteSettingsValues | null;
   phone: string;
   whatsapp: string;
   ownerName: string;
   establishedYear: number;
+  themePalette: ThemePalette;
+  setThemePalette: (palette: ThemePalette) => void;
   isLoading: boolean;
   refreshSettings: () => Promise<void>;
 }
@@ -38,11 +42,43 @@ export function SettingsProvider({
   const [whatsapp, setWhatsapp] = useState<string>(
     initialSettings?.whatsapp || siteConfig.whatsappNumber
   );
+  const [themePalette, setThemePaletteState] = useState<ThemePalette>(
+    (initialSettings?.themePalette as ThemePalette) || "classic-cream"
+  );
   const [isLoading, setIsLoading] = useState<boolean>(!initialSettings);
+
+  const setThemePalette = useCallback((palette: ThemePalette) => {
+    setThemePaletteState(palette);
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-palette", palette);
+      try {
+        localStorage.setItem("sanwaliya_theme_palette", palette);
+      } catch {
+        // LocalStorage access handled
+      }
+    }
+  }, []);
+
+  // Sync data-palette to <html> attribute on mount / palette change
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      try {
+        const stored = localStorage.getItem("sanwaliya_theme_palette");
+        if (stored && (stored === "classic-cream" || stored === "royal-blue" || stored === "maroon-elegant" || stored === "lavender-soft")) {
+          setThemePaletteState(stored as ThemePalette);
+          document.documentElement.setAttribute("data-palette", stored);
+          return;
+        }
+      } catch {
+        // LocalStorage handled
+      }
+      document.documentElement.setAttribute("data-palette", themePalette);
+    }
+  }, [themePalette]);
 
   const fetchSettings = useCallback(async () => {
     try {
-      const res = await fetch("/api/settings");
+      const res = await fetch("/api/settings", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load settings");
       const data: SiteSettingsValues = await res.json();
       if (data) {
@@ -51,6 +87,17 @@ export function SettingsProvider({
         if (data.establishedYear) setEstablishedYear(data.establishedYear);
         if (data.phone) setPhone(data.phone);
         if (data.whatsapp) setWhatsapp(data.whatsapp);
+        if (data.themePalette) {
+          setThemePaletteState(data.themePalette as ThemePalette);
+          if (typeof document !== "undefined") {
+            document.documentElement.setAttribute("data-palette", data.themePalette);
+            try {
+              localStorage.setItem("sanwaliya_theme_palette", data.themePalette);
+            } catch {
+              // LocalStorage handled
+            }
+          }
+        }
       }
     } catch (err) {
       console.warn("Could not fetch /api/settings:", err);
@@ -72,6 +119,8 @@ export function SettingsProvider({
         whatsapp,
         ownerName,
         establishedYear,
+        themePalette,
+        setThemePalette,
         isLoading,
         refreshSettings: fetchSettings,
       },
@@ -95,6 +144,9 @@ export function useSiteSettings(
   );
   const [standalonePhone, setStandalonePhone] = useState<string>(
     initialPhone || siteConfig.phone
+  );
+  const [standalonePalette, setStandalonePalette] = useState<ThemePalette>(
+    "classic-cream"
   );
   const [standaloneSettings, setStandaloneSettings] =
     useState<SiteSettingsValues | null>(null);
@@ -120,6 +172,12 @@ export function useSiteSettings(
           if (data.ownerName) setStandaloneOwner(data.ownerName);
           if (data.establishedYear) setStandaloneYear(data.establishedYear);
           if (data.phone) setStandalonePhone(data.phone);
+          if (data.themePalette) {
+            setStandalonePalette(data.themePalette as ThemePalette);
+            if (typeof document !== "undefined") {
+              document.documentElement.setAttribute("data-palette", data.themePalette);
+            }
+          }
           setStandaloneLoading(false);
         }
       })
@@ -140,6 +198,8 @@ export function useSiteSettings(
       establishedYear: initialEstablishedYear || context.establishedYear,
       phone: initialPhone || context.phone,
       whatsapp: context.whatsapp,
+      themePalette: context.themePalette,
+      setThemePalette: context.setThemePalette,
       isLoading: context.isLoading,
       refreshSettings: context.refreshSettings,
     };
@@ -151,6 +211,13 @@ export function useSiteSettings(
     establishedYear: standaloneYear,
     phone: standalonePhone,
     whatsapp: standaloneSettings?.whatsapp || siteConfig.whatsappNumber,
+    themePalette: standalonePalette,
+    setThemePalette: (p: ThemePalette) => {
+      setStandalonePalette(p);
+      if (typeof document !== "undefined") {
+        document.documentElement.setAttribute("data-palette", p);
+      }
+    },
     isLoading: standaloneLoading,
     refreshSettings: async () => {},
   };

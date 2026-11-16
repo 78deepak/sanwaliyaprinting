@@ -74,6 +74,7 @@ export interface ShopSettings {
   whatsappTemplate: string;
   ownerName: string;
   ownerEmail: string;
+  themePalette?: "classic-cream" | "royal-blue" | "maroon-elegant" | "lavender-soft";
   lastSynced: string;
 }
 
@@ -122,6 +123,7 @@ export const mockShopSettings: ShopSettings = {
     "Namaste Sanwaliya Printing Press, I would like to inquire about [Product Name] (Code: [Code]). Estimated quantity: [Qty]. Please provide pricing and gold foil stamping timeline for Suwasra dispatch.",
   ownerName: "Owner",
   ownerEmail: "owner@sanwaliyapress.in",
+  themePalette: "classic-cream",
   lastSynced: "Today, 04:15 PM IST",
 };
 

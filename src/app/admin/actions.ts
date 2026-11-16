@@ -356,6 +356,7 @@ export async function getSiteSettingsAction(): Promise<SiteSettingsValues & { up
         establishedYear: doc.establishedYear || 1994,
         ownerName: doc.ownerName || "",
         ownerEmail: doc.ownerEmail || "",
+        themePalette: (doc.themePalette as "classic-cream" | "royal-blue" | "maroon-elegant" | "lavender-soft") || "classic-cream",
         socialLinks: {
           instagram: doc.socialLinks?.instagram || "",
           facebook: doc.socialLinks?.facebook || "",
@@ -384,6 +385,7 @@ export async function getSiteSettingsAction(): Promise<SiteSettingsValues & { up
     establishedYear: 1994,
     ownerName: "",
     ownerEmail: "",
+    themePalette: "classic-cream",
     socialLinks: {
       instagram: "https://instagram.com/sanwaliyapress",
       facebook: "https://facebook.com/sanwaliyapress",

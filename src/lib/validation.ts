@@ -129,6 +129,10 @@ export const siteSettingsSchema = z.object({
   establishedYear: z.coerce.number().min(1800).max(2100).default(1994),
   ownerName: z.string().min(2, "Owner name must be at least 2 characters").default("Owner"),
   ownerEmail: z.string().email("Please enter a valid email address").optional().or(z.literal("")).default(""),
+  themePalette: z
+    .enum(["classic-cream", "royal-blue", "maroon-elegant", "lavender-soft"])
+    .optional()
+    .default("classic-cream"),
   socialLinks: z
     .object({
       instagram: z.string().optional().default(""),

@@ -115,6 +115,8 @@ const localBusinessSchema = {
   sameAs: [siteConfig.googleMapsUrl],
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -136,10 +138,17 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
+      data-palette={settings?.themePalette || "classic-cream"}
       suppressHydrationWarning
       className={`${playfair.variable} ${plusJakarta.variable} ${notoDevanagari.variable} scroll-smooth`}
     >
       <head>
+        <script
+          id="theme-palette-init"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=localStorage.getItem('sanwaliya_theme_palette');if(p){document.documentElement.setAttribute('data-palette',p);}}catch(e){}})()`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(dynamicSchema) }}

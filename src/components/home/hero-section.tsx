@@ -71,9 +71,9 @@ export function HeroSection({ featuredProduct }: HeroSectionProps) {
             </h1>
 
             {/* Hindi Subtitle Ribbon */}
-            <div className="mb-2 sm:mb-2.5 flex items-center gap-2.5 sm:gap-3 rounded-lg bg-surface-container px-3 sm:px-3.5 py-1.5 shadow-xs border border-border/60">
+            <div className="mb-2 sm:mb-2.5 flex items-center gap-2.5 sm:gap-3 rounded-lg bg-accent/70 px-3 sm:px-3.5 py-1.5 shadow-xs border border-secondary/30">
               <span className="h-4 sm:h-4.5 w-1 rounded-full bg-secondary shrink-0" />
-              <p className="font-headline-sm text-xs sm:text-sm text-secondary font-medium tracking-normal font-devanagari">
+              <p className="font-headline-sm text-xs sm:text-sm text-foreground font-semibold tracking-normal font-devanagari">
                 उत्कृष्ट डिज़ाइन और राजसी मुद्रण — आपकी खास यादों के लिए।
               </p>
             </div>

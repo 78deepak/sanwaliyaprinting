@@ -150,18 +150,21 @@ describe("2. Zod Validation Schemas", () => {
     assert.equal(result.success, true, "Valid settings must pass schema validation");
     if (result.success) {
       assert.equal(result.data.ownerName, "Owner", "Defaults ownerName when omitted");
+      assert.equal(result.data.themePalette, "classic-cream", "Defaults themePalette to classic-cream");
     }
 
-    // Custom owner name test
+    // Custom owner name and theme palette test
     const customOwnerResult = siteSettingsSchema.safeParse({
       ...validSettings,
       ownerName: "Deepak Patidar (Director)",
       establishedYear: 1990,
+      themePalette: "royal-blue",
     });
-    assert.equal(customOwnerResult.success, true, "Custom ownerName & establishedYear must pass schema validation");
+    assert.equal(customOwnerResult.success, true, "Custom ownerName & establishedYear & themePalette must pass schema validation");
     if (customOwnerResult.success) {
       assert.equal(customOwnerResult.data.ownerName, "Deepak Patidar (Director)");
       assert.equal(customOwnerResult.data.establishedYear, 1990);
+      assert.equal(customOwnerResult.data.themePalette, "royal-blue");
     }
 
     const invalidSettings = {

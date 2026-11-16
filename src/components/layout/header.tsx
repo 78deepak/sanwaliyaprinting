@@ -63,7 +63,7 @@ export function Header() {
       <header className="fixed top-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md shadow-xs border-b border-border/40">
         {/* Top Atelier Bar: location, hours, phone only. Hidden on mobile & on scroll */}
         <div
-          className={`hidden sm:block bg-surface-high/90 text-muted-foreground text-xs leading-tight transition-all duration-300 ease-in-out border-b ${
+          className={`hidden sm:block atelier-top-strip text-xs leading-tight transition-all duration-300 ease-in-out border-b ${
             isScrolled
               ? "max-h-0 opacity-0 py-0 border-transparent overflow-hidden pointer-events-none"
               : "max-h-12 opacity-100 py-2 border-border/50 px-3 sm:px-5 lg:px-6 xl:px-8"
@@ -83,7 +83,7 @@ export function Header() {
             <div className="flex items-center gap-4 ml-auto">
               <a
                 href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
-                className="flex items-center gap-1.5 text-foreground hover:text-primary transition-colors font-semibold"
+                className="atelier-top-phone flex items-center gap-1.5 transition-colors font-semibold"
               >
                 <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
                 <span>{phone}</span>
@@ -217,10 +217,10 @@ export function Header() {
             {/* 5. Custom Order */}
             <Link
               href="/custom-enquiry"
-              className={`whitespace-nowrap shrink-0 px-2.5 xl:px-3 py-1.5 rounded-full text-xs xl:text-[13px] 2xl:text-sm transition-all duration-200 ${
+              className={`whitespace-nowrap shrink-0 px-3 xl:px-4 py-1.5 rounded-full text-xs xl:text-[13px] 2xl:text-sm font-bold shadow-xs transition-all duration-200 custom-order-nav-btn ${
                 isCustomActive
-                  ? "bg-secondary/15 text-secondary font-bold shadow-2xs border border-secondary/30"
-                  : "text-secondary hover:text-primary hover:bg-secondary/10 font-semibold"
+                  ? "ring-2 ring-primary ring-offset-2 scale-105"
+                  : "hover:scale-105"
               }`}
             >
               <span>{lang === "hi" ? "कस्टम ऑर्डर" : "Custom Order"}</span>

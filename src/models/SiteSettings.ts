@@ -20,6 +20,7 @@ export interface ISiteSettings extends Document {
   establishedYear: number;
   ownerName?: string;
   ownerEmail?: string;
+  themePalette?: "classic-cream" | "royal-blue" | "maroon-elegant" | "lavender-soft";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -106,6 +107,11 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
       type: String,
       default: "",
       trim: true,
+    },
+    themePalette: {
+      type: String,
+      enum: ["classic-cream", "royal-blue", "maroon-elegant", "lavender-soft"],
+      default: "classic-cream",
     },
   },
   {
